@@ -4,6 +4,7 @@ library(readxl)
 library(igraph)
 library(arsenal)
 library(expss)
+library(RColorBrewer)
 
 # Carregando banco de dados no R
 Dados_ser <- readxl::read_xlsx("HSE_SERSO.xlsx") 
@@ -44,7 +45,25 @@ E(AP)$weight <- ars_ap_all_2$Peso
 V(AP)$gender <- c("M", "M", "M", "F", "F", "F", "F", "F", "M", "F", "M", "F", "M", "F", "M", "F", "F", "M", 
                   "F", "F", "F", "M", "M", "F", "F", "F", "M", "F", "M", "F", "F", "M", "F", "M", "F", "F", "F")
 
+# Atributo dos sujeitos sem nomes
 V(AP)$suj <- paste("s", 1:37, sep = "")
+
+# Nível de centralidade
+AP_deg <- degree(AP, mode = c("in"))
+AP_deg
+
+# EIGENVECTOR CENTRALITY
+AP_eig <- evcent(AP)$vector
+AP_eig
+
+# Betweenness centrality
+AP_bw <- betweenness(AP, directed = TRUE)
+AP_bw
+
+# Colocando as métricas no grafo
+V(AP)$degree <- AP_deg
+V(AP)$eig <- AP_deg
+V(AP)$bw <- AP_bw
 
 
 plot(AP, 
@@ -52,10 +71,12 @@ plot(AP,
      vertex.label = V(AP)$suj,
      vertex.label.color = "black", 
      vertex.label.cex = 1, 
-     edge.arrow.size=.1/2,
+     vertex.size = sqrt(V(AP)$bw),
+     edge.arrow.size=.1,
      edge.curved=0.2, 
      edge.width = E(AP)$weight, 
      layout = layout.fruchterman.reingold)
+
 
 plot(AP, 
      vertex.color = c("gold", "skyblue")[1+(V(AP)$gender=="M")], 
