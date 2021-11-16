@@ -13,7 +13,7 @@ Dados_AP_ <- readxl::read_xlsx("HSE_AP.xlsx")
 # retirada da linha 33 por ser repetida com a linha 35 (Natalia)
 Dados_AP_ <- Dados_AP_ %>% slice(-33)
 
-### Análise de redes ----
+### Análise de redes Psicologia ----
 df_ap <- Dados_AP_ %>% select(4, 75:89)
 
 ars_ap_1 <- df_ap %>% select(1,2) %>% rename(Amizade = "1ª amizade")
@@ -141,6 +141,56 @@ df_geral$rv12 <- ifelse(df_geral$RV_12 == "Perfume",1,0)
 # escore total
 df_geral$rvtotal <- df_geral %>% select(123:134) %>% rowSums()
 
+## Análise de redes Serviço Social -----
 
+df_ser <- Dados_ser %>% select(4, 75:89)
+
+df_ser_1 <- df_ser %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
+df_ser_1$Peso <- 5
+df_ser_2 <- df_ser %>% select(1,3) %>% rename(Amizade = "2ª Amizade")
+df_ser_2$Peso <- 4
+df_ser_3 <- df_ser %>% select(1,4) %>% rename(Amizade = "3ª Amizade")
+df_ser_3$Peso <- 3
+df_ser_4 <- df_ser %>% select(1,5) %>% rename(Amizade = "4ª Amizade")
+df_ser_4$Peso <- 2
+df_ser_5 <- df_ser %>% select(1,6) %>% rename(Amizade = "5ª Amizade")
+df_ser_5$Peso <- 1
+
+df_ser_all <- rbind(df_ser_1, df_ser_2, df_ser_3, df_ser_4, df_ser_5)
+
+df_ser_all_2 <- df_ser_all %>% slice(1:133, 135:138, 140:174, 177:178, 181:188, 191:194, 196:205)
+
+SER_ <- graph_from_data_frame(df_ser_all_2, directed = TRUE, vertices = NULL)
+
+V(SER_)$gender <- c("F", "F", "F", 
+                    "M", "F", "F", 
+                    "F", "F", "F", 
+                    "F", "M", "F", 
+                    "F", "F", "F", 
+                    "F", "F", "M", 
+                    "F", "F", "M", 
+                    "F", "F", "F", 
+                    "F", "F", "F", 
+                    "F", "F", "F", 
+                    "F", "F", "F", 
+                    "F", "F", "F", 
+                    "F", "F", "M", 
+                    "F", "F", "M", 
+                    "F", "F", "F",
+                    "F")
+
+# Atributo dos sujeitos sem nomes
+V(SER_)$suj <- paste("s", 1:46, sep = "")
+
+plot(SER_, 
+     vertex.color = c("gold", "skyblue")[1+(V(SER_)$gender=="M")], 
+     vertex.label = V(SER_)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.7, 
+     #vertex.size = sqrt(V(SER_)$bw),
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.width = E(SER_)$weight, 
+     layout = layout.fruchterman.reingold)
 
 
