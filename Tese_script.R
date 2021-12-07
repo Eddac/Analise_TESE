@@ -206,5 +206,7 @@ plot(SER_,
      edge.width = E(SER_)$weight, 
      layout = layout.fruchterman.reingold)
 
+## Escrevendo uma linha para teste no git
+
 
 
