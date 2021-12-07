@@ -7,13 +7,72 @@ library(expss)
 library(RColorBrewer)
 
 # Carregando banco de dados no R
-Dados_ser <- readxl::read_xlsx("HSE_SERSO.xlsx") 
+Dados_ser_ <- readxl::read_xlsx("HSE_SERSO.xlsx")
 Dados_AP_ <- readxl::read_xlsx("HSE_AP.xlsx") 
+Dados_mau_ <- readxl::read_xlsx("HSE_DOC_MAU.xlsx")
 
 # retirada da linha 33 por ser repetida com a linha 35 (Natalia)
 Dados_AP_ <- Dados_AP_ %>% slice(-33)
 
-### Análise de redes Psicologia ----
+# transformações dos dados de AP para padronizar com SC
+Dados_AP_2 <- Dados_AP_ %>% rename("1ª Amizade" = "1ª amizade", 
+                                   "2ª Amizade" = "2ª amizade",
+                                   "3ª Amizade" = "3ª amizade",
+                                   "4ª Amizade" = "4ª amizade",
+                                   "5ª Amizade" = "5ª amizade",
+                                   "1º Distanciamento" = "1ª distanciamento",
+                                   "2º Distanciamento" = "2ª distanciamento",
+                                   "3º Distanciamento" = "3ª distanciamento",
+                                   "4º Distanciamento" = "4ª distanciamento",
+                                   "5º Distanciamento" = "5ª distanciamento")
+
+
+# transformações dos dados do mau para padronizar com SC
+Dados_mau_2 <- Dados_mau_ %>% rename("1ª Amizade" = "1ª Proximidade", 
+                                   "2ª Amizade" = "2ª Proximidade",
+                                   "3ª Amizade" = "3ª Proximidade",
+                                   "4ª Amizade" = "4ª Proximidade",
+                                   "5ª Amizade" = "5ª Proximidade")
+
+# Unir todos os bancos----
+df_geral <- rbind(Dados_AP_2, Dados_ser, Dados_mau_2)
+
+# Correção de respostas dos sujeitos de psicologia RV_03, pois houve uma duplicação.
+recode(df_geral[, 48]) <- c("Primavera"~"Médico", "Férias"~"Hospital", "Sol"~"Doença", "Verão"~"Dor", "Ventilador"~"Coração")
+
+# rename de raciocínio verbal
+df_geral <- df_geral %>% rename(RV_01 = 46,
+                                RV_02 = 47,
+                                RV_03 = 48,
+                                RV_04 = 49,
+                                RV_05 = 50,
+                                RV_06 = 51,
+                                RV_07 = 52,
+                                RV_08 = 53,
+                                RV_09 = 54,
+                                RV_10 = 55,
+                                RV_11 = 56,
+                                RV_12 = 57)
+
+
+# Correção do raciocínio verbal
+df_geral$rv01 <- ifelse(df_geral$RV_01 == "Dia",1,0)
+df_geral$rv02 <- ifelse(df_geral$RV_02 == "Verão",1,0) 
+df_geral$rv03 <- ifelse(df_geral$RV_03 == "Doença",1,0) 
+df_geral$rv04 <- ifelse(df_geral$RV_04 == "Derrota",1,0) 
+df_geral$rv05 <- ifelse(df_geral$RV_05 == "Certeza",1,0) 
+df_geral$rv06 <- ifelse(df_geral$RV_06 == "Vender",1,0) 
+df_geral$rv07 <- ifelse(df_geral$RV_07 == "Literatura",1,0) 
+df_geral$rv08 <- ifelse(df_geral$RV_08 == "Cume",1,0) 
+df_geral$rv09 <- ifelse(df_geral$RV_09 == "Futuro",1,0) 
+df_geral$rv10 <- ifelse(df_geral$RV_10 == "Precoce",1,0) 
+df_geral$rv11 <- ifelse(df_geral$RV_11 == "Avaliar",1,0) 
+df_geral$rv12 <- ifelse(df_geral$RV_12 == "Perfume",1,0) 
+
+# escore total
+df_geral$rvtotal <- df_geral %>% select(123:134) %>% rowSums()
+
+### Análise de redes Psicologia (Amizade) ----
 df_ap <- Dados_AP_ %>% select(4, 75:89)
 
 ars_ap_1 <- df_ap %>% select(1,2) %>% rename(Amizade = "1ª amizade")
@@ -71,11 +130,12 @@ plot(AP,
      vertex.label = V(AP)$suj,
      vertex.label.color = "black", 
      vertex.label.cex = 1, 
-     vertex.size = sqrt(V(AP)$bw),
+     #vertex.size = sqrt(V(AP)$bw),
      edge.arrow.size=.1,
      edge.curved=0.2, 
      edge.width = E(AP)$weight, 
      layout = layout.fruchterman.reingold)
+
 
 
 plot(AP, 
@@ -92,56 +152,9 @@ plot(AP,
 
 ## retirar os escores e tirar as precisões
 
-# transformações dos dados de AP para padronizar com o outro banco
-Dados_AP_2 <- Dados_AP_ %>% rename("1ª Amizade" = "1ª amizade", 
-                                   "2ª Amizade" = "2ª amizade",
-                                   "3ª Amizade" = "3ª amizade",
-                                   "4ª Amizade" = "4ª amizade",
-                                   "5ª Amizade" = "5ª amizade",
-                                   "1º Distanciamento" = "1ª distanciamento",
-                                   "2º Distanciamento" = "2ª distanciamento",
-                                   "3º Distanciamento" = "3ª distanciamento",
-                                   "4º Distanciamento" = "4ª distanciamento",
-                                   "5º Distanciamento" = "5ª distanciamento")
-# Unir todos os bancos
-df_geral <- rbind(Dados_AP_2, Dados_ser)
-
-# Correção de respostas dos sujeitos de psicologia RV_03, pois houve uma duplicação.
-recode(df_geral[, 48]) <- c("Primavera"~"Médico", "Férias"~"Hospital", "Sol"~"Doença", "Verão"~"Dor", "Ventilador"~"Coração")
-
-# rename de raciocínio verbal
-df_geral <- df_geral %>% rename(RV_01 = 46,
-                                RV_02 = 47,
-                                RV_03 = 48,
-                                RV_04 = 49,
-                                RV_05 = 50,
-                                RV_06 = 51,
-                                RV_07 = 52,
-                                RV_08 = 53,
-                                RV_09 = 54,
-                                RV_10 = 55,
-                                RV_11 = 56,
-                                RV_12 = 57)
 
 
-# Correção do raciocínio verbal
-df_geral$rv01 <- ifelse(df_geral$RV_01 == "Dia",1,0)
-df_geral$rv02 <- ifelse(df_geral$RV_02 == "Verão",1,0) 
-df_geral$rv03 <- ifelse(df_geral$RV_03 == "Doença",1,0) 
-df_geral$rv04 <- ifelse(df_geral$RV_04 == "Derrota",1,0) 
-df_geral$rv05 <- ifelse(df_geral$RV_05 == "Certeza",1,0) 
-df_geral$rv06 <- ifelse(df_geral$RV_06 == "Vender",1,0) 
-df_geral$rv07 <- ifelse(df_geral$RV_07 == "Literatura",1,0) 
-df_geral$rv08 <- ifelse(df_geral$RV_08 == "Cume",1,0) 
-df_geral$rv09 <- ifelse(df_geral$RV_09 == "Futuro",1,0) 
-df_geral$rv10 <- ifelse(df_geral$RV_10 == "Precoce",1,0) 
-df_geral$rv11 <- ifelse(df_geral$RV_11 == "Avaliar",1,0) 
-df_geral$rv12 <- ifelse(df_geral$RV_12 == "Perfume",1,0) 
-
-# escore total
-df_geral$rvtotal <- df_geral %>% select(123:134) %>% rowSums()
-
-## Análise de redes Serviço Social -----
+## Análise de redes Serviço Social(Amizade) -----
 
 df_ser <- Dados_ser %>% select(4, 75:89)
 
@@ -186,11 +199,12 @@ plot(SER_,
      vertex.color = c("gold", "skyblue")[1+(V(SER_)$gender=="M")], 
      vertex.label = V(SER_)$suj,
      vertex.label.color = "black",
-     vertex.label.cex = 0.7, 
+     vertex.label.cex = 0.8, 
      #vertex.size = sqrt(V(SER_)$bw),
      edge.arrow.size=.1,
      edge.curved=0.2, 
      edge.width = E(SER_)$weight, 
      layout = layout.fruchterman.reingold)
+
 
 
