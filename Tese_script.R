@@ -1,4 +1,4 @@
-# Análises tese 
+### Análises tese ####
 library(tidyverse)
 library(readxl)
 library(igraph)
@@ -74,7 +74,9 @@ df_geral$rv12 <- ifelse(df_geral$RV_12 == "Perfume",1,0)
 # escore total
 df_geral$rvtotal <- df_geral %>% select(123:134) %>% rowSums()
 
-### Análise de redes Psicologia (Amizade) ----
+########################## ANÁLISE DE REDES PSICOLOGIA (Amizade) ######################################
+
+
 df_ap <- Dados_AP_ %>% select(4, 75:89)
 
 ars_ap_1 <- df_ap %>% select(1,2) %>% rename(Amizade = "1ª amizade")
@@ -91,18 +93,17 @@ ars_ap_5$Peso <- 1
 ars_ap_all <- rbind(ars_ap_1, ars_ap_2, ars_ap_3, ars_ap_4, ars_ap_5)
 
 # retirada das linhas com Na's
-ars_ap_all_2 <- na.omit(ars_ap_all)
+ars_ap_all <- na.omit(ars_ap_all)
 
 # Elaboração do grafo da turma de avaliação psicológica
-AP <- graph_from_data_frame(ars_ap_all_2, directed = TRUE, vertices = NULL)
+AP <- graph_from_data_frame(ars_ap_all, directed = TRUE, vertices = NULL)
 AP
 
 plot(AP, vertex.color = "gold", vertex.label.color = "black", vertex.label.cex = 0.8, edge.arrow.size=.4,
      edge.curved=0.2)
 
-AP
 V(AP)$name
-E(AP)$weight <- ars_ap_all_2$Peso
+E(AP)$weight <- ars_ap_all$Peso
 V(AP)$gender <- c("M", "M", "M", "F", 
                   "F", "F", "F", "F", 
                   "M", "F", "M", "F", 
@@ -117,18 +118,11 @@ V(AP)$gender <- c("M", "M", "M", "F",
 # Atributo dos sujeitos sem nomes
 V(AP)$suj <- paste("s", 1:37, sep = "")
 
+
 # Nível de centralidade
-AP_deg <- degree(AP, mode = c("in"))
-
-AP_deg <- as.data.frame(AP_deg)
-
-# EIGENVECTOR CENTRALITY
-AP_eig <- evcent(AP)$vector
-AP_eig
-
-# Betweenness centrality
-AP_bw <- betweenness(AP, directed = TRUE)
-AP_bw
+AP_centralidade <- degree(AP, mode = c("in")) %>% as.data.frame() %>% rename(Grau_geral = ".")
+AP_centralidade$Proximidade <- evcent(AP)$vector %>% as.data.frame() 
+AP_centralidade$Intermediação <- betweenness(AP, directed = TRUE) 
 
 # Colocando as métricas no grafo
 V(AP)$degree <- AP_deg
@@ -161,7 +155,7 @@ plot(AP,
 
 
 
-## Análise de distanciamento Psicologia
+#### DISTANCIAMENTO PSICOLOGIA 
 ars_ap_d_1 <- df_ap %>% select(1,7) %>% rename(Distância = "1ª distanciamento")
 ars_ap_d_1$Peso <- 5
 ars_ap_d_2 <- df_ap %>% select(1,8) %>% rename(Distância = "2ª distanciamento")
@@ -174,17 +168,17 @@ ars_ap_d_5 <- df_ap %>% select(1,11) %>% rename(Distância = "5ª distanciamento
 ars_ap_d_5$Peso <- 1
 
 ars_ap_d_all <- rbind(ars_ap_d_1,
-                    ars_ap_d_2,
-                    ars_ap_d_3,
-                    ars_ap_d_4,
-                    ars_ap_d_5)
-
+                      ars_ap_d_2,
+                      ars_ap_d_3,
+                      ars_ap_d_4,
+                      ars_ap_d_5)
+  
 ars_ap_d_all <- na.omit(ars_ap_d_all)
 
 AP_d <- graph_from_data_frame(ars_ap_d_all, directed = TRUE, vertices = NULL)
 
 
-plot(AP_d, vertex.color = "gold", vertex.label.color = "black", vertex.label.cex = 0.8, edge.arrow.size=.4,
+plot(AP_d, vertex.color = "gold", vertex.label.color = "black", vertex.label.cex = 0.6, edge.arrow.size=.4,
      edge.curved=0.2)
 
 
@@ -202,14 +196,9 @@ V(AP_d)$gender <- c("M", "M", "M", "F",
 
 
 # Nível de centralidade
-AP_d_deg <- degree(AP_d, mode = c("in"))
-AP_d_deg
-
-# EIGENVECTOR CENTRALITY
-AP_d_eig <- evcent(AP_d)$vector
-
-# Betweenness centrality
-AP_d_bw <- betweenness(AP_d, directed = TRUE)
+AP_d_centralidade <- degree(AP_d, mode = c("in")) %>% as.data.frame() %>% rename(Grau_geral = ".")
+AP_d_centralidade$Proximidade <- evcent(AP_d)$vector %>% as.data.frame() # EIGENVECTOR CENTRALITY
+AP_d_centralidade$Intermediação <- betweenness(AP_d, directed = TRUE) # Betweenness centrality
 
 # Colocando as métricas no grafo
 V(AP_d)$degree <- AP_d_deg
@@ -228,7 +217,71 @@ plot(AP_d,
      edge.width = E(AP_d)$weight, 
      layout = layout.fruchterman.reingold)
 
-## Análise profissional Psicologia
+###### PROFISSIONAL PSICOLOGIA
+ars_ap_p_1 <- df_ap %>% select(1,12) %>% rename(Profissional = "1º Profissional")
+ars_ap_p_1$Peso <- 5
+ars_ap_p_2 <- df_ap %>% select(1,13) %>% rename(Profissional = "2º Profissional")
+ars_ap_p_2$Peso <- 4
+ars_ap_p_3 <- df_ap %>% select(1,14) %>% rename(Profissional = "3º Profissional")
+ars_ap_p_3$Peso <- 3
+ars_ap_p_4 <- df_ap %>% select(1,15) %>% rename(Profissional = "4º Profissional")
+ars_ap_p_4$Peso <- 2
+ars_ap_p_5 <- df_ap %>% select(1,16) %>% rename(Profissional = "5º Profissional")
+ars_ap_p_5$Peso <- 1
+
+ars_ap_p_all <- rbind(ars_ap_p_1,
+                      ars_ap_p_2,
+                      ars_ap_p_3,
+                      ars_ap_p_4,
+                      ars_ap_p_5)
+
+ars_ap_p_all <- na.omit(ars_ap_p_all)
+
+AP_p <- graph_from_data_frame(ars_ap_p_all, directed = TRUE, vertices = NULL)
+
+
+E(AP_p)$weight <- ars_ap_p_all$Peso
+V(AP_p)$gender <- c("M", "M", "M", "F", 
+                    "F", "F", "F", "F", 
+                    "M", "F", "M", "F", 
+                    "M", "F", "M", "F", 
+                    "F", "M", "F", "F", 
+                    "F", "M", "M", "F", 
+                    "F", "F", "M", "F",
+                    "M", "F", "F", "M", 
+                    "F", "M", "F", "F", 
+                    "F")
+
+# Nível de centralidade
+AP_p_centralidade <- degree(AP_p, mode = c("in")) %>% as.data.frame() %>% rename(Grau_geral = ".")
+AP_p_centralidade$Proximidade <- evcent(AP_p)$vector %>% as.data.frame() # EIGENVECTOR CENTRALITY
+AP_p_centralidade$Intermediação <- betweenness(AP_p, directed = TRUE) # Betweenness centrality
+AP_p_centralidade %>% 
+
+
+# Colocando as métricas no grafo
+V(AP_p)$degree <- AP_centralidade$Grau_geral
+V(AP_p)$eig <- AP_centralidade$Proximidade
+V(AP_p)$bw <- AP_centralidade$Intermediação
+
+
+plot(AP_p, 
+     vertex.color = c("gold", "skyblue")[1+(V(AP_p)$gender=="M")], 
+     #vertex.label = V(AP)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     #vertex.size = sqrt(V(AP)$bw),
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.width = E(AP_p)$weight, 
+     layout = layout.fruchterman.reingold)
+
+
+
+
+
+
+
 # Usar o pacote arsenal
 
 ## retirar os escores e tirar as precisões
