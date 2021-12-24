@@ -120,9 +120,14 @@ V(AP)$suj <- paste("s", 1:37, sep = "")
 
 
 # Nível de centralidade
-AP_centralidade <- degree(AP, mode = c("in")) %>% as.data.frame() %>% rename(Grau_geral = ".")
+AP_centralidade <- data.frame(Nome = V(AP)$name, Grau_Entrada = degree(AP, mode = c("in")))
+AP_centralidade$Centralidade_distancia <- closeness(AP, mode = "all") %>% as.data.frame()
 AP_centralidade$Proximidade <- evcent(AP)$vector %>% as.data.frame() 
 AP_centralidade$Intermediação <- betweenness(AP, directed = TRUE) 
+# Nível de autoridade
+AP_p_centralidade$Autoridade <- authority_score(AP)$vector
+
+AP_centralidade <- AP_centralidade %>% arrange(Nome)
 
 # Colocando as métricas no grafo
 V(AP)$degree <- AP_deg
@@ -132,7 +137,7 @@ V(AP)$bw <- AP_bw
 
 plot(AP, 
      vertex.color = c("gold", "skyblue")[1+(V(AP)$gender=="M")], 
-     vertex.label = V(AP)$suj,
+     #vertex.label = V(AP)$suj,
      vertex.label.color = "black", 
      vertex.label.cex = 1, 
      #vertex.size = sqrt(V(AP)$bw),
@@ -153,6 +158,14 @@ plot(AP,
      edge.width = E(AP)$weight, 
      layout = layout_components)
 
+## Identificando comunidades
+
+teste <- as.undirected(AP, mode = "collapse", 
+                       edge.attr.comb = list(weight = "sum", "ignore"))
+teste_2 <- cluster_edge_betweenness(teste)
+teste_3 <- cluster_edge_betweenness(AP)
+
+plot(teste_3, AP)
 
 
 #### DISTANCIAMENTO PSICOLOGIA 
@@ -196,9 +209,12 @@ V(AP_d)$gender <- c("M", "M", "M", "F",
 
 
 # Nível de centralidade
-AP_d_centralidade <- degree(AP_d, mode = c("in")) %>% as.data.frame() %>% rename(Grau_geral = ".")
-AP_d_centralidade$Proximidade <- evcent(AP_d)$vector %>% as.data.frame() # EIGENVECTOR CENTRALITY
-AP_d_centralidade$Intermediação <- betweenness(AP_d, directed = TRUE) # Betweenness centrality
+AP_d_centralidade <- data.frame(Nome = V(AP_d)$name, Grau_Entrada_D = degree(AP_d, mode = c("in")))
+AP_d_centralidade$Centralidade_distancia_D <- closeness(AP_d, mode = "all") %>% as.data.frame()
+AP_d_centralidade$Proximidade_D <- evcent(AP_d)$vector %>% as.data.frame() 
+AP_d_centralidade$Intermediação_D <- betweenness(AP_d, directed = TRUE) 
+
+AP_d_centralidade <- AP_d_centralidade %>% arrange(Nome)
 
 # Colocando as métricas no grafo
 V(AP_d)$degree <- AP_d_deg
@@ -239,25 +255,29 @@ ars_ap_p_all <- na.omit(ars_ap_p_all)
 
 AP_p <- graph_from_data_frame(ars_ap_p_all, directed = TRUE, vertices = NULL)
 
-
+V(AP_p)$name
 E(AP_p)$weight <- ars_ap_p_all$Peso
 V(AP_p)$gender <- c("M", "M", "M", "F", 
                     "F", "F", "F", "F", 
-                    "M", "F", "M", "F", 
-                    "M", "F", "M", "F", 
-                    "F", "M", "F", "F", 
-                    "F", "M", "M", "F", 
-                    "F", "F", "M", "F",
                     "M", "F", "F", "M", 
-                    "F", "M", "F", "F", 
+                    "F", "M", "F", "M", 
+                    "F", "F", "M", "F", 
+                    "F", "M", "M", "F", 
+                    "F", "F", "F", "M",
+                    "F", "F", "M", "F", 
+                    "M", "F", "M", "F", 
                     "F")
 
 # Nível de centralidade
-AP_p_centralidade <- degree(AP_p, mode = c("in")) %>% as.data.frame() %>% rename(Grau_geral = ".")
-AP_p_centralidade$Proximidade <- evcent(AP_p)$vector %>% as.data.frame() # EIGENVECTOR CENTRALITY
-AP_p_centralidade$Intermediação <- betweenness(AP_p, directed = TRUE) # Betweenness centrality
-AP_p_centralidade %>% 
+AP_p_centralidade <- data.frame(Nome = V(AP_p)$name, Grau_Entrada_P = degree(AP_p, mode = c("in")))
+AP_p_centralidade$Centralidade_distancia_P <- closeness(AP_p, mode = "all") %>% as.data.frame()
+AP_p_centralidade$Proximidade_P <- evcent(AP_p)$vector %>% as.data.frame() # EIGENVECTOR CENTRALITY
+AP_p_centralidade$Intermediação_P <- betweenness(AP_p, directed = TRUE) 
 
+# Nível de autoridade
+AP_p_centralidade$Autoridade_P <- authority_score(AP_p)$vector
+
+AP_p_centralidade <- AP_p_centralidade %>% arrange(Nome)
 
 # Colocando as métricas no grafo
 V(AP_p)$degree <- AP_centralidade$Grau_geral
@@ -267,16 +287,21 @@ V(AP_p)$bw <- AP_centralidade$Intermediação
 
 plot(AP_p, 
      vertex.color = c("gold", "skyblue")[1+(V(AP_p)$gender=="M")], 
-     #vertex.label = V(AP)$suj,
+     #vertex.label = V(AP_p)$suj,
      vertex.label.color = "black", 
      vertex.label.cex = 1, 
-     #vertex.size = sqrt(V(AP)$bw),
+     #vertex.size = sqrt(V(AP_p)$bw),
      edge.arrow.size=.1,
      edge.curved=0.2, 
      edge.width = E(AP_p)$weight, 
      layout = layout.fruchterman.reingold)
 
+#### UNIR MÉTRICAS PSICOLOGIA
 
+# Retirada de Marcella e de Wesley
+AP_d_centralidade <- AP_d_centralidade %>% slice(-20, -39)
+
+AP_centralidade_geral <- cbind(AP_centralidade, AP_p_centralidade, AP_d_centralidade)
 
 
 
@@ -288,9 +313,9 @@ plot(AP_p,
 
 
 
-## Análise de redes Serviço Social(Amizade) -----
+########### Análise de redes SERVIÇO SOCIAL (Amizade) -----
 
-df_ser <- Dados_ser %>% select(4, 75:89)
+df_ser <- Dados_ser_ %>% select(4, 75:89)
 
 df_ser_1 <- df_ser %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
 df_ser_1$Peso <- 5
@@ -305,42 +330,47 @@ df_ser_5$Peso <- 1
 
 df_ser_all <- rbind(df_ser_1, df_ser_2, df_ser_3, df_ser_4, df_ser_5)
 
-df_ser_all_2 <- df_ser_all %>% slice(1:133, 135:138, 140:174, 177:178, 181:188, 191:194, 196:205)
+#df_ser_all <- df_ser_all %>% slice(1:133, 135:138, 140:174, 177:178, 181:188, 191:194, 196:205)
 
-SER_ <- graph_from_data_frame(df_ser_all_2, directed = TRUE, vertices = NULL)
+SER_ <- graph_from_data_frame(df_ser_all, directed = TRUE, vertices = NULL)
 
-V(SER_)$gender <- c("F", "F", "F", 
-                    "M", "F", "F", 
-                    "F", "F", "F", 
-                    "F", "M", "F", 
-                    "F", "F", "F", 
-                    "F", "F", "M", 
-                    "F", "F", "M", 
-                    "F", "F", "F", 
-                    "F", "F", "F", 
-                    "F", "F", "F", 
-                    "F", "F", "F", 
-                    "F", "F", "F", 
-                    "F", "F", "M", 
-                    "F", "F", "M", 
-                    "F", "F", "F",
-                    "F")
+V(SER_)$name
+V(SER_)$gender <- c("F", "F", "F", "M", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "M", "F", "F", 
+                    "M", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "F")
 
 # Atributo dos sujeitos sem nomes
-V(SER_)$suj <- paste("s", 1:46, sep = "")
+V(SER_)$suj <- paste("s", 1:47, sep = "")
 
 plot(SER_, 
      vertex.color = c("gold", "skyblue")[1+(V(SER_)$gender=="M")], 
-     vertex.label = V(SER_)$suj,
+     #vertex.label = V(SER_)$suj,
      vertex.label.color = "black",
-     vertex.label.cex = 0.8, 
+     vertex.label.cex = 0.7, 
      #vertex.size = sqrt(V(SER_)$bw),
      edge.arrow.size=.1,
      edge.curved=0.2, 
      edge.width = E(SER_)$weight, 
      layout = layout.fruchterman.reingold)
 
-## Escrevendo uma linha para teste no git
+# Nível de centralidade
+SER_centralidade <- data.frame(Nome = V(SER_)$name, Grau_Entrada = degree(SER_, mode = c("in")))
+SER_centralidade$Centralidade_distancia <- closeness(SER_, mode = "all") %>% as.data.frame()
+SER_centralidade$Proximidade <- evcent(SER_)$vector %>% as.data.frame() # EIGENVECTOR CENTRALITY
+SER_centralidade$Intermediação <- betweenness(SER_, directed = TRUE) 
 
+# Nível de autoridade
+SER_centralidade$Autoridade <- authority_score(SER_)$vector
+
+SER_centralidade <- SER_centralidade %>% arrange(Nome)
 
 
