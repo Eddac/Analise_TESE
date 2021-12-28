@@ -16,28 +16,29 @@ Dados_Odo <- readxl::read_xlsx("HSE_DOC_Odonto.xlsx")
 Dados_AP_ <- Dados_AP_ %>% slice(-33)
 
 # transformações dos dados de AP para padronizar com SC
-Dados_AP_2 <- Dados_AP_ %>% rename("1ª Amizade" = "1ª amizade", 
-                                   "2ª Amizade" = "2ª amizade",
-                                   "3ª Amizade" = "3ª amizade",
-                                   "4ª Amizade" = "4ª amizade",
-                                   "5ª Amizade" = "5ª amizade",
-                                   "1º Distanciamento" = "1ª distanciamento",
-                                   "2º Distanciamento" = "2ª distanciamento",
-                                   "3º Distanciamento" = "3ª distanciamento",
-                                   "4º Distanciamento" = "4ª distanciamento",
-                                   "5º Distanciamento" = "5ª distanciamento")
+Dados_AP_ <- Dados_AP_ %>% rename("1ª Amizade" = "1ª amizade", 
+                                  "2ª Amizade" = "2ª amizade",
+                                  "3ª Amizade" = "3ª amizade",
+                                  "4ª Amizade" = "4ª amizade",
+                                  "5ª Amizade" = "5ª amizade",
+                                  "1º Distanciamento" = "1ª distanciamento",
+                                  "2º Distanciamento" = "2ª distanciamento",
+                                  "3º Distanciamento" = "3ª distanciamento",
+                                  "4º Distanciamento" = "4ª distanciamento",
+                                  "5º Distanciamento" = "5ª distanciamento")
 
 
 # transformações dos dados do mau para padronizar com SC
-Dados_mau_2 <- Dados_mau_ %>% rename("1ª Amizade" = "1ª Proximidade", 
-                                   "2ª Amizade" = "2ª Proximidade",
-                                   "3ª Amizade" = "3ª Proximidade",
-                                   "4ª Amizade" = "4ª Proximidade",
-                                   "5ª Amizade" = "5ª Proximidade")
+Dados_mau_ <- Dados_mau_ %>% rename("1ª Amizade" = "1ª Proximidade", 
+                                    "2ª Amizade" = "2ª Proximidade",
+                                    "3ª Amizade" = "3ª Proximidade",
+                                    "4ª Amizade" = "4ª Proximidade",
+                                    "5ª Amizade" = "5ª Proximidade")
 
 
 # Unir todos os bancos----
-df_geral <- rbind(Dados_AP_2, Dados_ser, Dados_mau_2)
+df_geral <- rbind(Dados_AP_, Dados_ser_, Dados_mau_, Dados_Odo)
+
 
 # Correção de respostas dos sujeitos de psicologia RV_03, pois houve uma duplicação.
 recode(df_geral[, 48]) <- c("Primavera"~"Médico", "Férias"~"Hospital", "Sol"~"Doença", "Verão"~"Dor", "Ventilador"~"Coração")
@@ -74,20 +75,68 @@ df_geral$rv12 <- ifelse(df_geral$RV_12 == "Perfume",1,0)
 # escore total
 df_geral$rvtotal <- df_geral %>% select(123:134) %>% rowSums()
 
+
+## Correção competências emocionais
+
+# F1/F2/F3/F4/F5/FG
+# INVERSÃO DOS ITENS 3, 16 e 28
+
+# FATOR 1 (8 ITENS) - 1,5,8,15,23,26,29,31  -- >>> +11
+# FATOR 2 (7 ITENS) - 4,11,14,16,21,24,27
+# FATOR 3 (4 ITENS) - 6,18,28,32
+# FATOR 4 (7 ITENS) - 2,7,10,12,19,22,33
+# FATOR 5 (8 ITENS) - 3,9,13,17,20,25,30,34
+
+#
+df_geral <- df_geral %>% rename(C3 = 'Por mais que tente, não consigo controlar a expressão do que estou sentindo.')
+df_geral <- df_geral %>% rename(C16 = 'Frustrações deixam-me desanimado/a por bastante tempo.')
+df_geral <- df_geral %>% rename(C28 = 'Tenho vergonha de expressar os meus sentimentos.')
+
+
+
+df_geral$C3_inv <- ifelse(df_geral$C3 %in% c(5), 1,
+                   ifelse(df_geral$C3 %in% c(4), 2,
+                   ifelse(df_geral$C3 %in% c(3), 3,
+                   ifelse(df_geral$C3 %in% c(2), 4,
+                   ifelse(df_geral$C3 %in% c(1), 5, df_geral$C3)))))
+
+df_geral$C16_inv <- ifelse(df_geral$C16 %in% c(5), 1,
+                    ifelse(df_geral$C16 %in% c(4), 2,
+                    ifelse(df_geral$C16 %in% c(3), 3,
+                    ifelse(df_geral$C16 %in% c(2), 4,
+                    ifelse(df_geral$C16 %in% c(1), 5, df_geral$C16)))))
+
+df_geral$C28_inv <- ifelse(df_geral$C28 %in% c(5), 1,
+                    ifelse(df_geral$C28 %in% c(4), 2,
+                    ifelse(df_geral$C28 %in% c(3), 3,
+                    ifelse(df_geral$C28 %in% c(2), 4,
+                    ifelse(df_geral$C28 %in% c(1), 5, df_geral$C28)))))
+
+names(df_geral)
+
+df_geral$CF1 <- df_geral %>% select(12,16,19,26,34,37,40,42) %>% rowMeans()
+df_geral$CF2 <- df_geral %>% select(15,22,25,137,32,35,38) %>% rowMeans()
+df_geral$CF3 <- df_geral %>% select(17,19,138,43) %>% rowMeans()
+df_geral$CF4 <- df_geral %>% select(13,18,21,23,30,33,44) %>% rowMeans()
+df_geral$CF5 <- df_geral %>% select(136,20,24,28,31,36,45) %>% rowMeans()
+df_geral$C_GERAL <- df_geral %>% select(139:143) %>% rowMeans()
+
+
+
 ########################## ANÁLISE DE REDES PSICOLOGIA (Amizade) ######################################
 
 
 df_ap <- Dados_AP_ %>% select(4, 75:89)
 
-ars_ap_1 <- df_ap %>% select(1,2) %>% rename(Amizade = "1ª amizade")
+ars_ap_1 <- df_ap %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
 ars_ap_1$Peso <- 5
-ars_ap_2 <- df_ap %>% select(1,3) %>% rename(Amizade = "2ª amizade")
+ars_ap_2 <- df_ap %>% select(1,3) %>% rename(Amizade = "2ª Amizade")
 ars_ap_2$Peso <- 4
-ars_ap_3 <- df_ap %>% select(1,4) %>% rename(Amizade = "3ª amizade")
+ars_ap_3 <- df_ap %>% select(1,4) %>% rename(Amizade = "3ª Amizade")
 ars_ap_3$Peso <- 3
-ars_ap_4 <- df_ap %>% select(1,5) %>% rename(Amizade = "4ª amizade")
+ars_ap_4 <- df_ap %>% select(1,5) %>% rename(Amizade = "4ª Amizade")
 ars_ap_4$Peso <- 2
-ars_ap_5 <- df_ap %>% select(1,6) %>% rename(Amizade = "5ª amizade")
+ars_ap_5 <- df_ap %>% select(1,6) %>% rename(Amizade = "5ª Amizade")
 ars_ap_5$Peso <- 1
 
 ars_ap_all <- rbind(ars_ap_1, ars_ap_2, ars_ap_3, ars_ap_4, ars_ap_5)
@@ -365,12 +414,81 @@ plot(SER_,
 # Nível de centralidade
 SER_centralidade <- data.frame(Nome = V(SER_)$name, Grau_Entrada = degree(SER_, mode = c("in")))
 SER_centralidade$Centralidade_distancia <- closeness(SER_, mode = "all") %>% as.data.frame()
-SER_centralidade$Proximidade <- evcent(SER_)$vector %>% as.data.frame() # EIGENVECTOR CENTRALITY
+SER_centralidade$Proximidade <- evcent(SER_)$vector %>% as.data.frame() 
 SER_centralidade$Intermediação <- betweenness(SER_, directed = TRUE) 
 
 # Nível de autoridade
 SER_centralidade$Autoridade <- authority_score(SER_)$vector
 
 SER_centralidade <- SER_centralidade %>% arrange(Nome)
+
+### Distância SERVIÇO SOCIAL
+
+df_ser <- Dados_ser_ %>% select(4, 75:89)
+
+df_d_ser_1 <- df_ser %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
+df_d_ser_1$Peso <- 5
+df_d_ser_2 <- df_ser %>% select(1,8) %>% rename(Distância = "2º Distanciamento")
+df_d_ser_2$Peso <- 4
+df_d_ser_3 <- df_ser %>% select(1,9) %>% rename(Distância = "3º Distanciamento")
+df_d_ser_3$Peso <- 3
+df_d_ser_4 <- df_ser %>% select(1,10) %>% rename(Distância = "4º Distanciamento")
+df_d_ser_4$Peso <- 2
+df_d_ser_5 <- df_ser %>% select(1,11) %>% rename(Distância = "5º Distanciamento")
+df_d_ser_5$Peso <- 1
+
+df_d_ser_all <- rbind(df_d_ser_1, df_d_ser_2, df_d_ser_3, df_d_ser_4, df_d_ser_5)
+
+
+SER_d <- graph_from_data_frame(df_d_ser_all, directed = TRUE, vertices = NULL)
+
+V(SER_d)$name
+V(SER_d)$gender <- c("F", "F", "F", "M", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "M", "F", "F", 
+                    "M", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "F")
+
+# Atributo dos sujeitos sem nomes
+V(SER_d)$suj <- paste("s", 1:49, sep = "")
+
+plot(SER_d, 
+     vertex.color = c("gold", "skyblue")[1+(V(SER_d)$gender=="M")], 
+     #vertex.label = V(SER_)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.7, 
+     #vertex.size = sqrt(V(SER_)$bw),
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.width = E(SER_d)$weight, 
+     layout = layout.fruchterman.reingold)
+
+# Nível de centralidade
+SER_d_centralidade <- data.frame(Nome = V(SER_d)$name, Grau_Entrada_D = degree(SER_d, mode = c("in")))
+SER_d_centralidade$Centralidade_distancia_D <- closeness(SER_d, mode = "all") %>% as.data.frame()
+SER_d_centralidade$Proximidade_D <- evcent(SER_d)$vector %>% as.data.frame() 
+SER_d_centralidade$Intermediação_D <- betweenness(SER_d, directed = TRUE) 
+
+# Nível de autoridade
+SER_d_centralidade$Autoridade_D <- authority_score(SER_d)$vector
+
+SER_d_centralidade <- SER_d_centralidade %>% arrange(Nome)
+
+#### ODONTO
+
+
+Dados_Odo <- Dados_Odo %>% rename(Idade = "Idade (apenas números)")
+
+#### Análises Estatísticas
+
+
+
 
 
