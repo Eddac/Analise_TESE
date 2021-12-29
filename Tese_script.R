@@ -112,7 +112,7 @@ df_geral$C28_inv <- ifelse(df_geral$C28 %in% c(5), 1,
                     ifelse(df_geral$C28 %in% c(2), 4,
                     ifelse(df_geral$C28 %in% c(1), 5, df_geral$C28)))))
 
-names(df_geral)
+
 
 df_geral$CF1 <- df_geral %>% select(12,16,19,26,34,37,40,42) %>% rowMeans()
 df_geral$CF2 <- df_geral %>% select(15,22,25,137,32,35,38) %>% rowMeans()
@@ -121,6 +121,26 @@ df_geral$CF4 <- df_geral %>% select(13,18,21,23,30,33,44) %>% rowMeans()
 df_geral$CF5 <- df_geral %>% select(136,20,24,28,31,36,45) %>% rowMeans()
 df_geral$C_GERAL <- df_geral %>% select(139:143) %>% rowMeans()
 
+### Correção HSE adultos
+names(df_geral)
+
+# Fator 1 - neuroticismo 
+# itens invertidos - 98, 106
+
+df_geral$H98_inv <- ifelse(df_geral$`Controlo meus sentimentos.` %in% c(5), 1,
+                    ifelse(df_geral$`Controlo meus sentimentos.` %in% c(4), 2,
+                    ifelse(df_geral$`Controlo meus sentimentos.` %in% c(3), 3,
+                    ifelse(df_geral$`Controlo meus sentimentos.` %in% c(2), 4,
+                    ifelse(df_geral$`Controlo meus sentimentos.` %in% c(1), 5, df_geral$`Controlo meus sentimentos.`)))))
+
+df_geral$H106_inv <- ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(5), 1,
+                     ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(4), 2,
+                     ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(3), 3,
+                     ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(2), 4,
+                     ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(1), 5, df_geral$`Sou calmo(a) e controlo bem meu estresse.`)))))
+
+
+df_geral$HF1 <- df_geral %>% select(145,92,96,97,105,146) %>% rowMeans()
 
 
 ########################## ANÁLISE DE REDES PSICOLOGIA (Amizade) ######################################
