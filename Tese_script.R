@@ -126,7 +126,6 @@ names(df_geral)
 
 # Fator 1 - neuroticismo 
 # itens invertidos - 98, 106
-
 df_geral$H98_inv <- ifelse(df_geral$`Controlo meus sentimentos.` %in% c(5), 1,
                     ifelse(df_geral$`Controlo meus sentimentos.` %in% c(4), 2,
                     ifelse(df_geral$`Controlo meus sentimentos.` %in% c(3), 3,
@@ -140,9 +139,60 @@ df_geral$H106_inv <- ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.`
                      ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(1), 5, df_geral$`Sou calmo(a) e controlo bem meu estresse.`)))))
 
 
+
+## Fator 2 - inverter: 104,109
+df_geral$H104_inv <- ifelse(df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.` %in% c(5), 1,
+                     ifelse(df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.` %in% c(4), 2,
+                     ifelse(df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.` %in% c(3), 3,
+                     ifelse(df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.` %in% c(2), 4,
+                     ifelse(df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.` %in% c(1), 5, 
+                            df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.`)))))
+
+df_geral$H109_inv <- ifelse(df_geral$`Costumo ser desorganizado(a).` %in% c(5), 1,
+                     ifelse(df_geral$`Costumo ser desorganizado(a).` %in% c(4), 2,
+                     ifelse(df_geral$`Costumo ser desorganizado(a).` %in% c(3), 3,
+                     ifelse(df_geral$`Costumo ser desorganizado(a).` %in% c(2), 4,
+                     ifelse(df_geral$`Costumo ser desorganizado(a).` %in% c(1), 5, 
+                            df_geral$`Costumo ser desorganizado(a).`)))))
+
+
+
+
+
+
+## Fator 3 - Inverter: 113,115,118
+df_geral$H113_inv <- ifelse(df_geral$`Costumo ser quieto(a).` %in% c(5), 1,
+                     ifelse(df_geral$`Costumo ser quieto(a).` %in% c(4), 2,
+                     ifelse(df_geral$`Costumo ser quieto(a).` %in% c(3), 3,
+                     ifelse(df_geral$`Costumo ser quieto(a).` %in% c(2), 4,
+                     ifelse(df_geral$`Costumo ser quieto(a).` %in% c(1), 5, 
+                            df_geral$`Costumo ser quieto(a).`)))))
+
+df_geral$H115_inv <- ifelse(df_geral$`Sou reservado(a), fico mais na minha.` %in% c(5), 1,
+                     ifelse(df_geral$`Sou reservado(a), fico mais na minha.` %in% c(4), 2,
+                     ifelse(df_geral$`Sou reservado(a), fico mais na minha.` %in% c(3), 3,
+                     ifelse(df_geral$`Sou reservado(a), fico mais na minha.` %in% c(2), 4,
+                     ifelse(df_geral$`Sou reservado(a), fico mais na minha.` %in% c(1), 5, 
+                            df_geral$`Sou reservado(a), fico mais na minha.`)))))
+
+df_geral$H118_inv <- ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(5), 1,
+                     ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(4), 2,
+                     ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(3), 3,
+                     ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(2), 4,
+                     ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(1), 5, 
+                            df_geral$`Sou tímido(a), inibido(a).`)))))
+
+## Fator 4
+
+## Fator 5
+
+## Escores médios HSE
 df_geral$HF1 <- df_geral %>% select(145,92,96,97,105,146) %>% rowMeans()
-
-
+df_geral$HF2 <- df_geral %>% select(90,91,95,101,147,148) %>% rowMeans()
+df_geral$HF3 <- df_geral %>% select(149,150,116,117,151,119) %>% rowMeans()
+df_geral$HF4 <- df_geral %>% select(93,99,102,107,108,111) %>% rowMeans()
+df_geral$HF5 <- df_geral %>% select(94,100,103,110,112,114) %>% rowMeans()
+df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
 ########################## ANÁLISE DE REDES PSICOLOGIA (Amizade) ######################################
 
 
