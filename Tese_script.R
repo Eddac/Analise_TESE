@@ -193,6 +193,17 @@ df_geral$HF3 <- df_geral %>% select(149,150,116,117,151,119) %>% rowMeans()
 df_geral$HF4 <- df_geral %>% select(93,99,102,107,108,111) %>% rowMeans()
 df_geral$HF5 <- df_geral %>% select(94,100,103,110,112,114) %>% rowMeans()
 df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
+
+
+## Correção metas para realização
+### ESSE INSTRUMENTO ESTÁ UM POUCO CONFUSO -- ANALISAR POSTERIORMENTE
+# Meta aprender
+# df_geral$MF1 <- df_geral %>% select(58,59,60,61,62,63,64) %>% rowMeans()
+
+# Meta perfomance aproximação
+
+# Meta perfomance evitação
+
 ########################## ANÁLISE DE REDES PSICOLOGIA (Amizade) ######################################
 
 
@@ -210,6 +221,8 @@ ars_ap_5 <- df_ap %>% select(1,6) %>% rename(Amizade = "5ª Amizade")
 ars_ap_5$Peso <- 1
 
 ars_ap_all <- rbind(ars_ap_1, ars_ap_2, ars_ap_3, ars_ap_4, ars_ap_5)
+
+rm(ars_ap_1, ars_ap_2, ars_ap_3, ars_ap_4, ars_ap_5)
 
 # retirada das linhas com Na's
 ars_ap_all <- na.omit(ars_ap_all)
@@ -244,7 +257,7 @@ AP_centralidade$Centralidade_distancia <- closeness(AP, mode = "all") %>% as.dat
 AP_centralidade$Proximidade <- evcent(AP)$vector %>% as.data.frame() 
 AP_centralidade$Intermediação <- betweenness(AP, directed = TRUE) 
 # Nível de autoridade
-AP_p_centralidade$Autoridade <- authority_score(AP)$vector
+AP_centralidade$Autoridade <- authority_score(AP)$vector
 
 AP_centralidade <- AP_centralidade %>% arrange(Nome)
 
@@ -278,7 +291,7 @@ plot(AP,
      layout = layout_components)
 
 ## Identificando comunidades
-
+## não funcionou muito bem
 teste <- as.undirected(AP, mode = "collapse", 
                        edge.attr.comb = list(weight = "sum", "ignore"))
 teste_2 <- cluster_edge_betweenness(teste)
@@ -288,15 +301,15 @@ plot(teste_3, AP)
 
 
 #### DISTANCIAMENTO PSICOLOGIA 
-ars_ap_d_1 <- df_ap %>% select(1,7) %>% rename(Distância = "1ª distanciamento")
+ars_ap_d_1 <- df_ap %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
 ars_ap_d_1$Peso <- 5
-ars_ap_d_2 <- df_ap %>% select(1,8) %>% rename(Distância = "2ª distanciamento")
+ars_ap_d_2 <- df_ap %>% select(1,8) %>% rename(Distância = "2º Distanciamento")
 ars_ap_d_2$Peso <- 4
-ars_ap_d_3 <- df_ap %>% select(1,9) %>% rename(Distância = "3ª distanciamento")
+ars_ap_d_3 <- df_ap %>% select(1,9) %>% rename(Distância = "3º Distanciamento")
 ars_ap_d_3$Peso <- 3
-ars_ap_d_4 <- df_ap %>% select(1,10) %>% rename(Distância = "4ª distanciamento")
+ars_ap_d_4 <- df_ap %>% select(1,10) %>% rename(Distância = "4º Distanciamento")
 ars_ap_d_4$Peso <- 2
-ars_ap_d_5 <- df_ap %>% select(1,11) %>% rename(Distância = "5ª distanciamento")
+ars_ap_d_5 <- df_ap %>% select(1,11) %>% rename(Distância = "5º Distanciamento")
 ars_ap_d_5$Peso <- 1
 
 ars_ap_d_all <- rbind(ars_ap_d_1,
@@ -304,6 +317,12 @@ ars_ap_d_all <- rbind(ars_ap_d_1,
                       ars_ap_d_3,
                       ars_ap_d_4,
                       ars_ap_d_5)
+
+rm(ars_ap_d_1,
+   ars_ap_d_2,
+   ars_ap_d_3,
+   ars_ap_d_4,
+   ars_ap_d_5)
   
 ars_ap_d_all <- na.omit(ars_ap_d_all)
 
@@ -336,9 +355,9 @@ AP_d_centralidade$Intermediação_D <- betweenness(AP_d, directed = TRUE)
 AP_d_centralidade <- AP_d_centralidade %>% arrange(Nome)
 
 # Colocando as métricas no grafo
-V(AP_d)$degree <- AP_d_deg
-V(AP_d)$eig <- AP_d_eig
-V(AP_d)$bw <- AP_d_bw
+V(AP_d)$degree <- AP_d_centralidade$Grau_Entrada_D
+V(AP_d)$eig <- AP_d_centralidade$Proximidade_D
+V(AP_d)$bw <- AP_d_centralidade$Intermediação_D
 
 
 plot(AP_d, 
@@ -369,6 +388,12 @@ ars_ap_p_all <- rbind(ars_ap_p_1,
                       ars_ap_p_3,
                       ars_ap_p_4,
                       ars_ap_p_5)
+
+rm(ars_ap_p_1,
+   ars_ap_p_2,
+   ars_ap_p_3,
+   ars_ap_p_4,
+   ars_ap_p_5)
 
 ars_ap_p_all <- na.omit(ars_ap_p_all)
 
@@ -423,9 +448,6 @@ AP_d_centralidade <- AP_d_centralidade %>% slice(-20, -39)
 AP_centralidade_geral <- cbind(AP_centralidade, AP_p_centralidade, AP_d_centralidade)
 
 
-
-
-
 # Usar o pacote arsenal
 
 ## retirar os escores e tirar as precisões
@@ -449,7 +471,7 @@ df_ser_5$Peso <- 1
 
 df_ser_all <- rbind(df_ser_1, df_ser_2, df_ser_3, df_ser_4, df_ser_5)
 
-#df_ser_all <- df_ser_all %>% slice(1:133, 135:138, 140:174, 177:178, 181:188, 191:194, 196:205)
+rm(df_ser_1, df_ser_2, df_ser_3, df_ser_4, df_ser_5)
 
 SER_ <- graph_from_data_frame(df_ser_all, directed = TRUE, vertices = NULL)
 
@@ -509,6 +531,7 @@ df_d_ser_5$Peso <- 1
 
 df_d_ser_all <- rbind(df_d_ser_1, df_d_ser_2, df_d_ser_3, df_d_ser_4, df_d_ser_5)
 
+rm(df_d_ser_1, df_d_ser_2, df_d_ser_3, df_d_ser_4, df_d_ser_5)
 
 SER_d <- graph_from_data_frame(df_d_ser_all, directed = TRUE, vertices = NULL)
 
