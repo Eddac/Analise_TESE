@@ -122,7 +122,16 @@ df_geral$CF5 <- df_geral %>% select(136,20,24,28,31,36,45) %>% rowMeans()
 df_geral$C_GERAL <- df_geral %>% select(139:143) %>% rowMeans()
 
 ### Correção HSE adultos
-names(df_geral)
+
+## Detalhamento do HSE
+# H1,H2,H3,H4,H5
+# INVERSÃO DOS ITENS 9,15,17,20,24,25,29
+
+# H1(6 ITENS) - (3,7,8,9*,16,17*)
+# H2(6 ITENS) - (1,2,6,12,15*,20*)
+# H3(6 ITENS) - (24*,25*,27,28,29*,30) 
+# H4(6 ITENS) - (4,10,13,18,19,22)
+# H5(6 ITENS) - (5,11,14,21,23,25) 
 
 # Fator 1 - neuroticismo 
 # itens invertidos - 98, 106
@@ -573,6 +582,64 @@ SER_d_centralidade$Intermediação_D <- betweenness(SER_d, directed = TRUE)
 SER_d_centralidade$Autoridade_D <- authority_score(SER_d)$vector
 
 SER_d_centralidade <- SER_d_centralidade %>% arrange(Nome)
+
+## Jean e Jessica Menezes
+
+## Serviço Social - Profissional
+
+df_ser <- Dados_ser_ %>% select(4, 75:89)
+
+df_p_ser_1 <- df_ser %>% select(1,12) %>% rename(Profissional = "1º Profissional")
+df_p_ser_1$Peso <- 5
+df_p_ser_2 <- df_ser %>% select(1,13) %>% rename(Profissional = "2º Profissional")
+df_p_ser_2$Peso <- 4
+df_p_ser_3 <- df_ser %>% select(1,14) %>% rename(Profissional = "3º Profissional")
+df_p_ser_3$Peso <- 3
+df_p_ser_4 <- df_ser %>% select(1,15) %>% rename(Profissional = "4º Profissional")
+df_p_ser_4$Peso <- 2
+df_p_ser_5 <- df_ser %>% select(1,16) %>% rename(Profissional = "5º Profissional")
+df_p_ser_5$Peso <- 1
+
+df_p_ser_all <- rbind(df_p_ser_1,df_p_ser_2,df_p_ser_3,df_p_ser_4,df_p_ser_5)
+
+rm(df_p_ser_1,df_p_ser_2,df_p_ser_3,df_p_ser_4,df_p_ser_5)
+
+SER_p <- graph_from_data_frame(df_p_ser_all, directed = TRUE, vertices = NULL)
+
+plot(SER_p, 
+     vertex.color = c("gold", "skyblue")[1+(V(SER_p)$gender=="M")], 
+     #vertex.label = V(SER_)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.7, 
+     #vertex.size = sqrt(V(SER_)$bw),
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.width = E(SER_p)$weight, 
+     layout = layout.fruchterman.reingold)
+
+# Nível de centralidade
+SER_p_centralidade <- data.frame(Nome = V(SER_p)$name, Grau_Entrada_D = degree(SER_p, mode = c("in")))
+SER_p_centralidade$Centralidade_distancia_P <- closeness(SER_p, mode = "all") %>% as.data.frame()
+SER_p_centralidade$Proximidade_P <- evcent(SER_p)$vector %>% as.data.frame() 
+SER_p_centralidade$Intermediação_P <- betweenness(SER_p, directed = TRUE) 
+
+# Nível de autoridade
+SER_p_centralidade$Autoridade_P <- authority_score(SER_p)$vector
+
+SER_p_centralidade <- SER_p_centralidade %>% arrange(Nome)
+
+#### UNIR MÉTRICAS SERVIÇO SOCIAL
+
+## Observações
+# 42 pessoas responderam ao teste, porém 47 pessoas foram citadas em todos os momentos. 2 pessoas foram citadas apenas em distância
+# Retirar Jean e Jessica Menezes
+
+# Retirada de Marcella e de Wesley
+SER_d_centralidade <- SER_d_centralidade %>% slice(-20, -23)
+SER_p_centralidade <- SER_p_centralidade %>% slice(-20)
+
+SER_centralidade_geral <- cbind(SER_centralidade, SER_p_centralidade, SER_d_centralidade)
+
 
 #### ODONTO
 
