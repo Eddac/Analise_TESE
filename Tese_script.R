@@ -359,6 +359,10 @@ AP_centralidade_geral <- cbind(AP_centralidade, AP_p_centralidade, AP_d_centrali
 
 ########### Análise de redes SERVIÇO SOCIAL (Amizade) -----
 
+# IMPORTANTE
+# Situações que o respondente não desejava marcar todas as opções de amizade foi marcada de modo repetido. 
+# Retirar as repetições e colocar Na no lugar.
+
 df_ser <- Dados_ser_ %>% select(4, 75:89)
 
 df_ser_1 <- df_ser %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
