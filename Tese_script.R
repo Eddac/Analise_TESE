@@ -365,6 +365,16 @@ AP_centralidade_geral <- cbind(AP_centralidade, AP_p_centralidade, AP_d_centrali
 
 df_ser <- Dados_ser_ %>% select(4, 75:89)
 
+
+df_ser$`4ª Amizade` <- ifelse(df_ser$`3ª Amizade` == df_ser$`4ª Amizade`, NA, df_ser$`4ª Amizade`)
+df_ser$`5ª Amizade` <- ifelse(df_ser$`4ª Amizade` == df_ser$`5ª Amizade`, NA, df_ser$`5ª Amizade`)
+df_ser$`2º Distanciamento` <- ifelse(df_ser$`1º Distanciamento` == df_ser$`2º Distanciamento`, NA, df_ser$`2º Distanciamento`)
+df_ser$`3º Distanciamento` <- ifelse(df_ser$`2º Distanciamento` == df_ser$`3º Distanciamento`, NA, df_ser$`3º Distanciamento`)
+df_ser$`4º Distanciamento` <- ifelse(df_ser$`3º Distanciamento` == df_ser$`4º Distanciamento`, NA, df_ser$`4º Distanciamento`)
+df_ser$`5º Distanciamento` <- ifelse(df_ser$`4º Distanciamento` == df_ser$`5º Distanciamento`, NA, df_ser$`5º Distanciamento`)                              
+df_ser$`5º Profissional` <- ifelse(df_ser$`4º Profissional` == df_ser$`5º Profissional`, NA, df_ser$`5º Profissional`)                            
+                     
+                      
 df_ser_1 <- df_ser %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
 df_ser_1$Peso <- 5
 df_ser_2 <- df_ser %>% select(1,3) %>% rename(Amizade = "2ª Amizade")
