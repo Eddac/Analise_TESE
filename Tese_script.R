@@ -5,6 +5,11 @@ library(igraph)
 library(arsenal)
 library(expss)
 library(RColorBrewer)
+library(lmtest)
+library(rstatix)
+library(stats)
+library(psych)
+library(MASS)
 
 # Carregando banco de dados no R
 Dados_ser_ <- readxl::read_xlsx("HSE_DOC_SERSO_2.xlsx")
@@ -388,6 +393,8 @@ df_ser_5$Peso <- 1
 
 df_ser_all <- rbind(df_ser_1, df_ser_2, df_ser_3, df_ser_4, df_ser_5)
 
+df_ser_all <- na.omit(df_ser_all)
+
 rm(df_ser_1, df_ser_2, df_ser_3, df_ser_4, df_ser_5)
 
 SER_ <- graph_from_data_frame(df_ser_all, directed = TRUE, vertices = NULL)
@@ -407,8 +414,6 @@ SER_centralidade <- SER_centralidade %>% arrange(Nome)
 
 ### Distância SERVIÇO SOCIAL
 
-df_ser <- Dados_ser_ %>% select(4, 75:89)
-
 df_d_ser_1 <- df_ser %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
 df_d_ser_1$Peso <- 5
 df_d_ser_2 <- df_ser %>% select(1,8) %>% rename(Distância = "2º Distanciamento")
@@ -423,6 +428,8 @@ df_d_ser_5$Peso <- 1
 df_d_ser_all <- rbind(df_d_ser_1, df_d_ser_2, df_d_ser_3, df_d_ser_4, df_d_ser_5)
 
 rm(df_d_ser_1, df_d_ser_2, df_d_ser_3, df_d_ser_4, df_d_ser_5)
+
+df_d_ser_all <- na.omit(df_d_ser_all)
 
 SER_d <- graph_from_data_frame(df_d_ser_all, directed = TRUE, vertices = NULL)
 
@@ -442,8 +449,6 @@ SER_d_centralidade <- SER_d_centralidade %>% arrange(Nome)
 
 ## Serviço Social - Profissional
 
-df_ser <- Dados_ser_ %>% select(4, 75:89)
-
 df_p_ser_1 <- df_ser %>% select(1,12) %>% rename(Profissional = "1º Profissional")
 df_p_ser_1$Peso <- 5
 df_p_ser_2 <- df_ser %>% select(1,13) %>% rename(Profissional = "2º Profissional")
@@ -459,6 +464,8 @@ df_p_ser_all <- rbind(df_p_ser_1,df_p_ser_2,df_p_ser_3,df_p_ser_4,df_p_ser_5)
 
 rm(df_p_ser_1,df_p_ser_2,df_p_ser_3,df_p_ser_4,df_p_ser_5)
 
+df_p_ser_all <- na.omit(df_p_ser_all)
+
 SER_p <- graph_from_data_frame(df_p_ser_all, directed = TRUE, vertices = NULL)
 
 
@@ -470,7 +477,6 @@ SER_p_centralidade$Intermediação_P <- betweenness(SER_p, directed = TRUE)
 
 # Nível de autoridade
 SER_p_centralidade$Autoridade_P <- authority_score(SER_p)$vector
-
 SER_p_centralidade <- SER_p_centralidade %>% arrange(Nome)
 
 #### UNIR MÉTRICAS SERVIÇO SOCIAL
@@ -498,12 +504,26 @@ df_principal <- df_geral %>% slice(1:77) %>% select(4,10,120,139:144,152:157)
 
 # Centralidade geral de AP e SS
 df_centralidade <- rbind(AP_centralidade_geral, SER_centralidade_geral)
-
 df_principal <- df_principal %>% rename(Nome = "Seu nome")
-
 df_centralidade <- df_centralidade %>% select(-7, -13)
-
 df_principal_join <- inner_join(df_centralidade, df_principal, by = "Nome")
 
+## Análise de regressão
+
+mod <- lm(Centralidade_distancia ~ C_GERAL + H_GERAL, df_principal_join)
+mod2 <- lm(Intermediação ~ C_GERAL + H_GERAL, df_principal_join)
+mod3 <- lm(C_GERAL ~ Intermediação + Centralidade_distancia, df_principal_join)
+mod4 <- lm(Autoridade ~ C_GERAL + H_GERAL, df_principal_join)
+mod5 <- lm(Proximidade ~ C_GERAL + H_GERAL, df_principal_join)
 
 
+
+summary(mod)
+summary(mod2)
+summary(mod4)
+summary(mod5)
+
+
+# Observar multicolinearidade a partir da correlação
+df_principal_join %>% select(19:30) %>% pairs.panels()
+  
