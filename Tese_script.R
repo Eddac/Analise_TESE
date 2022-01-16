@@ -9,7 +9,7 @@ library(lmtest)
 library(rstatix)
 library(stats)
 library(psych)
-library(MASS)
+#library(MASS)
 
 # Carregando banco de dados no R
 Dados_ser_ <- readxl::read_xlsx("HSE_DOC_SERSO_2.xlsx")
@@ -355,11 +355,131 @@ AP_d_centralidade <- AP_d_centralidade %>% slice(-20, -39)
 
 AP_centralidade_geral <- cbind(AP_centralidade, AP_p_centralidade, AP_d_centralidade)
 
+########################## ANÁLISE DE REDES PSICOLOGIA_MAU (Amizade) ######################################
+names(Dados_mau_)
+
+df_ap_mau <- Dados_mau_ %>% select(4, 75:89)
+
+ars_ap_mau_1 <- df_ap_mau %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
+ars_ap_mau_1$Peso <- 5
+ars_ap_mau_2 <- df_ap_mau %>% select(1,3) %>% rename(Amizade = "2ª Amizade")
+ars_ap_mau_2$Peso <- 4
+ars_ap_mau_3 <- df_ap_mau %>% select(1,4) %>% rename(Amizade = "3ª Amizade")
+ars_ap_mau_3$Peso <- 3
+ars_ap_mau_4 <- df_ap_mau %>% select(1,5) %>% rename(Amizade = "4ª Amizade")
+ars_ap_mau_4$Peso <- 2
+ars_ap_mau_5 <- df_ap_mau %>% select(1,6) %>% rename(Amizade = "5ª Amizade")
+ars_ap_mau_5$Peso <- 1
+
+ars_ap_mau_all <- rbind(ars_ap_mau_1, ars_ap_mau_2, ars_ap_mau_3, ars_ap_mau_4, ars_ap_mau_5)
+
+rm(ars_ap_mau_1, ars_ap_mau_2, ars_ap_mau_3, ars_ap_mau_4, ars_ap_mau_5)
+
+# retirada das linhas com Na's
+ars_ap_mau_all <- na.omit(ars_ap_mau_all)
+
+# Elaboração do grafo da turma de avaliação psicológica
+AP_mau <- graph_from_data_frame(ars_ap_mau_all, directed = TRUE, vertices = NULL)
+
+
+
+
+# Nível de centralidade
+AP_mau_centralidade <- data.frame(Nome = V(AP_mau)$name, Grau_Entrada = degree(AP_mau, mode = c("in")))
+AP_mau_centralidade$Centralidade_distancia <- closeness(AP_mau, mode = "all") 
+AP_mau_centralidade$Proximidade <- evcent(AP_mau)$vector 
+AP_mau_centralidade$Intermediação <- betweenness(AP_mau, directed = TRUE) 
+# Nível de autoridade
+AP_mau_centralidade$Autoridade <- authority_score(AP_mau)$vector
+
+AP_mau_centralidade <- AP_mau_centralidade %>% arrange(Nome)
+
+
+#### DISTANCIAMENTO PSICOLOGIA MAU
+ars_ap_mau_d_1 <- df_ap_mau %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
+ars_ap_mau_d_1$Peso <- 5
+ars_ap_mau_d_2 <- df_ap_mau %>% select(1,8) %>% rename(Distância = "2º Distanciamento")
+ars_ap_mau_d_2$Peso <- 4
+ars_ap_mau_d_3 <- df_ap_mau %>% select(1,9) %>% rename(Distância = "3º Distanciamento")
+ars_ap_mau_d_3$Peso <- 3
+ars_ap_mau_d_4 <- df_ap_mau %>% select(1,10) %>% rename(Distância = "4º Distanciamento")
+ars_ap_mau_d_4$Peso <- 2
+ars_ap_mau_d_5 <- df_ap_mau %>% select(1,11) %>% rename(Distância = "5º Distanciamento")
+ars_ap_mau_d_5$Peso <- 1
+
+ars_ap_mau_d_all <- rbind(ars_ap_mau_d_1,
+                      ars_ap_mau_d_2,
+                      ars_ap_mau_d_3,
+                      ars_ap_mau_d_4,
+                      ars_ap_mau_d_5)
+
+rm(ars_ap_mau_d_1,
+   ars_ap_mau_d_2,
+   ars_ap_mau_d_3,
+   ars_ap_mau_d_4,
+   ars_ap_mau_d_5)
+
+ars_ap_mau_d_all <- na.omit(ars_ap_mau_d_all)
+
+AP_mau_d <- graph_from_data_frame(ars_ap_mau_d_all, directed = TRUE, vertices = NULL)
+
+
+# Nível de centralidade
+AP_mau_d_centralidade <- data.frame(Nome = V(AP_mau_d)$name, Grau_Entrada_D = degree(AP_mau_d, mode = c("in")))
+AP_mau_d_centralidade$Centralidade_distancia_D <- closeness(AP_mau_d, mode = "all") 
+AP_mau_d_centralidade$Proximidade_D <- evcent(AP_mau_d)$vector 
+AP_mau_d_centralidade$Intermediação_D <- betweenness(AP_mau_d, directed = TRUE) 
+AP_mau_d_centralidade$Autoridade_D <- authority_score(AP_mau_d)$vector
+
+AP_mau_d_centralidade <- AP_mau_d_centralidade %>% arrange(Nome)
+
+
+###### PROFISSIONAL PSICOLOGIA
+ars_ap_mau_p_1 <- df_ap_mau %>% select(1,12) %>% rename(Profissional = "1º Profissional")
+ars_ap_mau_p_1$Peso <- 5
+ars_ap_mau_p_2 <- df_ap_mau %>% select(1,13) %>% rename(Profissional = "2º Profissional")
+ars_ap_mau_p_2$Peso <- 4
+ars_ap_mau_p_3 <- df_ap_mau %>% select(1,14) %>% rename(Profissional = "3º Profissional")
+ars_ap_mau_p_3$Peso <- 3
+ars_ap_mau_p_4 <- df_ap_mau %>% select(1,15) %>% rename(Profissional = "4º Profissional")
+ars_ap_mau_p_4$Peso <- 2
+ars_ap_mau_p_5 <- df_ap_mau %>% select(1,16) %>% rename(Profissional = "5º Profissional")
+ars_ap_mau_p_5$Peso <- 1
+
+ars_ap_mau_p_all <- rbind(ars_ap_mau_p_1,
+                      ars_ap_mau_p_2,
+                      ars_ap_mau_p_3,
+                      ars_ap_mau_p_4,
+                      ars_ap_mau_p_5)
+
+rm(ars_ap_mau_p_1,
+   ars_ap_mau_p_2,
+   ars_ap_mau_p_3,
+   ars_ap_mau_p_4,
+   ars_ap_mau_p_5)
+
+ars_ap_mau_p_all <- na.omit(ars_ap_mau_p_all)
+
+AP_mau_p <- graph_from_data_frame(ars_ap_mau_p_all, directed = TRUE, vertices = NULL)
+
+
+# Nível de centralidade
+AP_mau_p_centralidade <- data.frame(Nome = V(AP_mau_p)$name, Grau_Entrada_P = degree(AP_mau_p, mode = c("in")))
+AP_mau_p_centralidade$Centralidade_distancia_P <- closeness(AP_mau_p, mode = "all") 
+AP_mau_p_centralidade$Proximidade_P <- evcent(AP_mau_p)$vector  # EIGENVECTOR CENTRALITY
+AP_mau_p_centralidade$Intermediação_P <- betweenness(AP_mau_p, directed = TRUE) 
+
+# Nível de autoridade
+AP_mau_p_centralidade$Autoridade_P <- authority_score(AP_mau_p)$vector
+
+AP_mau_p_centralidade <- AP_mau_p_centralidade %>% arrange(Nome)
+
+
+#### UNIR MÉTRICAS PSICOLOGIA
+
+AP_mau_centralidade_geral <- inner_join(AP_mau_centralidade, AP_mau_p_centralidade, AP_mau_d_centralidade, by = "Nome")
 
 # Usar o pacote arsenal
-
-## retirar os escores e tirar as precisões
-
 
 
 ########### Análise de redes SERVIÇO SOCIAL (Amizade) -----
