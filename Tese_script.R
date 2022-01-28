@@ -353,7 +353,8 @@ AP_p_centralidade <- AP_p_centralidade %>% arrange(Nome)
 # Retirada de Marcella e de Wesley
 AP_d_centralidade <- AP_d_centralidade %>% slice(-20, -39)
 
-AP_centralidade_geral <- cbind(AP_centralidade, AP_p_centralidade, AP_d_centralidade)
+AP_centralidade_geral <- inner_join(AP_centralidade, AP_p_centralidade, by = "Nome")
+AP_centralidade_geral <- inner_join(AP_centralidade_geral, AP_d_centralidade, by = "Nome")
 
 ########################## ANÁLISE DE REDES PSICOLOGIA_MAU (Amizade) ######################################
 names(Dados_mau_)
@@ -478,6 +479,7 @@ AP_mau_p_centralidade <- AP_mau_p_centralidade %>% arrange(Nome)
 #### UNIR MÉTRICAS PSICOLOGIA
 
 AP_mau_centralidade_geral <- inner_join(AP_mau_centralidade, AP_mau_p_centralidade, AP_mau_d_centralidade, by = "Nome")
+AP_mau_centralidade_geral <- inner_join(AP_mau_centralidade_geral, AP_mau_d_centralidade, by = "Nome")
 
 # Usar o pacote arsenal
 
@@ -609,8 +611,8 @@ SER_p_centralidade <- SER_p_centralidade %>% arrange(Nome)
 SER_d_centralidade <- SER_d_centralidade %>% slice(-20, -23)
 SER_p_centralidade <- SER_p_centralidade %>% slice(-20)
 
-SER_centralidade_geral <- cbind(SER_centralidade, SER_p_centralidade, SER_d_centralidade)
-
+SER_centralidade_geral <- inner_join(SER_centralidade, SER_p_centralidade, SER_d_centralidade, by = "Nome")
+SER_centralidade_geral <- inner_join(SER_centralidade_geral, SER_d_centralidade, by = "Nome")
 
 ####### ODONTO - Rede Amizade ----
 df_odo <- Dados_Odo %>% select(4, 75:89)
@@ -637,13 +639,13 @@ ODO_ <- graph_from_data_frame(Dados_Odo_all, directed = TRUE, vertices = NULL)
 
 
 # Nível de centralidade
-ODO_centralidade <- data.frame(Nome = V(ODO_)$name, Grau_Entrada_ = degree(ODO_, mode = c("in")))
-ODO_centralidade$Centralidade_distancia_ <- closeness(ODO_, mode = "all") 
-ODO_centralidade$Proximidade_ <- evcent(ODO_)$vector 
-ODO_centralidade$Intermediação_ <- betweenness(ODO_, directed = TRUE) 
+ODO_centralidade <- data.frame(Nome = V(ODO_)$name, Grau_Entrada = degree(ODO_, mode = c("in")))
+ODO_centralidade$Centralidade_distancia <- closeness(ODO_, mode = "all") 
+ODO_centralidade$Proximidade <- evcent(ODO_)$vector 
+ODO_centralidade$Intermediação <- betweenness(ODO_, directed = TRUE) 
 
 # Nível de autoridade
-ODO_centralidade$Autoridade_ <- authority_score(ODO_)$vector
+ODO_centralidade$Autoridade <- authority_score(ODO_)$vector
 ODO_centralidade <- ODO_centralidade %>% arrange(Nome)
 
 ### Odonto - Distância ----
@@ -669,13 +671,13 @@ ODO_d <- graph_from_data_frame(Dados_Odo_d_all, directed = TRUE, vertices = NULL
 
 
 # Nível de centralidade
-ODO_d_centralidade <- data.frame(Nome = V(ODO_d)$name, Grau_Entrada_d = degree(ODO_d, mode = c("in")))
-ODO_d_centralidade$Centralidade_distancia_d <- closeness(ODO_d, mode = "all") 
-ODO_d_centralidade$Proximidade_d <- evcent(ODO_d)$vector 
-ODO_d_centralidade$Intermediação_d <- betweenness(ODO_d, directed = TRUE) 
+ODO_d_centralidade <- data.frame(Nome = V(ODO_d)$name, Grau_Entrada_D = degree(ODO_d, mode = c("in")))
+ODO_d_centralidade$Centralidade_distancia_D <- closeness(ODO_d, mode = "all") 
+ODO_d_centralidade$Proximidade_D <- evcent(ODO_d)$vector 
+ODO_d_centralidade$Intermediação_D <- betweenness(ODO_d, directed = TRUE) 
 
 # Nível de autoridade
-ODO_d_centralidade$Autoridade_d <- authority_score(ODO_d)$vector
+ODO_d_centralidade$Autoridade_D <- authority_score(ODO_d)$vector
 ODO_d_centralidade <- ODO_d_centralidade %>% arrange(Nome)
 
 ## Odonto - Profissional ----
@@ -701,28 +703,28 @@ ODO_p <- graph_from_data_frame(Dados_Odo_p_all, directed = TRUE, vertices = NULL
 
 
 # Nível de centralidade
-ODO_p_centralidade <- data.frame(Nome = V(ODO_p)$name, Grau_Entrada_p = degree(ODO_p, mode = c("in")))
-ODO_p_centralidade$Centralidade_distancia_p <- closeness(ODO_p, mode = "all") 
-ODO_p_centralidade$Proximidade_p <- evcent(ODO_p)$vector 
-ODO_p_centralidade$Intermediação_p <- betweenness(ODO_p, directed = TRUE) 
+ODO_p_centralidade <- data.frame(Nome = V(ODO_p)$name, Grau_Entrada_P = degree(ODO_p, mode = c("in")))
+ODO_p_centralidade$Centralidade_distancia_P <- closeness(ODO_p, mode = "all") 
+ODO_p_centralidade$Proximidade_P <-  evcent(ODO_p)$vector 
+ODO_p_centralidade$Intermediação_P<- betweenness(ODO_p, directed = TRUE) 
 
 # Nível de autoridade
-ODO_p_centralidade$Autoridade_p <- authority_score(ODO_p)$vector
+ODO_p_centralidade$Autoridade_P <- authority_score(ODO_p)$vector
 ODO_p_centralidade <- ODO_p_centralidade %>% arrange(Nome)
 
 ## Unir Odonto
 
 ODO_centralidade_geral <- inner_join(ODO_centralidade, ODO_p_centralidade, ODO_d_centralidade, by = "Nome")
+ODO_centralidade_geral <- inner_join(ODO_centralidade_geral, ODO_d_centralidade, by = "Nome")
 
 #### Análises Estatísticas
 
 # Dados gerais apenas com AP e Serviço Social
-df_principal <- df_geral %>% slice(1:77) %>% select(4,10,120,139:144,152:157)
+df_principal <- df_geral %>% select(4,10,120,139:144,152:157)
 
 # Centralidade geral de AP e SS
-df_centralidade <- rbind(AP_centralidade_geral, SER_centralidade_geral)
+df_centralidade <- rbind(AP_centralidade_geral, SER_centralidade_geral, ODO_centralidade_geral, AP_mau_centralidade_geral)
 df_principal <- df_principal %>% rename(Nome = "Seu nome")
-df_centralidade <- df_centralidade %>% select(-7, -13)
 df_principal_join <- inner_join(df_centralidade, df_principal, by = "Nome")
 
 ## Análise de regressão
