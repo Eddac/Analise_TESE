@@ -737,10 +737,10 @@ mod5 <- lm(Proximidade ~ C_GERAL + H_GERAL, df_principal_join)
 
 
 
-summary(mod)
+summary(mod) # Hse é significativo
 summary(mod2)
-summary(mod4)
-summary(mod5)
+summary(mod4) # Hse é significativo
+summary(mod5) # Hse é significativo
 
 
 # Observar multicolinearidade a partir da correlação
