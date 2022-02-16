@@ -16,6 +16,9 @@ Dados_ser_ <- readxl::read_xlsx("HSE_DOC_SERSO_2.xlsx")
 Dados_AP_ <- readxl::read_xlsx("HSE_AP.xlsx") 
 Dados_mau_ <- readxl::read_xlsx("HSE_DOC_MAU_2.xlsx")
 Dados_Odo <- readxl::read_xlsx("HSE_DOC_Odonto.xlsx")
+Dados_AP_2022 <- readxl::read_xlsx("HSE_DOC_PSI_2022.xlsx")
+Dados_Petrolina_1 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_1.xlsx")
+Dados_Petrolina_3 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_3.xlsx")
 
 # retirada da linha 33 por ser repetida com a linha 35 (Natalia)
 Dados_AP_ <- Dados_AP_ %>% slice(-33)
@@ -42,7 +45,7 @@ Dados_mau_ <- Dados_mau_ %>% rename("1ª Amizade" = "1ª Proximidade",
 
 
 # Unir todos os bancos----
-df_geral <- rbind(Dados_AP_, Dados_ser_, Dados_mau_, Dados_Odo)
+df_geral <- rbind(Dados_AP_, Dados_ser_, Dados_mau_, Dados_Odo, Dados_AP_2022, Dados_Petrolina_1, Dados_Petrolina_3)
 
 
 # Correção de respostas dos sujeitos de psicologia RV_03, pois houve uma duplicação.
@@ -358,6 +361,8 @@ AP_centralidade_geral <- inner_join(AP_centralidade_geral, AP_d_centralidade, by
 
 ########################## ANÁLISE DE REDES PSICOLOGIA_MAU (Amizade) ######################################
 names(Dados_mau_)
+
+## Retirar Gabriela da análise
 
 df_ap_mau <- Dados_mau_ %>% select(4, 75:89)
 
@@ -717,7 +722,144 @@ ODO_p_centralidade <- ODO_p_centralidade %>% arrange(Nome)
 ODO_centralidade_geral <- inner_join(ODO_centralidade, ODO_p_centralidade, ODO_d_centralidade, by = "Nome")
 ODO_centralidade_geral <- inner_join(ODO_centralidade_geral, ODO_d_centralidade, by = "Nome")
 
-#### Análises Estatísticas
+
+### Análise de redes Psicologia_2022 #####
+
+df_ap_2022 <- Dados_AP_2022 %>% select(4, 75:89)
+
+ars_ap_2022_1 <- df_ap_2022 %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
+ars_ap_2022_1$Peso <- 5
+ars_ap_2022_2 <- df_ap_2022 %>% select(1,3) %>% rename(Amizade = "2ª Amizade")
+ars_ap_2022_2$Peso <- 4
+ars_ap_2022_3 <- df_ap_2022 %>% select(1,4) %>% rename(Amizade = "3ª Amizade")
+ars_ap_2022_3$Peso <- 3
+ars_ap_2022_4 <- df_ap_2022 %>% select(1,5) %>% rename(Amizade = "4ª Amizade")
+ars_ap_2022_4$Peso <- 2
+ars_ap_2022_5 <- df_ap_2022 %>% select(1,6) %>% rename(Amizade = "5ª Amizade")
+ars_ap_2022_5$Peso <- 1
+
+ars_ap_2022_all <- rbind(ars_ap_2022_1,
+                    ars_ap_2022_2,
+                    ars_ap_2022_3,
+                    ars_ap_2022_4,
+                    ars_ap_2022_5)
+
+rm(ars_ap_2022_1,
+   ars_ap_2022_1,
+   ars_ap_2022_2,
+   ars_ap_2022_2,
+   ars_ap_2022_3,
+   ars_ap_2022_3,
+   ars_ap_2022_4,
+   ars_ap_2022_4,
+   ars_ap_2022_5,
+   ars_ap_2022_5)
+
+# retirada das linhas com Na's
+ars_ap_2022_all <- na.omit(ars_ap_2022_all)
+
+# Elaboração do grafo da turma de avaliação psicológica
+AP_2022 <- graph_from_data_frame(ars_ap_2022_all, directed = TRUE, vertices = NULL)
+AP_2022
+
+
+
+# Nível de centralidade
+AP_2022_centralidade <- data.frame(Nome = V(AP_2022)$name, Grau_Entrada = degree(AP_2022, mode = c("in")))
+AP_2022_centralidade$Centralidade_distancia <- closeness(AP_2022, mode = "all") 
+AP_2022_centralidade$Proximidade <- evcent(AP_2022)$vector 
+AP_2022_centralidade$Intermediação <- betweenness(AP_2022, directed = TRUE) 
+# Nível de autoridade
+AP_2022_centralidade$Autoridade <- authority_score(AP_2022)$vector
+
+AP_2022_centralidade <- AP_2022_centralidade %>% arrange(Nome)
+
+#### DISTANCIAMENTO PSICOLOGIA 
+ars_ap_2022_d_1 <- df_ap_2022 %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
+ars_ap_2022_d_1$Peso <- 5
+ars_ap_2022_d_2 <- df_ap_2022 %>% select(1,8) %>% rename(Distância = "2º Distanciamento")
+ars_ap_2022_d_2$Peso <- 4
+ars_ap_2022_d_3 <- df_ap_2022 %>% select(1,9) %>% rename(Distância = "3º Distanciamento")
+ars_ap_2022_d_3$Peso <- 3
+ars_ap_2022_d_4 <- df_ap_2022 %>% select(1,10) %>% rename(Distância = "4º Distanciamento")
+ars_ap_2022_d_4$Peso <- 2
+ars_ap_2022_d_5 <- df_ap_2022 %>% select(1,11) %>% rename(Distância = "5º Distanciamento")
+ars_ap_2022_d_5$Peso <- 1
+
+ars_ap_2022_d_all <- rbind(ars_ap_2022_d_1,
+                      ars_ap_2022_d_2,
+                      ars_ap_2022_d_3,
+                      ars_ap_2022_d_4,
+                      ars_ap_2022_d_5)
+
+rm(ars_ap_2022_d_1,
+   ars_ap_2022_d_2,
+   ars_ap_2022_d_3,
+   ars_ap_2022_d_4,
+   ars_ap_2022_d_5)
+
+ars_ap_2022_d_all <- na.omit(ars_ap_2022_d_all)
+
+AP_2022_d <- graph_from_data_frame(ars_ap_2022_d_all, directed = TRUE, vertices = NULL)
+
+
+# Nível de centralidade
+AP_2022_d_centralidade <- data.frame(Nome = V(AP_2022_d)$name, Grau_Entrada_D = degree(AP_2022_d, mode = c("in")))
+AP_2022_d_centralidade$Centralidade_distancia_D <- closeness(AP_2022_d, mode = "all") 
+AP_2022_d_centralidade$Proximidade_D <- evcent(AP_2022_d)$vector 
+AP_2022_d_centralidade$Intermediação_D <- betweenness(AP_2022_d, directed = TRUE) 
+AP_2022_d_centralidade$Autoridade_D <- authority_score(AP_2022_d)$vector
+
+AP_2022_d_centralidade <- AP_2022_d_centralidade %>% arrange(Nome)
+
+
+###### PROFISSIONAL PSICOLOGIA
+ars_ap_2022_p_1 <- df_ap_2022 %>% select(1,12) %>% rename(Profissional = "1º Profissional")
+ars_ap_2022_p_1$Peso <- 5
+ars_ap_2022_p_2 <- df_ap_2022 %>% select(1,13) %>% rename(Profissional = "2º Profissional")
+ars_ap_2022_p_2$Peso <- 4
+ars_ap_2022_p_3 <- df_ap_2022 %>% select(1,14) %>% rename(Profissional = "3º Profissional")
+ars_ap_2022_p_3$Peso <- 3
+ars_ap_2022_p_4 <- df_ap_2022 %>% select(1,15) %>% rename(Profissional = "4º Profissional")
+ars_ap_2022_p_4$Peso <- 2
+ars_ap_2022_p_5 <- df_ap_2022 %>% select(1,16) %>% rename(Profissional = "5º Profissional")
+ars_ap_2022_p_5$Peso <- 1
+
+ars_ap_2022_p_all <- rbind(ars_ap_2022_p_1,
+                      ars_ap_2022_p_2,
+                      ars_ap_2022_p_3,
+                      ars_ap_2022_p_4,
+                      ars_ap_2022_p_5)
+
+rm(ars_ap_2022_p_1,
+   ars_ap_2022_p_2,
+   ars_ap_2022_p_3,
+   ars_ap_2022_p_4,
+   ars_ap_2022_p_5)
+
+ars_ap_2022_p_all <- na.omit(ars_ap_2022_p_all)
+
+AP_2022_p <- graph_from_data_frame(ars_ap_2022_p_all, directed = TRUE, vertices = NULL)
+
+
+# Nível de centralidade
+AP_2022_p_centralidade <- data.frame(Nome = V(AP_2022_p)$name, Grau_Entrada_P = degree(AP_2022_p, mode = c("in")))
+AP_2022_p_centralidade$Centralidade_distancia_P <- closeness(AP_2022_p, mode = "all") 
+AP_2022_p_centralidade$Proximidade_P <- evcent(AP_2022_p)$vector  # EIGENVECTOR CENTRALITY
+AP_2022_p_centralidade$Intermediação_P <- betweenness(AP_2022_p, directed = TRUE) 
+
+# Nível de autoridade
+AP_2022_p_centralidade$Autoridade_P <- authority_score(AP_2022_p)$vector
+
+AP_2022_p_centralidade <- AP_2022_p_centralidade %>% arrange(Nome)
+
+
+#### UNIR MÉTRICAS PSICOLOGIA
+
+AP_2022_centralidade_geral <- inner_join(AP_2022_centralidade, AP_2022_p_centralidade, by = "Nome")
+AP_2022_centralidade_geral <- inner_join(AP_2022_centralidade_geral, AP_2022_d_centralidade, by = "Nome")
+
+#### Análises Estatísticas #####
 
 # Dados gerais apenas com AP e Serviço Social
 df_principal <- df_geral %>% select(4,10,120,139:144,152:157)
@@ -728,6 +870,9 @@ df_principal <- df_principal %>% rename(Nome = "Seu nome")
 df_principal_join <- inner_join(df_centralidade, df_principal, by = "Nome")
 
 ## Análise de regressão
+
+# Fazer análise de correlação antes da regressão.
+# Olhar entre salas.
 
 mod <- lm(Centralidade_distancia ~ C_GERAL + H_GERAL, df_principal_join)
 mod2 <- lm(Intermediação ~ C_GERAL + H_GERAL, df_principal_join)
@@ -745,4 +890,11 @@ summary(mod5) # Hse é significativo
 
 # Observar multicolinearidade a partir da correlação
 df_principal_join %>% select(19:30) %>% pairs.panels()
+
+range(AP_centralidade_geral$Proximidade)
+range(SER_centralidade_geral$Proximidade)
+
+?inner_join
+
+####
   
