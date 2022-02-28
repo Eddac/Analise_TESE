@@ -176,3 +176,64 @@ plot(SER_p,
      edge.width = E(SER_p)$weight, 
      layout = layout.fruchterman.reingold)
 
+
+## AP 2022 ####
+AP_2022
+E(AP_2022)$weight <- ars_ap_2022_all$Peso
+V(AP_2022)$suj <- paste("s", 1:38, sep = "")
+V(AP_2022)$name
+
+plot(AP_2022, 
+     vertex.color = "pink", 
+     vertex.label = V(AP_2022)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.9, 
+     #vertex.size = sqrt(V(AP_2022)$bw),
+     edge.arrow.size= 0.4,
+     edge.curved=0.2, 
+     edge.color = E(AP_2022)$weight,
+     edge.width = E(AP_2022)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Amizade')
+
+hist(V(AP_2022)$degree,
+     col = 'green')
+
+barplot(AP_2022_dis)
+
+
+
+V(AP_2022_p)$suj <- paste("s", 1:36, sep = "")
+E(AP_2022_p)$weight <- ars_ap_2022_p_all$Peso
+V(AP_2022_p)$name
+
+plot(AP_2022_p, 
+     vertex.color = "pink", 
+     vertex.label = V(AP_2022_p)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.9, 
+     #vertex.size = sqrt(V(AP_2022)$bw),
+     edge.arrow.size= 0.4,
+     edge.curved=0.2, 
+     edge.color = E(AP_2022_p)$weight,
+     edge.width = E(AP_2022_p)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Profissão')
+
+
+V(AP_2022_d)$suj <- paste("s", 1:39, sep = "")
+E(AP_2022_d)$weight <- ars_ap_2022_d_all$Peso
+V(AP_2022_d)$name
+plot(AP_2022_d, 
+     vertex.color = "pink", 
+     vertex.label = V(AP_2022_d)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.9, 
+     #vertex.size = sqrt(V(AP_2022)$bw),
+     edge.arrow.size= 0.4,
+     edge.curved=0.2, 
+     edge.color = E(AP_2022_d)$weight,
+     edge.width = E(AP_2022_d)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Distância')
+
