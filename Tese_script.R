@@ -131,7 +131,7 @@ df_geral$CF5 <- df_geral %>% select(136,20,24,28,31,36,45) %>% rowMeans()
 df_geral$C_GERAL <- df_geral %>% select(139:143) %>% rowMeans()
 
 ### Correção HSE adultos -----
-names(df_geral)
+names(df_geral) %>% as.data.frame()
 ## Detalhamento do HSE
 # H1,H2,H3,H4,H5
 # INVERSÃO DOS ITENS 9,15,17,20,24,26,29
@@ -1129,6 +1129,8 @@ PET3_p_centralidade$Autoridade_P <- authority_score(PET3_p)$vector
 
 #### UNIR MÉTRICAS PSICOLOGIA
 
+## Novas informacoes
+
 PET3_centralidade_geral <- inner_join(PET3_centralidade, PET3_p_centralidade, by = "Nome")
 PET3_centralidade_geral <- inner_join(PET3_centralidade_geral, PET3_d_centralidade, by = "Nome")
 
@@ -1192,6 +1194,11 @@ df_principal_join %>% select(18, 22, 28) %>% pairs.panels()
 names(df_principal_join)
 range(AP_centralidade_geral$Proximidade)
 range(SER_centralidade_geral$Proximidade)
+
+## testando
+
+## Testando
+
 
 
 
