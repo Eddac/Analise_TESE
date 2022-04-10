@@ -14,6 +14,7 @@ library(ggplot2)
 
 # Carregando banco de dados no R   ---------------------------------
 Dados_ser_ <- readxl::read_xlsx("HSE_DOC_SERSO_2.xlsx")
+Dados_ser_2 <- readxl::read_xlsx("HSE_DOC_SERV_2022.xlsx")
 Dados_AP_ <- readxl::read_xlsx("HSE_AP.xlsx") 
 Dados_mau_ <- readxl::read_xlsx("HSE_DOC_MAU_2.xlsx")
 Dados_Odo <- readxl::read_xlsx("HSE_DOC_Odonto.xlsx")
@@ -616,6 +617,121 @@ SER_p_centralidade <- SER_p_centralidade %>% slice(-20)
 
 SER_centralidade_geral <- inner_join(SER_centralidade, SER_p_centralidade, SER_d_centralidade, by = "Nome")
 SER_centralidade_geral <- inner_join(SER_centralidade_geral, SER_d_centralidade, by = "Nome")
+
+########### ANÁLISE DE REDES SERVIÇO SOCIAL 2022 -----
+# AMIZADE
+df_ser_2022 <- Dados_ser_2 %>% select(4, 75:89)
+
+
+df_ser_2022_1 <- df_ser_2022 %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
+df_ser_2022_1$Peso <- 5
+df_ser_2022_2 <- df_ser_2022 %>% select(1,3) %>% rename(Amizade = "2ª Amizade")
+df_ser_2022_2$Peso <- 4
+df_ser_2022_3 <- df_ser_2022 %>% select(1,4) %>% rename(Amizade = "3ª Amizade")
+df_ser_2022_3$Peso <- 3
+df_ser_2022_4 <- df_ser_2022 %>% select(1,5) %>% rename(Amizade = "4ª Amizade")
+df_ser_2022_4$Peso <- 2
+df_ser_2022_5 <- df_ser_2022 %>% select(1,6) %>% rename(Amizade = "5ª Amizade")
+df_ser_2022_5$Peso <- 1
+
+df_ser_2022_all <- rbind(df_ser_2022_1, df_ser_2022_2, df_ser_2022_3, df_ser_2022_4, 
+                    df_ser_2022_5)
+
+df_ser_2022_all <- na.omit(df_ser_2022_all)
+
+rm(df_ser_2022_1, df_ser_2022_2, df_ser_2022_3, df_ser_2022_4, 
+   df_ser_2022_5)
+
+SER_2022 <- graph_from_data_frame(df_ser_2022_all, directed = TRUE, vertices = NULL)
+
+
+
+# Nível de centralidade
+SER_2022_centralidade <- data.frame(Nome = V(SER_2022)$name, Grau_Entrada = degree(SER_2022))
+SER_2022_centralidade$Centralidade_distancia <- closeness(SER_2022, mode = "all") 
+SER_2022_centralidade$Proximidade <- evcent(SER_2022)$vector 
+SER_2022_centralidade$Intermediação <- betweenness(SER_2022, directed = TRUE) 
+
+# Nível de autoridade
+SER_2022_centralidade$Autoridade <- authority_score(SER_2022)$vector
+
+# SER_2022_centralidade <- SER_2022_centralidade %>% arrange(Nome)
+
+### Distância SERVIÇO SOCIAL
+
+df_d_ser_2022_1 <- df_ser_2022 %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
+df_d_ser_2022_1$Peso <- 5
+df_d_ser_2022_2 <- df_ser_2022 %>% select(1,8) %>% rename(Distância = "2º Distanciamento")
+df_d_ser_2022_2$Peso <- 4
+df_d_ser_2022_3 <- df_ser_2022 %>% select(1,9) %>% rename(Distância = "3º Distanciamento")
+df_d_ser_2022_3$Peso <- 3
+df_d_ser_2022_4 <- df_ser_2022 %>% select(1,10) %>% rename(Distância = "4º Distanciamento")
+df_d_ser_2022_4$Peso <- 2
+df_d_ser_2022_5 <- df_ser_2022 %>% select(1,11) %>% rename(Distância = "5º Distanciamento")
+df_d_ser_2022_5$Peso <- 1
+
+df_d_ser_2022_all <- rbind(df_d_ser_2022_1, df_d_ser_2022_2, df_d_ser_2022_3, df_d_ser_2022_4, 
+                      df_d_ser_2022_5)
+
+rm(df_d_ser_2022_1, df_d_ser_2022_2, df_d_ser_2022_3, df_d_ser_2022_4, 
+   df_d_ser_2022_5)
+
+df_d_ser_2022_all <- na.omit(df_d_ser_2022_all)
+
+SER_2022_d <- graph_from_data_frame(df_d_ser_2022_all, directed = TRUE, vertices = NULL)
+
+
+# Nível de centralidade
+SER_2022_d_centralidade <- data.frame(Nome = V(SER_2022_d)$name, Grau_Entrada_D = degree(SER_2022_d, mode = c("in")))
+SER_2022_d_centralidade$Centralidade_distancia_D <- closeness(SER_2022_d, mode = "all") 
+SER_2022_d_centralidade$Proximidade_D <- evcent(SER_2022_d)$vector 
+SER_2022_d_centralidade$Intermediação_D <- betweenness(SER_2022_d, directed = TRUE) 
+
+# Nível de autoridade
+SER_2022_d_centralidade$Autoridade_D <- authority_score(SER_2022_d)$vector
+
+# SER_d_centralidade <- SER_d_centralidade %>% arrange(Nome)
+
+## Serviço Social - Profissional
+
+df_p_ser_2022_1 <- df_ser_2022 %>% select(1,12) %>% rename(Profissional = "1º Profissional")
+df_p_ser_2022_1$Peso <- 5
+df_p_ser_2022_2 <- df_ser_2022 %>% select(1,13) %>% rename(Profissional = "2º Profissional")
+df_p_ser_2022_2$Peso <- 4
+df_p_ser_2022_3 <- df_ser_2022 %>% select(1,14) %>% rename(Profissional = "3º Profissional")
+df_p_ser_2022_3$Peso <- 3
+df_p_ser_2022_4 <- df_ser_2022 %>% select(1,15) %>% rename(Profissional = "4º Profissional")
+df_p_ser_2022_4$Peso <- 2
+df_p_ser_2022_5 <- df_ser_2022 %>% select(1,16) %>% rename(Profissional = "5º Profissional")
+df_p_ser_2022_5$Peso <- 1
+
+df_p_ser_2022_all <- rbind(df_p_ser_2022_1,df_p_ser_2022_2,df_p_ser_2022_3,df_p_ser_2022_4,
+                      df_p_ser_2022_5)
+
+rm(f_p_ser_2022_1,df_p_ser_2022_2,df_p_ser_2022_3,df_p_ser_2022_4,
+   df_p_ser_2022_5)
+
+df_p_ser_2022_all <- na.omit(df_p_ser_2022_all)
+
+SER_2022_p <- graph_from_data_frame(df_p_ser_2022_all, directed = TRUE, vertices = NULL)
+
+
+# Nível de centralidade
+SER_2022_p_centralidade <- data.frame(Nome = V(SER_2022_p)$name, Grau_Entrada_P = degree(SER_2022_p, mode = c("in")))
+SER_2022_p_centralidade$Centralidade_distancia_P <- closeness(SER_2022_p, mode = "all") 
+SER_2022_p_centralidade$Proximidade_P <- evcent(SER_2022_p)$vector 
+SER_2022_p_centralidade$Intermediação_P <- betweenness(SER_2022_p, directed = TRUE) 
+
+# Nível de autoridade
+SER_2022_p_centralidade$Autoridade_P <- authority_score(SER_2022_p)$vector
+# SER_2022_p_centralidade <- SER_p_centralidade %>% arrange(Nome)
+
+#### UNIR MÉTRICAS SERVIÇO SOCIAL 2022
+
+SER_2022_centralidade_geral <- inner_join(SER_2022_centralidade, SER_2022_p_centralidade, SER_2022_d_centralidade, by = "Nome")
+SER_2022_centralidade_geral <- inner_join(SER_2022_centralidade_geral, SER_2022_d_centralidade, by = "Nome")
+
+
 
 ####### ANÁLISE DE REDES ODONTO (Rede Amizade) ----
 df_odo <- Dados_Odo %>% select(4, 75:89)
