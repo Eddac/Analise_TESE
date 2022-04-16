@@ -1326,9 +1326,9 @@ names(df_principal_join)
 range(AP_centralidade_geral$Proximidade)
 range(SER_centralidade_geral$Proximidade)
 
-## testando
-
-## Testando
+## Possivelmente a regressão multinível será mais adequada por assumir que os valores não são independentes, ou seja,
+## há uma relação entre o resultado da pesquisa e a turma que o sujeito faz parte
+## análise com efeitos aleatórios 
 
 
 
