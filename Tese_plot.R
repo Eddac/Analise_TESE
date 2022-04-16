@@ -257,3 +257,21 @@ plot(SER_2022,
      layout = layout.fruchterman.reingold,
      main = 'Rede de Amizade')
 
+SER_2022_p
+E(SER_2022_p)$weight <- df_p_ser_2022_all$Peso
+V(SER_2022_p)$suj <- paste("s", 1:58, sep = "")
+V(SER_2022_p)$name
+
+plot(SER_2022_p, 
+     vertex.color = "pink", 
+     vertex.label = V(SER_2022_p)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.9, 
+     #vertex.size = sqrt(V(AP_2022)$bw),
+     edge.arrow.size= 0.4,
+     edge.curved=0.2, 
+     edge.color = E(SER_2022_p)$weight,
+     edge.width = E(SER_2022_p)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Profissão')
+

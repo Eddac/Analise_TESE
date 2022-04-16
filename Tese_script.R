@@ -13,14 +13,14 @@ library(ggplot2)
 #library(MASS)
 
 # Carregando banco de dados no R   ---------------------------------
-Dados_ser_ <- readxl::read_xlsx("HSE_DOC_SERSO_2.xlsx")
-Dados_ser_2 <- readxl::read_xlsx("HSE_DOC_SERV_2022.xlsx")
-Dados_AP_ <- readxl::read_xlsx("HSE_AP.xlsx") 
-Dados_mau_ <- readxl::read_xlsx("HSE_DOC_MAU_2.xlsx")
-Dados_Odo <- readxl::read_xlsx("HSE_DOC_Odonto.xlsx")
-Dados_AP_2022 <- readxl::read_xlsx("HSE_DOC_PSI_2022.xlsx")
-Dados_Petrolina_1 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_1.xlsx")
-Dados_Petrolina_3 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_3.xlsx")
+Dados_ser_ <- readxl::read_xlsx("HSE_DOC_SERSO_2.xlsx") #1
+Dados_ser_2 <- readxl::read_xlsx("HSE_DOC_SERV_2022.xlsx") #2
+Dados_AP_ <- readxl::read_xlsx("HSE_AP.xlsx") #3
+Dados_mau_ <- readxl::read_xlsx("HSE_DOC_MAU_2.xlsx") #4
+Dados_Odo <- readxl::read_xlsx("HSE_DOC_Odonto.xlsx") #5
+Dados_AP_2022 <- readxl::read_xlsx("HSE_DOC_PSI_2022.xlsx") #6
+Dados_Petrolina_1 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_1.xlsx") #7
+Dados_Petrolina_3 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_3.xlsx") #8
 
 # retirada da linha 33 por ser repetida com a linha 35 (Natalia)
 Dados_AP_ <- Dados_AP_ %>% slice(-33)
@@ -47,7 +47,9 @@ Dados_mau_ <- Dados_mau_ %>% rename("1ª Amizade" = "1ª Proximidade",
 
 
 # Unir todos os bancos     ------------------------------
-df_geral <- rbind(Dados_AP_, Dados_ser_, Dados_mau_, Dados_Odo, Dados_AP_2022, Dados_Petrolina_1, Dados_Petrolina_3)
+df_geral <- rbind(Dados_AP_, Dados_ser_, Dados_ser_2, 
+                  Dados_mau_, Dados_Odo, Dados_AP_2022, 
+                  Dados_Petrolina_1, Dados_Petrolina_3)
 
 
 # Correção de respostas dos sujeitos de psicologia RV_03, pois houve uma duplicação.
@@ -621,6 +623,18 @@ SER_centralidade_geral <- inner_join(SER_centralidade_geral, SER_d_centralidade,
 ########### ANÁLISE DE REDES SERVIÇO SOCIAL 2022 -----
 # AMIZADE
 df_ser_2022 <- Dados_ser_2 %>% select(4, 75:89)
+
+df_ser_2022$`1ª Amizade` <- ifelse(df_ser_2022$`Seu nome` == df_ser_2022$`1ª Amizade`, NA, df_ser_2022$`1ª Amizade`)
+df_ser_2022$`2ª Amizade` <- ifelse(df_ser_2022$`Seu nome` == df_ser_2022$`2ª Amizade`, NA, df_ser_2022$`2ª Amizade`)
+df_ser_2022$`3ª Amizade` <- ifelse(df_ser_2022$`Seu nome` == df_ser_2022$`3ª Amizade`, NA, df_ser_2022$`3ª Amizade`)
+df_ser_2022$`4ª Amizade` <- ifelse(df_ser_2022$`Seu nome` == df_ser_2022$`4ª Amizade`, NA, df_ser_2022$`4ª Amizade`)
+df_ser_2022$`5ª Amizade` <- ifelse(df_ser_2022$`Seu nome` == df_ser_2022$`5ª Amizade`, NA, df_ser_2022$`5ª Amizade`)
+                             
+df_ser_2022$`1º Profissional` <- ifelse(df_ser_2022$`Seu nome` == df_ser_2022$`1º Profissional`, NA, df_ser_2022$`1º Profissional`)
+df_ser_2022$`2º Profissional` <- ifelse(df_ser_2022$`Seu nome` == df_ser_2022$`2º Profissional`, NA, df_ser_2022$`2º Profissional`)
+df_ser_2022$`3º Profissional` <- ifelse(df_ser_2022$`Seu nome` == df_ser_2022$`3º Profissional`, NA, df_ser_2022$`3º Profissional`)
+df_ser_2022$`4º Profissional` <- ifelse(df_ser_2022$`Seu nome` == df_ser_2022$`4º Profissional`, NA, df_ser_2022$`4º Profissional`)
+df_ser_2022$`5º Profissional` <- ifelse(df_ser_2022$`Seu nome` == df_ser_2022$`5º Profissional`, NA, df_ser_2022$`5º Profissional`)
 
 
 df_ser_2022_1 <- df_ser_2022 %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
@@ -1250,12 +1264,13 @@ PET3_p_centralidade$Autoridade_P <- authority_score(PET3_p)$vector
 PET3_centralidade_geral <- inner_join(PET3_centralidade, PET3_p_centralidade, by = "Nome")
 PET3_centralidade_geral <- inner_join(PET3_centralidade_geral, PET3_d_centralidade, by = "Nome")
 
-#### Análises Estatísticas #####
+############################# Análises Estatísticas ###################################
 
+# Seleção de todos os subfatores e fatores gerais
 df_principal <- df_geral %>% select(4,10,120,139:144,152:160)
 
-# Centralidade geral 
-df_centralidade <- rbind(AP_centralidade_geral, SER_centralidade_geral, 
+# Centralidade geral de todas as salas
+df_centralidade <- rbind(AP_centralidade_geral, SER_centralidade_geral, SER_2022_centralidade_geral, 
                          ODO_centralidade_geral, AP_mau_centralidade_geral,
                          AP_2022_centralidade_geral, PET3_centralidade_geral,
                          PET1_centralidade_geral)
