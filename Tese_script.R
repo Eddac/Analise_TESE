@@ -5,12 +5,15 @@ library(igraph)
 library(arsenal)
 library(expss)
 library(RColorBrewer)
-library(lmtest)
+#library(lmtest)
+library(lme4)
+library(lmerTest)
+library(mlmRev)
 library(rstatix)
 library(stats)
 library(psych)
 library(ggplot2)
-#library(MASS)
+
 
 # Carregando banco de dados no R   ---------------------------------
 Dados_ser_ <- readxl::read_xlsx("HSE_DOC_SERSO_2.xlsx") #1
@@ -21,6 +24,16 @@ Dados_Odo <- readxl::read_xlsx("HSE_DOC_Odonto.xlsx") #5
 Dados_AP_2022 <- readxl::read_xlsx("HSE_DOC_PSI_2022.xlsx") #6
 Dados_Petrolina_1 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_1.xlsx") #7
 Dados_Petrolina_3 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_3.xlsx") #8
+
+# Numerando o banco de dados
+Dados_ser_$Sala <- 1
+Dados_ser_2$Sala <- 2
+Dados_AP_$Sala <- 3
+Dados_mau_$Sala <- 4
+Dados_Odo$Sala <- 5
+Dados_AP_2022$Sala <- 6
+Dados_Petrolina_1$Sala <- 7
+Dados_Petrolina_3$Sala <- 8
 
 # retirada da linha 33 por ser repetida com a linha 35 (Natalia)
 Dados_AP_ <- Dados_AP_ %>% slice(-33)
@@ -44,6 +57,7 @@ Dados_mau_ <- Dados_mau_ %>% rename("1ª Amizade" = "1ª Proximidade",
                                     "3ª Amizade" = "3ª Proximidade",
                                     "4ª Amizade" = "4ª Proximidade",
                                     "5ª Amizade" = "5ª Proximidade")
+
 
 
 # Unir todos os bancos     ------------------------------
@@ -1276,6 +1290,7 @@ df_centralidade <- rbind(AP_centralidade_geral, SER_centralidade_geral, SER_2022
                          PET1_centralidade_geral)
 
 df_principal <- df_principal %>% rename(Nome = "Seu nome")
+df_principal <- df_principal %>% rename(Curso = "Qual o seu curso?")
 df_principal_join <- inner_join(df_centralidade, df_principal, by = "Nome")
 df_principal_join <- df_principal_join %>% rename(nota = 'Desempenho no último semestre')
 df_principal_join$nota <- ifelse(df_principal_join$nota == "9.50 - 10",19,
@@ -1330,6 +1345,15 @@ range(SER_centralidade_geral$Proximidade)
 ## há uma relação entre o resultado da pesquisa e a turma que o sujeito faz parte
 ## análise com efeitos aleatórios 
 
+# a regressão multinível tem efeitos aleatórios/fixos no intercepto e no slope
+# quando o foco é no intercepto, isso se refere a variável de pertencimento da amostra
+# por exemplo, a amostra foi coletada em espaços diferentes (salas de aula)
+# Nessa situação, o intercepto pode ser aleatório
+# o slope tem relação com a variável preditora (VI)
 
+## Construção de modelos multiníveis
 
+mod4 <- lmer(Autoridade ~ HF3 + (1|Curso), data = df_principal_join)
+mod5 <- lm(Autoridade ~ HF3, data = df_principal_join)
+  
 

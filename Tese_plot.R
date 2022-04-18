@@ -241,7 +241,7 @@ plot(AP_2022_d,
 ## SERV 2022 ####
 SER_2022
 E(SER_2022)$weight <- df_ser_2022_all$Peso
-V(SER_2022)$suj <- paste("s", 1:61, sep = "")
+V(SER_2022)$suj <- paste("s", 1:60, sep = "")
 V(SER_2022)$name
 
 plot(SER_2022, 
