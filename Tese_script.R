@@ -5,7 +5,7 @@ library(igraph)
 library(arsenal)
 library(expss)
 library(RColorBrewer)
-#library(lmtest)
+library(lmtest)
 library(lme4)
 library(lmerTest)
 library(mlmRev)
@@ -58,12 +58,13 @@ Dados_mau_ <- Dados_mau_ %>% rename("1ª Amizade" = "1ª Proximidade",
                                     "4ª Amizade" = "4ª Proximidade",
                                     "5ª Amizade" = "5ª Proximidade")
 
-
+# Correção coluna Idade de Odonto
+Dados_Odo <- Dados_Odo %>% rename(Idade = `Idade (apenas números)`)
 
 # Unir todos os bancos     ------------------------------
-df_geral <- rbind(Dados_AP_, Dados_ser_, Dados_ser_2, 
-                  Dados_mau_, Dados_Odo, Dados_AP_2022, 
-                  Dados_Petrolina_1, Dados_Petrolina_3)
+df_geral <- rbind(Dados_AP_, Dados_AP_2022, Dados_mau_, 
+                  Dados_ser_, Dados_ser_2, Dados_Petrolina_1,
+                  Dados_Petrolina_3, Dados_Odo)
 
 
 # Correção de respostas dos sujeitos de psicologia RV_03, pois houve uma duplicação.
