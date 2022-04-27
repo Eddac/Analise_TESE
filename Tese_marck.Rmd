@@ -5,6 +5,13 @@ date: "4/18/2022"
 output: html_document
 ---
 
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(expss)
+```
+
+
 ```{r}
 # Carregando banco de dados no R   ---------------------------------
 Dados_ser_ <- readxl::read_xlsx("HSE_DOC_SERSO_2.xlsx") #1
@@ -105,4 +112,122 @@ df_geral$rv12 <- ifelse(df_geral$RV_12 == "Perfume",1,0)
 # escore total
 df_geral$rvtotal <- df_geral %>% select(123:134) %>% rowSums()
 ```
+
+
+```{r}
+df_geral <- df_geral %>% rename(C3 = 'Por mais que tente, não consigo controlar a expressão do que estou sentindo.')
+df_geral <- df_geral %>% rename(C16 = 'Frustrações deixam-me desanimado/a por bastante tempo.')
+df_geral <- df_geral %>% rename(C28 = 'Tenho vergonha de expressar os meus sentimentos.')
+```
+
+```{r}
+df_geral$C3_inv <- ifelse(df_geral$C3 %in% c(5), 1,
+                   ifelse(df_geral$C3 %in% c(4), 2,
+                   ifelse(df_geral$C3 %in% c(3), 3,
+                   ifelse(df_geral$C3 %in% c(2), 4,
+                   ifelse(df_geral$C3 %in% c(1), 5, df_geral$C3)))))
+
+df_geral$C16_inv <- ifelse(df_geral$C16 %in% c(5), 1,
+                    ifelse(df_geral$C16 %in% c(4), 2,
+                    ifelse(df_geral$C16 %in% c(3), 3,
+                    ifelse(df_geral$C16 %in% c(2), 4,
+                    ifelse(df_geral$C16 %in% c(1), 5, df_geral$C16)))))
+
+df_geral$C28_inv <- ifelse(df_geral$C28 %in% c(5), 1,
+                    ifelse(df_geral$C28 %in% c(4), 2,
+                    ifelse(df_geral$C28 %in% c(3), 3,
+                    ifelse(df_geral$C28 %in% c(2), 4,
+                    ifelse(df_geral$C28 %in% c(1), 5, df_geral$C28)))))
+```
+
+```{r}
+df_geral$CF1 <- df_geral %>% select(12,16,19,26,34,37,40,42) %>% rowMeans()
+df_geral$CF2 <- df_geral %>% select(15,22,25,137,32,35,38) %>% rowMeans()
+df_geral$CF3 <- df_geral %>% select(17,19,138,43) %>% rowMeans()
+df_geral$CF4 <- df_geral %>% select(13,18,21,23,30,33,44) %>% rowMeans()
+df_geral$CF5 <- df_geral %>% select(136,20,24,28,31,36,45) %>% rowMeans()
+df_geral$C_GERAL <- df_geral %>% select(139:143) %>% rowMeans()
+```
+
+```{r}
+# Fator 1 - neuroticismo 
+# itens invertidos - 98, 106
+df_geral$H98_inv <- ifelse(df_geral$`Controlo meus sentimentos.` %in% c(5), 1,
+                    ifelse(df_geral$`Controlo meus sentimentos.` %in% c(4), 2,
+                    ifelse(df_geral$`Controlo meus sentimentos.` %in% c(3), 3,
+                    ifelse(df_geral$`Controlo meus sentimentos.` %in% c(2), 4,
+                    ifelse(df_geral$`Controlo meus sentimentos.` %in% c(1), 5, df_geral$`Controlo meus sentimentos.`)))))
+
+df_geral$H106_inv <- ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(5), 1,
+                     ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(4), 2,
+                     ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(3), 3,
+                     ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(2), 4,
+                     ifelse(df_geral$`Sou calmo(a) e controlo bem meu estresse.` %in% c(1), 5, df_geral$`Sou calmo(a) e controlo bem meu estresse.`)))))
+
+
+
+## Fator 2 - inverter: 104,109
+df_geral$H104_inv <- ifelse(df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.` %in% c(5), 1,
+                     ifelse(df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.` %in% c(4), 2,
+                     ifelse(df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.` %in% c(3), 3,
+                     ifelse(df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.` %in% c(2), 4,
+                     ifelse(df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.` %in% c(1), 5, 
+                            df_geral$`Sou meio desleixado(a), não tenho cuidado na hora de fazer as coisas.`)))))
+
+df_geral$H109_inv <- ifelse(df_geral$`Costumo ser desorganizado(a).` %in% c(5), 1,
+                     ifelse(df_geral$`Costumo ser desorganizado(a).` %in% c(4), 2,
+                     ifelse(df_geral$`Costumo ser desorganizado(a).` %in% c(3), 3,
+                     ifelse(df_geral$`Costumo ser desorganizado(a).` %in% c(2), 4,
+                     ifelse(df_geral$`Costumo ser desorganizado(a).` %in% c(1), 5, 
+                            df_geral$`Costumo ser desorganizado(a).`)))))
+
+
+
+
+
+
+## Fator 3 - Inverter: 113,115,118
+df_geral$H113_inv <- ifelse(df_geral$`Costumo ser quieto(a).` %in% c(5), 1,
+                     ifelse(df_geral$`Costumo ser quieto(a).` %in% c(4), 2,
+                     ifelse(df_geral$`Costumo ser quieto(a).` %in% c(3), 3,
+                     ifelse(df_geral$`Costumo ser quieto(a).` %in% c(2), 4,
+                     ifelse(df_geral$`Costumo ser quieto(a).` %in% c(1), 5, 
+                            df_geral$`Costumo ser quieto(a).`)))))
+
+df_geral$H115_inv <- ifelse(df_geral$`Sou reservado(a), fico mais na minha.` %in% c(5), 1,
+                     ifelse(df_geral$`Sou reservado(a), fico mais na minha.` %in% c(4), 2,
+                     ifelse(df_geral$`Sou reservado(a), fico mais na minha.` %in% c(3), 3,
+                     ifelse(df_geral$`Sou reservado(a), fico mais na minha.` %in% c(2), 4,
+                     ifelse(df_geral$`Sou reservado(a), fico mais na minha.` %in% c(1), 5, 
+                            df_geral$`Sou reservado(a), fico mais na minha.`)))))
+
+df_geral$H118_inv <- ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(5), 1,
+                     ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(4), 2,
+                     ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(3), 3,
+                     ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(2), 4,
+                     ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(1), 5, 
+                            df_geral$`Sou tímido(a), inibido(a).`)))))
+
+```
+
+```{r}
+## Escores médios HSE
+df_geral$HF1 <- df_geral %>% select(145,92,96,97,105,146) %>% rowMeans()
+df_geral$HF2 <- df_geral %>% select(90,91,95,101,147,148) %>% rowMeans()
+df_geral$HF3 <- df_geral %>% select(149,150,116,117,151,119) %>% rowMeans()
+df_geral$HF4 <- df_geral %>% select(93,99,102,107,108,111) %>% rowMeans()
+df_geral$HF5 <- df_geral %>% select(94,100,103,110,112,114) %>% rowMeans()
+df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
+```
+
+```{r}
+## Correção metas para realização -----
+df_geral$MF1 <- df_geral %>% select(58:64, 71:74) %>% rowMeans()
+df_geral$MF2 <- df_geral %>% select(65:70) %>% rowMeans()
+df_geral$MF_GERAL <- df_geral %>% select(158, 159) %>% rowMeans()
+```
+
+
+
+
 
