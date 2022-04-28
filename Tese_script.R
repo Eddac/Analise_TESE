@@ -376,8 +376,6 @@ AP_centralidade_geral <- inner_join(AP_centralidade, AP_p_centralidade, by = "No
 AP_centralidade_geral <- inner_join(AP_centralidade_geral, AP_d_centralidade, by = "Nome")
 
 ########################## ANÁLISE DE REDES PSICOLOGIA_MAU (Amizade) ######################################
-names(Dados_mau_)
-
 ## Retirar Gabriela da análise
 
 df_ap_mau <- Dados_mau_ %>% select(4, 75:89)

@@ -985,3 +985,274 @@ AP_2022_centralidade_geral <- inner_join(AP_2022_centralidade, AP_2022_p_central
 AP_2022_centralidade_geral <- inner_join(AP_2022_centralidade_geral, AP_2022_d_centralidade, by = "Nome")
 ```
 
+```{r}
+### ANÁLISE DE REDES PSICOLOGIA_PETROLINA 1 #####
+
+df_pet1 <- Dados_Petrolina_1 %>% select(4, 75:89)
+
+ars_pet1_1 <- df_pet1 %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
+ars_pet1_1$Peso <- 5
+ars_pet1_2 <- df_pet1 %>% select(1,3) %>% rename(Amizade = "2ª Amizade")
+ars_pet1_2$Peso <- 4
+ars_pet1_3 <- df_pet1 %>% select(1,4) %>% rename(Amizade = "3ª Amizade")
+ars_pet1_3$Peso <- 3
+ars_pet1_4 <- df_pet1 %>% select(1,5) %>% rename(Amizade = "4ª Amizade")
+ars_pet1_4$Peso <- 2
+ars_pet1_5 <- df_pet1 %>% select(1,6) %>% rename(Amizade = "5ª Amizade")
+ars_pet1_5$Peso <- 1
+
+ars_pet1_all <- rbind(ars_pet1_1,
+                      ars_pet1_2,
+                      ars_pet1_3,
+                      ars_pet1_4,
+                      ars_pet1_5)
+
+rm(ars_pet1_1,
+   ars_pet1_2,
+   ars_pet1_3,
+   ars_pet1_4,
+   ars_pet1_5)
+
+# retirada das linhas com Na's
+ars_pet1_all <- na.omit(ars_pet1_all)
+
+# Elaboração do grafo da turma de avaliação psicológica
+PET1 <- graph_from_data_frame(ars_pet1_all, directed = TRUE, vertices = NULL)
+
+
+
+
+# Nível de centralidade
+PET1_centralidade <- data.frame(Nome = V(PET1)$name, Grau_Entrada = degree(PET1, mode = c("in")))
+PET1_centralidade$Centralidade_distancia <- closeness(PET1, mode = "all") 
+PET1_centralidade$Proximidade <- evcent(PET1)$vector 
+PET1_centralidade$Intermediação <- betweenness(PET1, directed = TRUE) 
+# Nível de autoridade
+PET1_centralidade$Autoridade <- authority_score(PET1)$vector
+
+#AP_2022_centralidade <- AP_2022_centralidade %>% arrange(Nome)
+
+#PET1_dis <- degree.distribution(PET1, cumulative = FALSE)
+
+V(PET1)$degree <- PET1_centralidade$Grau_Entrada
+
+#### DISTANCIAMENTO PSICOLOGIA 
+ars_pet1_d_1 <- df_pet1 %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
+ars_pet1_d_1$Peso <- 5
+ars_pet1_d_2 <- df_pet1 %>% select(1,8) %>% rename(Distância = "2º Distanciamento")
+ars_pet1_d_2$Peso <- 4
+ars_pet1_d_3 <- df_pet1 %>% select(1,9) %>% rename(Distância = "3º Distanciamento")
+ars_pet1_d_3$Peso <- 3
+ars_pet1_d_4 <- df_pet1 %>% select(1,10) %>% rename(Distância = "4º Distanciamento")
+ars_pet1_d_4$Peso <- 2
+ars_pet1_d_5 <- df_pet1 %>% select(1,11) %>% rename(Distância = "5º Distanciamento")
+ars_pet1_d_5$Peso <- 1
+
+ars_pet1_d_all <- rbind(ars_pet1_d_1,
+                           ars_pet1_d_2,
+                           ars_pet1_d_3,
+                           ars_pet1_d_4,
+                           ars_pet1_d_5)
+
+rm(ars_pet1_d_1,
+   ars_pet1_d_2,
+   ars_pet1_d_3,
+   ars_pet1_d_4,
+   ars_pet1_d_5)
+
+ars_pet1_d_all <- na.omit(ars_pet1_d_all)
+
+PET1_d <- graph_from_data_frame(ars_pet1_d_all, directed = TRUE, vertices = NULL)
+
+
+# Nível de centralidade
+PET1_d_centralidade <- data.frame(Nome = V(PET1_d)$name, Grau_Entrada_D = degree(PET1_d, mode = c("in")))
+PET1_d_centralidade$Centralidade_distancia_D <- closeness(PET1_d, mode = "all") 
+PET1_d_centralidade$Proximidade_D <- evcent(PET1_d)$vector 
+PET1_d_centralidade$Intermediação_D <- betweenness(PET1_d, directed = TRUE) 
+PET1_d_centralidade$Autoridade_D <- authority_score(PET1_d)$vector
+
+
+
+
+###### PROFISSIONAL PSICOLOGIA
+ars_pet1_p_1 <- df_pet1 %>% select(1,12) %>% rename(Profissional = "1º Profissional")
+ars_pet1_p_1$Peso <- 5
+ars_pet1_p_2 <- df_pet1 %>% select(1,13) %>% rename(Profissional = "2º Profissional")
+ars_pet1_p_2$Peso <- 4
+ars_pet1_p_3 <- df_pet1 %>% select(1,14) %>% rename(Profissional = "3º Profissional")
+ars_pet1_p_3$Peso <- 3
+ars_pet1_p_4 <- df_pet1 %>% select(1,15) %>% rename(Profissional = "4º Profissional")
+ars_pet1_p_4$Peso <- 2
+ars_pet1_p_5 <- df_pet1 %>% select(1,16) %>% rename(Profissional = "5º Profissional")
+ars_pet1_p_5$Peso <- 1
+
+ars_pet1_p_all <- rbind(ars_pet1_p_1,
+                       ars_pet1_p_2,
+                       ars_pet1_p_3,
+                       ars_pet1_p_4,
+                       ars_pet1_p_5)
+
+rm(ars_pet1_p_1,
+   ars_pet1_p_2,
+   ars_pet1_p_3,
+   ars_pet1_p_4,
+   ars_pet1_p_5)
+
+ars_pet1_p_all <- na.omit(ars_pet1_p_all)
+
+PET1_p <- graph_from_data_frame(ars_pet1_p_all, directed = TRUE, vertices = NULL)
+
+
+# Nível de centralidade
+PET1_p_centralidade <- data.frame(Nome = V(PET1_p)$name, Grau_Entrada_P = degree(PET1_p, mode = c("in")))
+PET1_p_centralidade$Centralidade_distancia_P <- closeness(PET1_p, mode = "all") 
+PET1_p_centralidade$Proximidade_P <- evcent(PET1_p)$vector  # EIGENVECTOR CENTRALITY
+PET1_p_centralidade$Intermediação_P <- betweenness(PET1_p, directed = TRUE) 
+
+# Nível de autoridade
+PET1_p_centralidade$Autoridade_P <- authority_score(PET1_p)$vector
+```
+
+```{r}
+#### UNIR MÉTRICAS PSICOLOGIA
+
+PET1_centralidade_geral <- inner_join(PET1_centralidade, PET1_p_centralidade, by = "Nome")
+PET1_centralidade_geral <- inner_join(PET1_centralidade_geral, PET1_d_centralidade, by = "Nome")
+```
+
+```{r}
+### ANÁLISE DE REDES PSICOLOGIA_PETROLINA 3 #####
+
+df_pet3 <- Dados_Petrolina_3 %>% select(4, 75:89)
+
+ars_pet3_1 <- df_pet3 %>% select(1,2) %>% rename(Amizade = "1ª Amizade")
+ars_pet3_1$Peso <- 5
+ars_pet3_2 <- df_pet3 %>% select(1,3) %>% rename(Amizade = "2ª Amizade")
+ars_pet3_2$Peso <- 4
+ars_pet3_3 <- df_pet3 %>% select(1,4) %>% rename(Amizade = "3ª Amizade")
+ars_pet3_3$Peso <- 3
+ars_pet3_4 <- df_pet3 %>% select(1,5) %>% rename(Amizade = "4ª Amizade")
+ars_pet3_4$Peso <- 2
+ars_pet3_5 <- df_pet3 %>% select(1,6) %>% rename(Amizade = "5ª Amizade")
+ars_pet3_5$Peso <- 1
+
+ars_pet3_all <- rbind(ars_pet3_1,
+                      ars_pet3_2,
+                      ars_pet3_3,
+                      ars_pet3_4,
+                      ars_pet3_5)
+
+rm(ars_pet3_1,
+   ars_pet3_2,
+   ars_pet3_3,
+   ars_pet3_4,
+   ars_pet3_5)
+
+# retirada das linhas com Na's
+ars_pet3_all <- na.omit(ars_pet3_all)
+
+# Elaboração do grafo da turma de avaliação psicológica
+PET3 <- graph_from_data_frame(ars_pet3_all, directed = TRUE, vertices = NULL)
+
+
+
+
+# Nível de centralidade
+PET3_centralidade <- data.frame(Nome = V(PET3)$name, Grau_Entrada = degree(PET3, mode = c("in")))
+PET3_centralidade$Centralidade_distancia <- closeness(PET3, mode = "all") 
+PET3_centralidade$Proximidade <- evcent(PET3)$vector 
+PET3_centralidade$Intermediação <- betweenness(PET3, directed = TRUE) 
+# Nível de autoridade
+PET3_centralidade$Autoridade <- authority_score(PET3)$vector
+
+#AP_2022_centralidade <- AP_2022_centralidade %>% arrange(Nome)
+
+#PET1_dis <- degree.distribution(PET1, cumulative = FALSE)
+
+V(PET3)$degree <- PET3_centralidade$Grau_Entrada
+
+#### DISTANCIAMENTO PSICOLOGIA 
+ars_pet3_d_1 <- df_pet3 %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
+ars_pet3_d_1$Peso <- 5
+ars_pet3_d_2 <- df_pet3 %>% select(1,8) %>% rename(Distância = "2º Distanciamento")
+ars_pet3_d_2$Peso <- 4
+ars_pet3_d_3 <- df_pet3 %>% select(1,9) %>% rename(Distância = "3º Distanciamento")
+ars_pet3_d_3$Peso <- 3
+ars_pet3_d_4 <- df_pet3 %>% select(1,10) %>% rename(Distância = "4º Distanciamento")
+ars_pet3_d_4$Peso <- 2
+ars_pet3_d_5 <- df_pet3 %>% select(1,11) %>% rename(Distância = "5º Distanciamento")
+ars_pet3_d_5$Peso <- 1
+
+ars_pet3_d_all <- rbind(ars_pet3_d_1,
+                        ars_pet3_d_2,
+                        ars_pet3_d_3,
+                        ars_pet3_d_4,
+                        ars_pet3_d_5)
+
+rm(ars_pet3_d_1,
+   ars_pet3_d_2,
+   ars_pet3_d_3,
+   ars_pet3_d_4,
+   ars_pet3_d_5)
+
+ars_pet3_d_all <- na.omit(ars_pet3_d_all)
+
+PET3_d <- graph_from_data_frame(ars_pet3_d_all, directed = TRUE, vertices = NULL)
+
+
+# Nível de centralidade
+PET3_d_centralidade <- data.frame(Nome = V(PET3_d)$name, Grau_Entrada_D = degree(PET3_d, mode = c("in")))
+PET3_d_centralidade$Centralidade_distancia_D <- closeness(PET3_d, mode = "all") 
+PET3_d_centralidade$Proximidade_D <- evcent(PET3_d)$vector 
+PET3_d_centralidade$Intermediação_D <- betweenness(PET3_d, directed = TRUE) 
+PET3_d_centralidade$Autoridade_D <- authority_score(PET3_d)$vector
+
+# AP_2022_d_centralidade <- AP_2022_d_centralidade %>% arrange(Nome)
+
+
+###### PROFISSIONAL PSICOLOGIA
+ars_pet3_p_1 <- df_pet3 %>% select(1,12) %>% rename(Profissional = "1º Profissional")
+ars_pet3_p_1$Peso <- 5
+ars_pet3_p_2 <- df_pet3 %>% select(1,13) %>% rename(Profissional = "2º Profissional")
+ars_pet3_p_2$Peso <- 4
+ars_pet3_p_3 <- df_pet3 %>% select(1,14) %>% rename(Profissional = "3º Profissional")
+ars_pet3_p_3$Peso <- 3
+ars_pet3_p_4 <- df_pet3 %>% select(1,15) %>% rename(Profissional = "4º Profissional")
+ars_pet3_p_4$Peso <- 2
+ars_pet3_p_5 <- df_pet3 %>% select(1,16) %>% rename(Profissional = "5º Profissional")
+ars_pet3_p_5$Peso <- 1
+
+ars_pet3_p_all <- rbind(ars_pet3_p_1,
+                        ars_pet3_p_2,
+                        ars_pet3_p_3,
+                        ars_pet3_p_4,
+                        ars_pet3_p_5)
+
+rm(ars_pet3_p_1,
+   ars_pet3_p_2,
+   ars_pet3_p_3,
+   ars_pet3_p_4,
+   ars_pet3_p_5)
+
+ars_pet3_p_all <- na.omit(ars_pet3_p_all)
+
+PET3_p <- graph_from_data_frame(ars_pet3_p_all, directed = TRUE, vertices = NULL)
+
+
+# Nível de centralidade
+PET3_p_centralidade <- data.frame(Nome = V(PET3_p)$name, Grau_Entrada_P = degree(PET3_p, mode = c("in")))
+PET3_p_centralidade$Centralidade_distancia_P <- closeness(PET3_p, mode = "all") 
+PET3_p_centralidade$Proximidade_P <- evcent(PET3_p)$vector  # EIGENVECTOR CENTRALITY
+PET3_p_centralidade$Intermediação_P <- betweenness(PET3_p, directed = TRUE) 
+
+# Nível de autoridade
+PET3_p_centralidade$Autoridade_P <- authority_score(PET3_p)$vector
+```
+
+```{r}
+#### UNIR MÉTRICAS PSICOLOGIA
+PET3_centralidade_geral <- inner_join(PET3_centralidade, PET3_p_centralidade, by = "Nome")
+PET3_centralidade_geral <- inner_join(PET3_centralidade_geral, PET3_d_centralidade, by = "Nome")
+```
+
