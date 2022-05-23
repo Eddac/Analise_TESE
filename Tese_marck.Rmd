@@ -5,14 +5,16 @@ date: "4/18/2022"
 output: html_document
 ---
 
-
+- Carregamento de pacotes
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(expss)
 library(igraph)
 ```
 
-
+- Carregando banco de dados  
+Ao todo, os questionários foram aplicados em **9 turmas**. Porém, apenas **8 turmas** apresentou engajamento mais próximo de 100%, a participação da maior parcela da turma era importante para obter redes mais fidedignas com o ambiente de sala de aula.  
+Dessas turmas, 2 foram da **Univasf/Petrolina** e as demais foram de **Recife/UFPE**. 5 turmas foram de Psicologia, 2 de Serviço Social e 1 de Odonto.  
 ```{r}
 # Carregando banco de dados no R   ---------------------------------
 Dados_ser_ <- readxl::read_xlsx("HSE_DOC_SERSO_2.xlsx") #1
@@ -24,7 +26,8 @@ Dados_AP_2022 <- readxl::read_xlsx("HSE_DOC_PSI_2022.xlsx") #6
 Dados_Petrolina_1 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_1.xlsx") #7
 Dados_Petrolina_3 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_3.xlsx") #8
 ```
-
+  
+No processo das análises, pode ser necessário observar se a turma que o sujeito se encontra exerce efeito sobre seu resultado. Por isso, as turmas foram enumeradas. 
 ```{r}
 # Numerando o banco de dados
 Dados_ser_$Sala <- 1
@@ -36,12 +39,17 @@ Dados_AP_2022$Sala <- 6
 Dados_Petrolina_1$Sala <- 7
 Dados_Petrolina_3$Sala <- 8
 ```
-
+  
+  
+A participante Natalia respondeu o questionário 2 vezes e solicitou a retirada do primeiro momento de resposta.
 ```{r}
 # retirada da linha 33 por ser repetida com a linha 35 (Natalia)
 Dados_AP_ <- Dados_AP_ %>% slice(-33)
 ```
-
+  
+- Início das análises
+  
+Os questionários não ficaram perfeitamente padronizados. Por isso, a parte inicial das análises se concentra na organização dos dados.
 ```{r}
 # transformações dos dados de AP para padronizar com SC
 Dados_AP_ <- Dados_AP_ %>% rename("1ª Amizade" = "1ª amizade", 
@@ -1254,5 +1262,9 @@ PET3_p_centralidade$Autoridade_P <- authority_score(PET3_p)$vector
 #### UNIR MÉTRICAS PSICOLOGIA
 PET3_centralidade_geral <- inner_join(PET3_centralidade, PET3_p_centralidade, by = "Nome")
 PET3_centralidade_geral <- inner_join(PET3_centralidade_geral, PET3_d_centralidade, by = "Nome")
+```
+
+```{r}
+
 ```
 
