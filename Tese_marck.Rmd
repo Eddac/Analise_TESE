@@ -2,18 +2,27 @@
 title: "Tese_script_marck"
 author: "Emanuel Cordeiro"
 date: "4/18/2022"
-output: html_document
+output: 
+  html_document:
+    toc: yes 
+    toc_float: 
+      collapsed: yes
+      smooth_control: yes
+  
 ---
 
-- Carregamento de pacotes
+# Carregamento de pacotes
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(expss)
 library(igraph)
+library(lme4)
+library(lmerTest)
+library(mlmRev)
 ```
 
-- Carregando banco de dados  
-Ao todo, os questionários foram aplicados em **9 turmas**. Porém, apenas **8 turmas** apresentou engajamento mais próximo de 100%, a participação da maior parcela da turma era importante para obter redes mais fidedignas com o ambiente de sala de aula.  
+# Carregando banco de dados  
+- Ao todo, os questionários foram aplicados em **9 turmas**. Porém, apenas **8 turmas** apresentou engajamento mais próximo de 100%, a participação da maior parcela da turma era importante para obter redes mais fidedignas com o ambiente de sala de aula.  
 Dessas turmas, 2 foram da **Univasf/Petrolina** e as demais foram de **Recife/UFPE**. 5 turmas foram de Psicologia, 2 de Serviço Social e 1 de Odonto.  
 ```{r}
 # Carregando banco de dados no R   ---------------------------------
@@ -47,7 +56,7 @@ A participante Natalia respondeu o questionário 2 vezes e solicitou a retirada 
 Dados_AP_ <- Dados_AP_ %>% slice(-33)
 ```
   
-- Início das análises
+# Início das análises
   
 Os questionários não ficaram perfeitamente padronizados. Por isso, a parte inicial das análises se concentra na organização dos dados.
 ```{r}
@@ -72,19 +81,21 @@ Dados_mau_ <- Dados_mau_ %>% rename("1ª Amizade" = "1ª Proximidade",
 
 Dados_Odo <- Dados_Odo %>% rename(Idade = `Idade (apenas números)`)
 ```
-
+  
+Após a primeira padronização, criou-se um dataframe único por nome ``df_geral`` com todos os bancos de dados.
 ```{r}
 # Unir todos os bancos     ------------------------------
 df_geral <- rbind(Dados_AP_, Dados_AP_2022, Dados_mau_, 
                   Dados_ser_, Dados_ser_2, Dados_Petrolina_1,
                   Dados_Petrolina_3, Dados_Odo)
 ```
-
+  
+Um banco de dados de Psicologia estava com a opção de respostas repetidas, por isso foi dito no momento da aplicação as opções corretas e sua ordem de marcação. Em seguida, foi feita a transformação no banco de dados.
 ```{r}
 # Correção de respostas dos sujeitos de psicologia RV_03, pois houve uma duplicação.
 recode(df_geral[, 48]) <- c("Primavera"~"Médico", "Férias"~"Hospital", "Sol"~"Doença", "Verão"~"Dor", "Ventilador"~"Coração")
 ```
-
+  
 ```{r}
 # rename de raciocínio verbal
 df_geral <- df_geral %>% rename(RV_01 = 46,
@@ -100,7 +111,8 @@ df_geral <- df_geral %>% rename(RV_01 = 46,
                                 RV_11 = 56,
                                 RV_12 = 57)
 ```
-
+  
+- Correção das perguntas de raciocínio verbal. **Respostas corretas = 1 / Respostas erradas = 0**
 ```{r}
 ## Correção do raciocínio verbal ----
 df_geral$rv01 <- ifelse(df_geral$RV_01 == "Dia",1,0)
@@ -116,13 +128,14 @@ df_geral$rv10 <- ifelse(df_geral$RV_10 == "Precoce",1,0)
 df_geral$rv11 <- ifelse(df_geral$RV_11 == "Avaliar",1,0) 
 df_geral$rv12 <- ifelse(df_geral$RV_12 == "Perfume",1,0) 
 ```
-
+  
+Soma do resultado em RV
 ```{r}
 # escore total
 df_geral$rvtotal <- df_geral %>% select(123:134) %>% rowSums()
 ```
 
-
+renomeando esses itens para facilitar a inversão, pois são itens negativos.
 ```{r}
 df_geral <- df_geral %>% rename(C3 = 'Por mais que tente, não consigo controlar a expressão do que estou sentindo.')
 df_geral <- df_geral %>% rename(C16 = 'Frustrações deixam-me desanimado/a por bastante tempo.')
@@ -148,7 +161,8 @@ df_geral$C28_inv <- ifelse(df_geral$C28 %in% c(5), 1,
                     ifelse(df_geral$C28 %in% c(2), 4,
                     ifelse(df_geral$C28 %in% c(1), 5, df_geral$C28)))))
 ```
-
+  
+## Cálculo dos fatores de Competências Emocionais
 ```{r}
 df_geral$CF1 <- df_geral %>% select(12,16,19,26,34,37,40,42) %>% rowMeans()
 df_geral$CF2 <- df_geral %>% select(15,22,25,137,32,35,38) %>% rowMeans()
@@ -157,7 +171,10 @@ df_geral$CF4 <- df_geral %>% select(13,18,21,23,30,33,44) %>% rowMeans()
 df_geral$CF5 <- df_geral %>% select(136,20,24,28,31,36,45) %>% rowMeans()
 df_geral$C_GERAL <- df_geral %>% select(139:143) %>% rowMeans()
 ```
-
+  
+## Cálculo dos fatores de Habilidades
+  
+Inversão dos itens negativos
 ```{r}
 # Fator 1 - neuroticismo 
 # itens invertidos - 98, 106
@@ -219,6 +236,8 @@ df_geral$H118_inv <- ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(5), 1,
 
 ```
 
+- Cálculo final  
+
 ```{r}
 ## Escores médios HSE
 df_geral$HF1 <- df_geral %>% select(145,92,96,97,105,146) %>% rowMeans()
@@ -228,7 +247,8 @@ df_geral$HF4 <- df_geral %>% select(93,99,102,107,108,111) %>% rowMeans()
 df_geral$HF5 <- df_geral %>% select(94,100,103,110,112,114) %>% rowMeans()
 df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
 ```
-
+  
+## Cálculo dos fatores de Metas para Realização  
 ```{r}
 ## Correção metas para realização -----
 df_geral$MF1 <- df_geral %>% select(58:64, 71:74) %>% rowMeans()
@@ -236,6 +256,8 @@ df_geral$MF2 <- df_geral %>% select(65:70) %>% rowMeans()
 df_geral$MF_GERAL <- df_geral %>% select(158, 159) %>% rowMeans()
 ```
 
+# Análise de Redes
+## Turma Psicologia 2021
 ```{r}
 ########################## ANÁLISE DE REDES PSICOLOGIA (Amizade) ######################################
 df_ap <- Dados_AP_ %>% select(4, 75:89)
@@ -367,6 +389,7 @@ AP_centralidade_geral <- inner_join(AP_centralidade, AP_p_centralidade, by = "No
 AP_centralidade_geral <- inner_join(AP_centralidade_geral, AP_d_centralidade, by = "Nome")
 ```
 
+## Turma Prof. Maurício 2021
 ```{r, warning=FALSE}
 ########################## ANÁLISE DE REDES PSICOLOGIA_MAU (Amizade) ######################################
 ## Retirar Gabriela da análise
@@ -495,6 +518,7 @@ AP_mau_centralidade_geral <- inner_join(AP_mau_centralidade, AP_mau_p_centralida
 AP_mau_centralidade_geral <- inner_join(AP_mau_centralidade_geral, AP_mau_d_centralidade, by = "Nome")
 ```
 
+## Turma Serviço social 2021
 ```{r}
 ########### ANÁLISE DE REDES SERVIÇO SOCIAL (Amizade) -----
 # IMPORTANTE
@@ -625,6 +649,7 @@ SER_centralidade_geral <- inner_join(SER_centralidade_geral, SER_d_centralidade,
 
 ```
 
+## Turma Serviço social 2022
 ```{r}
 ########### ANÁLISE DE REDES SERVIÇO SOCIAL 2022 -----
 # AMIZADE
@@ -753,6 +778,7 @@ SER_2022_centralidade_geral <- inner_join(SER_2022_centralidade, SER_2022_p_cent
 SER_2022_centralidade_geral <- inner_join(SER_2022_centralidade_geral, SER_2022_d_centralidade, by = "Nome")
 ```
 
+## Turma Odonto 2021
 ```{r}
 ####### ANÁLISE DE REDES ODONTO (Rede Amizade) ----
 df_odo <- Dados_Odo %>% select(4, 75:89)
@@ -858,6 +884,8 @@ ODO_centralidade_geral <- inner_join(ODO_centralidade, ODO_p_centralidade, ODO_d
 ODO_centralidade_geral <- inner_join(ODO_centralidade_geral, ODO_d_centralidade, by = "Nome")
 ```
 
+
+## Turma Psicologia 2022
 ```{r}
 ### ANÁLISE DE REDES PSICOLOGIA_2022 #####
 df_ap_2022 <- Dados_AP_2022 %>% select(4, 75:89)
@@ -993,6 +1021,7 @@ AP_2022_centralidade_geral <- inner_join(AP_2022_centralidade, AP_2022_p_central
 AP_2022_centralidade_geral <- inner_join(AP_2022_centralidade_geral, AP_2022_d_centralidade, by = "Nome")
 ```
 
+## Turma Psicologia Petrolina_1 2022
 ```{r}
 ### ANÁLISE DE REDES PSICOLOGIA_PETROLINA 1 #####
 
@@ -1129,6 +1158,7 @@ PET1_centralidade_geral <- inner_join(PET1_centralidade, PET1_p_centralidade, by
 PET1_centralidade_geral <- inner_join(PET1_centralidade_geral, PET1_d_centralidade, by = "Nome")
 ```
 
+## Turma Psicologia Petrolina_2 2022
 ```{r}
 ### ANÁLISE DE REDES PSICOLOGIA_PETROLINA 3 #####
 
@@ -1265,6 +1295,152 @@ PET3_centralidade_geral <- inner_join(PET3_centralidade_geral, PET3_d_centralida
 ```
 
 ```{r}
+options(scipen = 999)
+```
 
+# Análise Estatísticas
+```{r, warning=FALSE}
+# Seleção de todos os subfatores e fatores gerais
+df_principal <- df_geral %>% select(4,10,120,123,136,140:145,153:161)
+
+# Centralidade geral de todas as salas
+df_centralidade <- rbind(AP_centralidade_geral, SER_centralidade_geral, SER_2022_centralidade_geral, 
+                         ODO_centralidade_geral, AP_mau_centralidade_geral,
+                         AP_2022_centralidade_geral, PET3_centralidade_geral,
+                         PET1_centralidade_geral)
+
+df_principal <- df_principal %>% rename(Nome = "Seu nome")
+df_principal <- df_principal %>% rename(Curso = "Qual o seu curso?")
+df_principal_join <- inner_join(df_centralidade, df_principal, by = "Nome")
+df_principal_join <- df_principal_join %>% rename(nota = 'Desempenho no último semestre')
+df_principal_join$nota <- ifelse(df_principal_join$nota == "9.50 - 10",19,
+                          ifelse(df_principal_join$nota == "9 - 9.49",18,
+                          ifelse(df_principal_join$nota == "8.5 - 8.99",17,
+                          ifelse(df_principal_join$nota == "8 - 8.49",16,
+                          ifelse(df_principal_join$nota == "7.5 - 7.99",15,
+                          ifelse(df_principal_join$nota == "7 - 7.49",14,
+                          ifelse(df_principal_join$nota == "6.5 - 6.99",13,
+                          ifelse(df_principal_join$nota == "6 - 6.49",12,
+                          ifelse(df_principal_join$nota == "5.5 - 5.99",11,
+                          ifelse(df_principal_join$nota == "3 - 3.49",6,
+                          ifelse(df_principal_join$nota == "0 - 1",1, df_principal_join$nota)))))))))))
+df_principal_join$nota <- as.numeric(df_principal_join$nota)
+
+```
+## Regressões Amizade
+```{r}
+mod <- lm(Centralidade_distancia ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+mod2 <- lm(Intermediação ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+mod3 <- lm(Autoridade ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+mod4 <- lm(Proximidade ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+mod5 <- lm(Proximidade ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+mod6 <- lm(nota ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+mod7 <- lm(nota ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+mod8 <- lm(Centralidade_distancia ~ MF1 + MF2, df_principal_join)
+mod9 <- lm(Autoridade ~ MF1 + MF2, df_principal_join)
+mod10 <- lm(Centralidade_distancia ~ CF1 + CF2 + CF3 + CF4 + CF5, df_principal_join)
+mod11 <- lm(Autoridade ~ CF2 + CF3 + CF4 + CF5, df_principal_join)
+mod12 <- lm(nota ~ MF1 + MF2, df_principal_join)
+```
+
+```{r}
+mod16 <- lm(nota ~ CF1 + CF2 + CF3 + CF4 + CF5, df_principal_join)
+```
+
+Alguns efeitos são encontrados quando analisados a partir da regressão linear simples. Ao utilizar o **modelo misto**, em que assume a sala de aula como **intercepto aleatório**, observa-se que a sala explicar uma porcentagem acima de 20% sobre o efeito das variáveis, e retira o efeito preditor na VD.
+```{r}
+mod13 <- lmerTest::lmer(nota ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2 + (1|Sala), df_principal_join)
+mod14 <- lmerTest::lmer(nota ~ HF1 + HF2 + HF3 + HF4 +HF5 + (1|Sala), df_principal_join)
+mod17 <- lmerTest::lmer(nota ~ CF1 + CF2 + CF3 + CF4 + CF5 + (1|Sala), df_principal_join)
+mod18 <- lmerTest::lmer(Autoridade ~ HF1 + HF2 + HF3 + HF4 +HF5 + (1|Sala), df_principal_join)
+mod19 <- lmerTest::lmer(Autoridade ~ CF1 + CF2 + CF3 + CF4 + CF5 + (1|Sala), df_principal_join)
+```
+
+```{r}
+mod15 <- lmerTest::lmer(nota ~ HF1 + HF2 + HF3 + HF4 +HF5 + (1 + HF1 + HF2 + HF3 + HF4 + HF5|Sala), df_principal_join)
+```
+
+  
+Extroversão (HF3) exerce efeito no comportamento das redes. Amabilidade exerce efeito nas notas acadêmicas. 
+```{r}
+summary(mod) # Hse é significativo
+summary(mod2)
+summary(mod3)
+summary(mod4) # Hse é significativo
+summary(mod5) # Hse é significativo
+summary(mod6) # Hse é significativo
+summary(mod7)
+summary(mod8)
+summary(mod9)
+summary(mod10)
+summary(mod11)
+summary(mod12)
+```
+
+```{r}
+summary(mod13)
+summary(mod14)
+summary(mod16)
+summary(mod17)
+```
+
+```{r}
+ranova(mod15)
+```
+
+```{r}
+summary(mod18)
+summary(mod19)
+```
+
+## Regressões Profissional
+
+- Explicação básica sobre as centralidades
+
+Os tipos de centralidade destacam diferentes características no vértice perante a rede.  
+A centralidade de grau indica o quanto o vértice apresenta muitas conexões com outros vértices.  
+Centralidade de proximidade indica que mais importante que ter muitas conexões é não estar longe demais dos demais vértices.  
+*"Um nó importante está próximo dos outros nós"*  
+
+
+```{r}
+modP <- lm(Centralidade_distancia_P ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modP2 <- lm(Intermediação_P ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modP3 <- lm(Autoridade_P ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modP4 <- lm(Proximidade_P ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+modP5 <- lm(Proximidade_P ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+modP8 <- lm(Centralidade_distancia_P ~ MF1 + MF2, df_principal_join)
+modP9 <- lm(Autoridade_P ~ MF1 + MF2, df_principal_join)
+modP10 <- lm(Centralidade_distancia_P ~ CF1 + CF2 + CF3 + CF4 + CF5, df_principal_join)
+modP11 <- lm(Autoridade_P ~ CF2 + CF3 + CF4 + CF5, df_principal_join)
+```
+
+Modelo com todas os fatores de H ocasionou um overfit, por isso foi retirado **H1, H4, H5**.
+```{r}
+modP6 <- lmerTest::lmer(Autoridade_P ~ HF2 + HF3 + (1|Sala), df_principal_join)
+modP7 <- lmerTest::lmer(Autoridade_P ~ MF1 + MF2 + (1|Sala), df_principal_join)
+```
+
+```{r}
+summary(modP)
+summary(modP2)
+summary(modP3)
+summary(modP4)
+summary(modP5)
+summary(modP8)
+summary(modP9)
+summary(modP10)
+summary(modP11)
+```
+
+```{r}
+summary(modP6)
+summary(modP7)
 ```
 

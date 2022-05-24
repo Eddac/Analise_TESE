@@ -223,10 +223,10 @@ df_geral$H118_inv <- ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(5), 1,
 ## Fator 5
 
 ## Escores médios HSE
-df_geral$HF1 <- df_geral %>% select(145,92,96,97,105,146) %>% rowMeans()
-df_geral$HF2 <- df_geral %>% select(90,91,95,101,147,148) %>% rowMeans()
-df_geral$HF3 <- df_geral %>% select(149,150,116,117,151,119) %>% rowMeans()
-df_geral$HF4 <- df_geral %>% select(93,99,102,107,108,111) %>% rowMeans()
+df_geral$HF1 <- df_geral %>% select(145,92,96,97,105,146) %>% rowMeans() # Neuroticismo
+df_geral$HF2 <- df_geral %>% select(90,91,95,101,147,148) %>% rowMeans() # Conscienciosidade
+df_geral$HF3 <- df_geral %>% select(149,150,116,117,151,119) %>% rowMeans() # Extroversão
+df_geral$HF4 <- df_geral %>% select(93,99,102,107,108,111) %>% rowMeans() # Amabilidade
 df_geral$HF5 <- df_geral %>% select(94,100,103,110,112,114) %>% rowMeans()
 df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
 
@@ -1280,7 +1280,7 @@ PET3_centralidade_geral <- inner_join(PET3_centralidade_geral, PET3_d_centralida
 ############################# Análises Estatísticas ###################################
 
 # Seleção de todos os subfatores e fatores gerais
-df_principal <- df_geral %>% select(4,10,120,139:144,152:160)
+df_principal <- df_geral %>% select(4,10,120,140:145,153:161)
 
 # Centralidade geral de todas as salas
 df_centralidade <- rbind(AP_centralidade_geral, SER_centralidade_geral, SER_2022_centralidade_geral, 
