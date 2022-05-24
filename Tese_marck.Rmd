@@ -1299,6 +1299,22 @@ options(scipen = 999)
 ```
 
 # Análise Estatísticas
+
+- Explicação básica sobre as centralidades
+
+Os tipos de centralidade destacam diferentes características no vértice perante a rede.  
+A **centralidade de grau** indica o quanto o vértice apresenta muitas conexões com outros vértices.  
+**Centralidade de proximidade** indica que mais importante que ter muitas conexões é não estar longe demais dos demais vértices.  
+*"Um nó importante está próximo dos outros nós"*  
+  
+**Centralidade de intermediação** indica o quanto o vértice é importante no caminho de outros vértices.  
+  
+*"Um nó importante faz parte de muitos caminhos"*  
+  
+  
+**Centralidade de autovetor**que no banco foi colocado como Proximidade. Indica que se sou vizinho de alguém importante eu também apresentarei importância.  
+  
+**Centralidade de autoridade** indica o quanto o vértice está conectado com outros hubs dentro da rede. Quanto maior essa conexão, mais forte é sua autoridade.
 ```{r, warning=FALSE}
 # Seleção de todos os subfatores e fatores gerais
 df_principal <- df_geral %>% select(4,10,120,123,136,140:145,153:161)
@@ -1350,6 +1366,16 @@ mod12 <- lm(nota ~ MF1 + MF2, df_principal_join)
 mod16 <- lm(nota ~ CF1 + CF2 + CF3 + CF4 + CF5, df_principal_join)
 ```
 
+```{r}
+mod20 <- lm(nota ~ rvtotal, df_principal_join)
+```
+
+```{r}
+mod21 <- lmerTest::lmer(Autoridade ~ rvtotal + (1|Sala), df_principal_join)
+mod22 <- lmerTest::lmer(Autoridade ~ rvtotal + (rvtotal|Sala), df_principal_join) #overfit
+```
+
+
 Alguns efeitos são encontrados quando analisados a partir da regressão linear simples. Ao utilizar o **modelo misto**, em que assume a sala de aula como **intercepto aleatório**, observa-se que a sala explicar uma porcentagem acima de 20% sobre o efeito das variáveis, e retira o efeito preditor na VD.
 ```{r}
 mod13 <- lmerTest::lmer(nota ~ CF1 + CF2 + CF3 + CF4 + CF5 +
@@ -1397,15 +1423,12 @@ summary(mod18)
 summary(mod19)
 ```
 
+```{r}
+summary(mod20)
+summary(mod21)
+```
+
 ## Regressões Profissional
-
-- Explicação básica sobre as centralidades
-
-Os tipos de centralidade destacam diferentes características no vértice perante a rede.  
-A centralidade de grau indica o quanto o vértice apresenta muitas conexões com outros vértices.  
-Centralidade de proximidade indica que mais importante que ter muitas conexões é não estar longe demais dos demais vértices.  
-*"Um nó importante está próximo dos outros nós"*  
-
 
 ```{r}
 modP <- lm(Centralidade_distancia_P ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
@@ -1442,5 +1465,48 @@ summary(modP11)
 ```{r}
 summary(modP6)
 summary(modP7)
+```
+
+**RESUMO**  
+  
+Até o presente momento, as análises indicam que extroversão exerce efeito sobre a centralidade do sujeito na rede.  
+Que sujeitos mais consciosos e extrovertidos são observados como bons profissionais.  
+Que metas para realização 2 exerce efeito para a percepção profissional.  
+Que nota acadêmica é predita por CF5 quando observado no modelo simples, porém observando o efeito aleatório da sala de aula esse efeito não é encontrado.  
+
+## Regressões Distância
+
+```{r}
+modD <- lm(Centralidade_distancia_D ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modD2 <- lm(Intermediação_D ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modD3 <- lm(Autoridade_D ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modD4 <- lm(Proximidade_D ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+            HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+modD5 <- lm(Proximidade_D ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+            HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+modD8 <- lm(Centralidade_distancia_D ~ MF1 + MF2, df_principal_join)
+modD9 <- lm(Autoridade_D ~ MF1 + MF2, df_principal_join)
+modD10 <- lm(Centralidade_distancia_D ~ CF1 + CF2 + CF3 + CF4 + CF5, df_principal_join)
+modD11 <- lm(Autoridade_D ~ CF2 + CF3 + CF4 + CF5, df_principal_join)
+```
+
+```{r}
+modD6 <- lmerTest::lmer(Autoridade_D ~ CF2 + CF3 + CF4 + CF5 + (1|Sala), df_principal_join)
+```
+
+```{r}
+summary(modD)
+summary(modD2)
+summary(modD3)
+summary(modD4)
+summary(modD5)
+summary(modD8)
+summary(modD9)
+summary(modD10)
+summary(modD11)
+```
+
+```{r}
+summary(modD6)
 ```
 
