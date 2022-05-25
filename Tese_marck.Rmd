@@ -1510,3 +1510,26 @@ summary(modD11)
 summary(modD6)
 ```
 
+### Regressão ARS e nota
+
+```{r}
+mod_nota <- lm(nota ~ Autoridade_P + Autoridade, df_principal_join)
+mod_nota2 <- lm(nota ~ Autoridade_P + Intermediação_P + Centralidade_distancia_P, df_principal_join)
+mod_nota3 <- lm(nota ~ Autoridade_P, df_principal_join)
+```
+
+```{r}
+mod_nota4 <- lmerTest::lmer(nota ~ Autoridade_P + (1|Sala), df_principal_join)
+```
+
+
+```{r}
+summary(mod_nota)
+summary(mod_nota2)
+summary(mod_nota3)
+```
+
+```{r}
+summary(mod_nota4)
+```
+
