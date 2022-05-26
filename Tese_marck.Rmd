@@ -19,6 +19,9 @@ library(igraph)
 library(lme4)
 library(lmerTest)
 library(mlmRev)
+library(psych)
+library(qgraph)
+library(ggplot2)
 ```
 
 # Carregando banco de dados  
@@ -1209,6 +1212,7 @@ PET3_centralidade$Autoridade <- authority_score(PET3)$vector
 #PET1_dis <- degree.distribution(PET1, cumulative = FALSE)
 
 V(PET3)$degree <- PET3_centralidade$Grau_Entrada
+V(PET3)$autoridade <- authority_score(PET3)$vector
 
 #### DISTANCIAMENTO PSICOLOGIA 
 ars_pet3_d_1 <- df_pet3 %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
@@ -1531,5 +1535,27 @@ summary(mod_nota3)
 
 ```{r}
 summary(mod_nota4)
+```
+
+## Plot
+
+```{r}
+centralityPlot(PET3, include = "all")
+
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(PET3, vertex.size = V(PET3)$autoridade*30)
+```
+
+```{r}
+ggplot(PET3_centralidade_geral, aes(Autoridade, reorder(Nome, Nome)))+
+  geom_point()
+```
+
+```{r}
+df_principal_join %>% group_by(Sala=) %>% ggplot(aes(x = Autoridade, y = Nome))+
+  geom_point()
 ```
 

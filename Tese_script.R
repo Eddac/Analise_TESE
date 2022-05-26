@@ -227,7 +227,7 @@ df_geral$HF1 <- df_geral %>% select(145,92,96,97,105,146) %>% rowMeans() # Neuro
 df_geral$HF2 <- df_geral %>% select(90,91,95,101,147,148) %>% rowMeans() # Conscienciosidade
 df_geral$HF3 <- df_geral %>% select(149,150,116,117,151,119) %>% rowMeans() # Extroversão
 df_geral$HF4 <- df_geral %>% select(93,99,102,107,108,111) %>% rowMeans() # Amabilidade
-df_geral$HF5 <- df_geral %>% select(94,100,103,110,112,114) %>% rowMeans()
+df_geral$HF5 <- df_geral %>% select(94,100,103,110,112,114) %>% rowMeans() # Abertura à Experiência
 df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
 
 
