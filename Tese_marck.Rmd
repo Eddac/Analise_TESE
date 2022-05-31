@@ -60,7 +60,7 @@ Dados_AP_ <- Dados_AP_ %>% slice(-33)
 ```
   
 # Início das análises
-  
+
 Os questionários não ficaram perfeitamente padronizados. Por isso, a parte inicial das análises se concentra na organização dos dados.
 ```{r}
 # transformações dos dados de AP para padronizar com SC
@@ -254,9 +254,62 @@ df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
 ## Cálculo dos fatores de Metas para Realização  
 ```{r}
 ## Correção metas para realização -----
-df_geral$MF1 <- df_geral %>% select(58:64, 71:74) %>% rowMeans()
-df_geral$MF2 <- df_geral %>% select(65:70) %>% rowMeans()
+df_geral$MF1 <- df_geral %>% select(58:61, 64) %>% rowMeans()
+df_geral$MF2 <- df_geral %>% select(62,63,65:70) %>% rowMeans()
+df_geral$MF3 <- df_geral %>% select(71:74) %>% rowMeans()
 df_geral$MF_GERAL <- df_geral %>% select(158, 159) %>% rowMeans()
+```
+
+# Análise de confiabilidade
+
+```{r}
+# names(df_geral) # Itens do 58:74
+```
+
+```{r}
+df_geral %>% select(58:74) %>% KMO()
+df_geral %>% select(58:74) %>% bartlett.test()
+```
+
+```{r}
+poly_meta <- df_geral %>% select(58:74) %>% polychoric(.)   # matriz de correlações policóricas para análise paralela.
+rho_meta <- poly_meta$rho # guardando apenas o Rho de Spearman da matriz de correlações policóricas
+scree_meta <-scree(rho_meta)
+
+pa_meta <- fa.parallel(rho_meta, n.obs=209, fa="fa") # análise paralela sobre a matriz de correlações policóricas
+pa_meta$fa.values #mostra os eigenvalues com os dados experimentais
+pa_meta$fa.sim #mostra os eigenvalues com os dados simulados
+```
+
+```{r}
+# Fatores
+
+meta_efa <- df_geral %>% select(58:74) %>% fa(nfactors = '3', cor='poly', 
+            fm='wls', rotate = 'geominQ')
+
+meta_efa$e.values
+meta_efa$loadings %>% view()
+```
+
+```{r}
+glimpse(df_geral)
+```
+
+
+```{r}
+# Fatores
+
+meta_efa2 <- df_geral %>% select(58:74) %>% fa(nfactors = '4', cor='poly', 
+            fm='wls', rotate = 'geominQ')
+
+meta_efa2$e.values
+meta_efa2$loadings %>% view()
+```
+
+```{r}
+df_geral %>% select(58:61, 64) %>% psych::omega(digits=3,poly=TRUE) #0.93
+df_geral %>% select(62,63,65:70) %>% omega(digits=3,poly=TRUE) #0.86
+df_geral %>% select(71:74) %>% omega(digits=3,poly=TRUE) #0.83
 ```
 
 # Análise de Redes
@@ -1321,7 +1374,7 @@ A **centralidade de grau** indica o quanto o vértice apresenta muitas conexões
 **Centralidade de autoridade** indica o quanto o vértice está conectado com outros hubs dentro da rede. Quanto maior essa conexão, mais forte é sua autoridade.
 ```{r, warning=FALSE}
 # Seleção de todos os subfatores e fatores gerais
-df_principal <- df_geral %>% select(4,10,120,123,136,140:145,153:161)
+df_principal <- df_geral %>% select(4,10,120,123,136,140:145,153:162)
 
 # Centralidade geral de todas as salas
 df_centralidade <- rbind(AP_centralidade_geral, SER_centralidade_geral, SER_2022_centralidade_geral, 
@@ -1347,6 +1400,11 @@ df_principal_join$nota <- ifelse(df_principal_join$nota == "9.50 - 10",19,
 df_principal_join$nota <- as.numeric(df_principal_join$nota)
 
 ```
+
+```{r}
+names(df_geral)
+```
+
 ## Regressões Amizade
 ```{r}
 mod <- lm(Centralidade_distancia ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
@@ -1516,6 +1574,7 @@ summary(modD6)
 
 ### Regressão ARS e nota
 
+
 ```{r}
 mod_nota <- lm(nota ~ Autoridade_P + Autoridade, df_principal_join)
 mod_nota2 <- lm(nota ~ Autoridade_P + Intermediação_P + Centralidade_distancia_P, df_principal_join)
@@ -1558,4 +1617,32 @@ ggplot(PET3_centralidade_geral, aes(Autoridade, reorder(Nome, Nome)))+
 df_principal_join %>% group_by(Sala=) %>% ggplot(aes(x = Autoridade, y = Nome))+
   geom_point()
 ```
+
+## Teste com prof
+
+```{r}
+df_principal_join %>% select(2:6) %>% corr.test()
+df_principal_join %>% select(7:11) %>% corr.test()
+df_principal_join %>% select(12:16) %>% corr.test()
+df_principal_join %>% select(12:16) %>% corr.test()
+```
+
+```{r}
+df_principal_join %>% select(6,11,16) %>% corr.test()
+```
+
+```{r}
+profm <- corr.test(df_principal_join[20:35], df_principal_join[3:6])
+profm$stars
+```
+
+```{r}
+names(df_principal_join)
+```
+
+
+
+
+
+
 

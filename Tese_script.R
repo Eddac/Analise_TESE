@@ -231,6 +231,13 @@ df_geral$HF5 <- df_geral %>% select(94,100,103,110,112,114) %>% rowMeans() # Abe
 df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
 
 
+df_geral %>% select(149,150,116,117,151,119) %>% alpha()
+
+df_geral %>% select(149,150,116,117,151,119) %>% psych::omega()
+  
+names(df_geral)
+
+
 ## Correção metas para realização -----
 
 df_geral$MF1 <- df_geral %>% select(58:64, 71:74) %>% rowMeans()
