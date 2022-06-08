@@ -257,7 +257,7 @@ df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
 df_geral$MF1 <- df_geral %>% select(58:61, 64) %>% rowMeans()
 df_geral$MF2 <- df_geral %>% select(62,63,65:70) %>% rowMeans()
 df_geral$MF3 <- df_geral %>% select(71:74) %>% rowMeans()
-df_geral$MF_GERAL <- df_geral %>% select(158, 159) %>% rowMeans()
+df_geral$MF_GERAL <- df_geral %>% select(159:161) %>% rowMeans()
 ```
 
 # Análise de confiabilidade
@@ -1624,7 +1624,6 @@ df_principal_join %>% group_by(Sala=) %>% ggplot(aes(x = Autoridade, y = Nome))+
 df_principal_join %>% select(2:6) %>% corr.test()
 df_principal_join %>% select(7:11) %>% corr.test()
 df_principal_join %>% select(12:16) %>% corr.test()
-df_principal_join %>% select(12:16) %>% corr.test()
 ```
 
 ```{r}
@@ -1632,14 +1631,37 @@ df_principal_join %>% select(6,11,16) %>% corr.test()
 ```
 
 ```{r}
-profm <- corr.test(df_principal_join[20:35], df_principal_join[3:6])
+profm <- corr.test(df_principal_join[20:36], df_principal_join[3:6])
 profm$stars
+```
+
+```{r}
+profm2 <- corr.test(df_principal_join[20:36], df_principal_join[7:11])
+profm2$stars
+```
+
+```{r}
+profm3 <- corr.test(df_principal_join[3:16], df_principal_join[18])
+profm3$stars
+```
+
+```{r}
+
 ```
 
 ```{r}
 names(df_principal_join)
 ```
 
+- Regressões
+
+```{r}
+modP1 <- lm(Autoridade_P ~ MF1 + MF2 + MF3, df_principal_join)
+summary(modP1)
+
+mod1 <- lm(Autoridade ~ MF1 + MF2 + MF3, df_principal_join)
+summary(mod1)
+```
 
 
 
