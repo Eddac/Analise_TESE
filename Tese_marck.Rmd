@@ -25,7 +25,7 @@ library(ggplot2)
 ```
 
 # Carregando banco de dados  
-- Ao todo, os questionários foram aplicados em **9 turmas**. Porém, apenas **8 turmas** apresentou engajamento mais próximo de 100%, a participação da maior parcela da turma era importante para obter redes mais fidedignas com o ambiente de sala de aula.  
+- Ao todo, os questionários foram aplicados em **9 turmas**. Porém, apenas **8 turmas** apresentaram engajamento mais próximo de 100%, a participação da maior parcela da turma era importante para obter redes mais fidedignas com o ambiente de sala de aula.  
 Dessas turmas, 2 foram da **Univasf/Petrolina** e as demais foram de **Recife/UFPE**. 5 turmas foram de Psicologia, 2 de Serviço Social e 1 de Odonto.  
 ```{r}
 # Carregando banco de dados no R   ---------------------------------
@@ -259,6 +259,36 @@ df_geral$MF2 <- df_geral %>% select(62,63,65:70) %>% rowMeans()
 df_geral$MF3 <- df_geral %>% select(71:74) %>% rowMeans()
 df_geral$MF_GERAL <- df_geral %>% select(159:161) %>% rowMeans()
 ```
+
+```{r}
+df_geral$Idade <- substr(df_geral$Idade,1,2)
+```
+
+```{r}
+df_geral$Idade <- as.numeric(df_geral$Idade)
+glimpse(df_geral)
+```
+
+
+```{r}
+df_geral %>% select(Idade, Sala) %>% filter(Sala <= 6) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+
+df_geral %>% select(Gênero, Sala) %>% filter(Sala <= 6) %>% group_by(Gênero) %>% count() %>% mutate(porc = n/(164+50+3+1)*100)
+```
+
+
+```{r}
+df_geral %>% select(Idade, Sala) %>% filter(Sala == 7 | Sala == 8) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+
+df_geral %>% select(Gênero, Sala) %>% filter(Sala == 7 | Sala == 8) %>% group_by(Gênero) %>% count() %>% mutate(porc = n/(35+9+1)*100)
+```
+
+
+```{r}
+summary(df_geral$Idade)
+```
+
+
 
 # Análise de confiabilidade
 
