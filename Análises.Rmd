@@ -1,0 +1,131 @@
+---
+title: "Análises"
+author: "Emanuel Cordeiro"
+date: "7/1/2022"
+output: html_document
+---
+```{r}
+library(arsenal)
+library(olsrr)
+library(ggpubr)
+```
+
+
+
+## Teste com prof
+
+- Testar pressupostos
+
+- Normalidade
+- Homocesdasticidade
+- Relação linear
+
+```{r}
+shapiro.test(df_principal_join$CF1)
+shapiro.test(df_principal_join$CF2)
+shapiro.test(df_principal_join$CF3)
+shapiro.test(df_principal_join$CF4)
+shapiro.test(df_principal_join$CF5)
+shapiro.test(df_principal_join$HF1)
+shapiro.test(df_principal_join$HF2)
+shapiro.test(df_principal_join$HF3)
+shapiro.test(df_principal_join$HF4)
+shapiro.test(df_principal_join$HF5)
+shapiro.test(df_principal_join$MF1)
+shapiro.test(df_principal_join$MF2)
+shapiro.test(df_principal_join$MF3)
+shapiro.test(df_principal_join$nota)
+```
+
+
+
+```{r}
+df_principal_join %>% select(2:6) %>% corr.test()
+df_principal_join %>% select(7:11) %>% corr.test()
+df_principal_join %>% select(12:16) %>% corr.test()
+```
+
+```{r}
+df_principal_join %>% select(6,11,16) %>% corr.test()
+```
+
+```{r}
+profm <- corr.test(df_principal_join[20:36], df_principal_join[3:6])
+profm$stars
+```
+
+```{r}
+profm2 <- corr.test(df_principal_join[20:36], df_principal_join[7:11])
+profm2$stars
+```
+
+```{r}
+profm3 <- corr.test(df_principal_join[3:16], df_principal_join[18])
+profm3$stars
+```
+
+```{r}
+profm3 <- corr.test(df_principal_join[20:36], df_principal_join[12:16])
+profm3$stars
+```
+
+```{r}
+names(df_principal_join)
+```
+
+- Regressões
+
+```{r}
+mod1 <- lm(Autoridade ~ CF3 + HF3 + HF4 + HF5, df_principal_join)
+ols_regress(mod1)
+```
+
+```{r}
+mod2 <- lm(Autoridade ~  HF3, df_principal_join)
+ols_regress(mod2)
+```
+
+```{r}
+ggplot(df_principal_join, aes(x = HF3, y = Autoridade)) +
+  geom_jitter() + geom_smooth(method = 'lm') +
+  ggpubr::stat_regline_equation(label.x = 5.1, label.y = 1.1) +
+  ggpubr::stat_cor(aes(label = ..rr.label..), method = 'pearson',
+                   label.x = 1, label.y = 0.9)
+```
+
+```{r}
+ols_plot_resid_qq(mod1)
+ols_plot_resid_qq(mod2)
+```
+
+```{r}
+ols_test_normality(mod1)
+```
+
+```{r}
+ols_plot_resid_fit(mod1)
+ols_test_breusch_pagan(mod1)
+```
+
+```{r}
+ols_coll_diag(mod1)
+```
+
+
+
+```{r}
+modP1 <- lm(Autoridade_P ~ CF3 + CF4 + HF2 + HF3 + HF5, df_principal_join)
+summary(modP1)
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(mod2, which = c(1,3))
+```
+
+
+
+
+
+
+

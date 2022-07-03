@@ -39,20 +39,6 @@ Dados_Petrolina_1 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_1.xlsx") #7
 Dados_Petrolina_3 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_3.xlsx") #8
 ```
   
-No processo das análises, pode ser necessário observar se a turma que o sujeito se encontra exerce efeito sobre seu resultado. Por isso, as turmas foram enumeradas. 
-```{r}
-# Numerando o banco de dados
-Dados_ser_$Sala <- 1
-Dados_ser_2$Sala <- 2
-Dados_AP_$Sala <- 3
-Dados_mau_$Sala <- 4
-Dados_Odo$Sala <- 5
-Dados_AP_2022$Sala <- 6
-Dados_Petrolina_1$Sala <- 7
-Dados_Petrolina_3$Sala <- 8
-```
-  
-  
 A participante Natalia respondeu o questionário 2 vezes e solicitou a retirada do primeiro momento de resposta.
 ```{r}
 # retirada da linha 33 por ser repetida com a linha 35 (Natalia)
@@ -243,11 +229,11 @@ df_geral$H118_inv <- ifelse(df_geral$`Sou tímido(a), inibido(a).` %in% c(5), 1,
 
 ```{r}
 ## Escores médios HSE
-df_geral$HF1 <- df_geral %>% select(145,92,96,97,105,146) %>% rowMeans()
-df_geral$HF2 <- df_geral %>% select(90,91,95,101,147,148) %>% rowMeans()
-df_geral$HF3 <- df_geral %>% select(149,150,116,117,151,119) %>% rowMeans()
-df_geral$HF4 <- df_geral %>% select(93,99,102,107,108,111) %>% rowMeans()
-df_geral$HF5 <- df_geral %>% select(94,100,103,110,112,114) %>% rowMeans()
+df_geral$HF1 <- df_geral %>% select(145,92,96,97,105,146) %>% rowMeans() #Neuroticismo
+df_geral$HF2 <- df_geral %>% select(90,91,95,101,147,148) %>% rowMeans() #Concienciosidade
+df_geral$HF3 <- df_geral %>% select(149,150,116,117,151,119) %>% rowMeans() #Extroversão
+df_geral$HF4 <- df_geral %>% select(93,99,102,107,108,111) %>% rowMeans() #Amabilidade
+df_geral$HF5 <- df_geral %>% select(94,100,103,110,112,114) %>% rowMeans() #Abertura
 df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
 ```
   
@@ -257,35 +243,7 @@ df_geral$H_GERAL <- df_geral %>% select(152:156) %>% rowMeans()
 df_geral$MF1 <- df_geral %>% select(58:61, 64) %>% rowMeans()
 df_geral$MF2 <- df_geral %>% select(62,63,65:70) %>% rowMeans()
 df_geral$MF3 <- df_geral %>% select(71:74) %>% rowMeans()
-df_geral$MF_GERAL <- df_geral %>% select(159:161) %>% rowMeans()
-```
-
-```{r}
-df_geral$Idade <- substr(df_geral$Idade,1,2)
-```
-
-```{r}
-df_geral$Idade <- as.numeric(df_geral$Idade)
-glimpse(df_geral)
-```
-
-
-```{r}
-df_geral %>% select(Idade, Sala) %>% filter(Sala <= 6) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
-
-df_geral %>% select(Gênero, Sala) %>% filter(Sala <= 6) %>% group_by(Gênero) %>% count() %>% mutate(porc = n/(164+50+3+1)*100)
-```
-
-
-```{r}
-df_geral %>% select(Idade, Sala) %>% filter(Sala == 7 | Sala == 8) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
-
-df_geral %>% select(Gênero, Sala) %>% filter(Sala == 7 | Sala == 8) %>% group_by(Gênero) %>% count() %>% mutate(porc = n/(35+9+1)*100)
-```
-
-
-```{r}
-summary(df_geral$Idade)
+df_geral$MF_GERAL <- df_geral %>% select(158:160) %>% rowMeans()
 ```
 
 
@@ -341,6 +299,25 @@ df_geral %>% select(58:61, 64) %>% psych::omega(digits=3,poly=TRUE) #0.93
 df_geral %>% select(62,63,65:70) %>% omega(digits=3,poly=TRUE) #0.86
 df_geral %>% select(71:74) %>% omega(digits=3,poly=TRUE) #0.83
 ```
+
+No processo das análises, pode ser necessário observar se a turma que o sujeito se encontra exerce efeito sobre seu resultado. Por isso, as turmas foram enumeradas. 
+```{r}
+# Numerando o banco de dados
+#Dados_ser_$Sala <- 1
+#Dados_ser_2$Sala <- 2
+#Dados_AP_$Sala <- 3
+#Dados_mau_$Sala <- 4
+#Dados_Odo$Sala <- 5
+#Dados_AP_2022$Sala <- 6
+#Dados_Petrolina_1$Sala <- 7
+#Dados_Petrolina_3$Sala <- 8
+```
+
+```{r}
+#df_geral$Sala <- 1
+#df_geral$Sala[36] <- 
+```
+
 
 # Análise de Redes
 ## Turma Psicologia 2021
@@ -1404,7 +1381,7 @@ A **centralidade de grau** indica o quanto o vértice apresenta muitas conexões
 **Centralidade de autoridade** indica o quanto o vértice está conectado com outros hubs dentro da rede. Quanto maior essa conexão, mais forte é sua autoridade.
 ```{r, warning=FALSE}
 # Seleção de todos os subfatores e fatores gerais
-df_principal <- df_geral %>% select(4,10,120,123,136,140:145,153:162)
+df_principal <- df_geral %>% select(4,10,120,122,135,139:144,152:161)
 
 # Centralidade geral de todas as salas
 df_centralidade <- rbind(AP_centralidade_geral, SER_centralidade_geral, SER_2022_centralidade_geral, 
@@ -1647,54 +1624,4 @@ ggplot(PET3_centralidade_geral, aes(Autoridade, reorder(Nome, Nome)))+
 df_principal_join %>% group_by(Sala=) %>% ggplot(aes(x = Autoridade, y = Nome))+
   geom_point()
 ```
-
-## Teste com prof
-
-```{r}
-df_principal_join %>% select(2:6) %>% corr.test()
-df_principal_join %>% select(7:11) %>% corr.test()
-df_principal_join %>% select(12:16) %>% corr.test()
-```
-
-```{r}
-df_principal_join %>% select(6,11,16) %>% corr.test()
-```
-
-```{r}
-profm <- corr.test(df_principal_join[20:36], df_principal_join[3:6])
-profm$stars
-```
-
-```{r}
-profm2 <- corr.test(df_principal_join[20:36], df_principal_join[7:11])
-profm2$stars
-```
-
-```{r}
-profm3 <- corr.test(df_principal_join[3:16], df_principal_join[18])
-profm3$stars
-```
-
-```{r}
-
-```
-
-```{r}
-names(df_principal_join)
-```
-
-- Regressões
-
-```{r}
-modP1 <- lm(Autoridade_P ~ MF1 + MF2 + MF3, df_principal_join)
-summary(modP1)
-
-mod1 <- lm(Autoridade ~ MF1 + MF2 + MF3, df_principal_join)
-summary(mod1)
-```
-
-
-
-
-
 

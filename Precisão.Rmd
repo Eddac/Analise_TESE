@@ -1,0 +1,60 @@
+---
+title: "Tese_Confiabilidade"
+author: "Emanuel Cordeiro"
+date: "6/30/2022"
+output: html_document
+---
+# Carregamento de pacotes
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(expss)
+library(igraph)
+library(lme4)
+library(lmerTest)
+library(mlmRev)
+library(psych)
+library(qgraph)
+library(ggplot2)
+```
+
+# Análise de precisão
+- Metas
+```{r}
+df_geral %>% select(58:61, 64) %>% psych::omega(digits=3,poly=TRUE) #0.93
+df_geral %>% select(62,63,65:70) %>% omega(digits=3,poly=TRUE) #0.86
+df_geral %>% select(71:74) %>% omega(digits=3,poly=TRUE) #0.83
+```
+
+```{r}
+df_geral %>% select(145,92,96,97,105,146) %>% omega(digits=3,poly=TRUE)
+df_geral %>% select(90,91,95,101,147,148) %>% omega(digits=3,poly=TRUE)
+df_geral %>% select(149,150,116,117,151,119) %>% omega(digits=3,poly=TRUE)
+df_geral %>% select(93,99,102,107,108,111) %>% omega(digits=3,poly=TRUE)
+df_geral %>% select(94,100,103,110,112,114) %>% omega(digits=3,poly=TRUE)
+```
+
+```{r}
+df_geral$Idade <- substr(df_geral$Idade,1,2)
+```
+
+```{r}
+df_geral$Idade <- as.numeric(df_geral$Idade)
+glimpse(df_geral)
+```
+
+```{r}
+df_geral %>% select(Idade, Sala) %>% filter(Sala <= 6) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+
+df_geral %>% select(Gênero, Sala) %>% filter(Sala <= 6) %>% group_by(Gênero) %>% count() %>% mutate(porc = n/(164+50+3+1)*100)
+```
+
+```{r}
+df_geral %>% select(Idade, Sala) %>% filter(Sala == 7 | Sala == 8) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+
+df_geral %>% select(Gênero, Sala) %>% filter(Sala == 7 | Sala == 8) %>% group_by(Gênero) %>% count() %>% mutate(porc = n/(35+9+1)*100)
+```
+
+
+```{r}
+summary(df_geral$Idade)
+```
