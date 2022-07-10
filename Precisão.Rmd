@@ -25,13 +25,40 @@ df_geral %>% select(62,63,65:70) %>% omega(digits=3,poly=TRUE) #0.86
 df_geral %>% select(71:74) %>% omega(digits=3,poly=TRUE) #0.83
 ```
 
+- HSE
 ```{r}
+# Neuroticismo
+# Ome - 0.92/ alfa - 0.88
 df_geral %>% select(145,92,96,97,105,146) %>% omega(digits=3,poly=TRUE)
+# Consci
+# Ome 0.90/ alfa - 0.84
 df_geral %>% select(90,91,95,101,147,148) %>% omega(digits=3,poly=TRUE)
+# Extro
+# 0.96 / 0.91
 df_geral %>% select(149,150,116,117,151,119) %>% omega(digits=3,poly=TRUE)
+# Amabilidade
+# 0.90 / 0.83
 df_geral %>% select(93,99,102,107,108,111) %>% omega(digits=3,poly=TRUE)
+# Abertura
+# 0.89 / 0.84
 df_geral %>% select(94,100,103,110,112,114) %>% omega(digits=3,poly=TRUE)
 ```
+
+-CE
+```{r}
+# Al 0.84 e Om 0.89
+df_geral %>% select(12,16,19,26,34,37,40,42) %>% psych::omega(digits=3,poly=TRUE)
+# 0.84 / 0.88
+df_geral %>% select(15,22,25,137,32,35,38) %>% omega(digits=3,poly=TRUE)
+# 0.72 / 0.76
+df_geral %>% select(17,19,138,43) %>% omega(digits=3,poly=TRUE)
+# 0.73 / 0.82
+df_geral %>% select(13,18,21,23,30,33,44) %>% omega(digits=3,poly=TRUE)
+# 0.65 / 0.73
+df_geral %>% select(136,20,24,28,31,36,45) %>% omega(digits=3,poly=TRUE)
+```
+
+
 
 ```{r}
 df_geral$Idade <- substr(df_geral$Idade,1,2)

@@ -1,0 +1,490 @@
+---
+title: "Plots"
+author: "Emanuel Cordeiro"
+date: "7/8/2022"
+output: html_document
+---
+```{r}
+library(cowplot)
+library(tidyverse)
+library(igraph)
+```
+
+
+
+```{r}
+V(AP)$name
+E(AP)$weight <- ars_ap_all$Peso
+V(AP)$gender <- c("M", "M", "M", "F", 
+                  "F", "F", "F", "F", 
+                  "M", "F", "M", "F", 
+                  "M", "F", "M", "F", 
+                  "F", "M", "F", "F", 
+                  "F", "M", "M", "F", 
+                  "F", "F", "M", "F",
+                  "M", "F", "F", "M", 
+                  "F", "M", "F", "F", 
+                  "F")
+
+# Atributo dos sujeitos sem nomes
+V(AP)$suj <- paste("s", 1:37, sep = "")
+
+# Colocando as métricas no grafo
+V(AP)$aut <-  authority_score(AP)$vector
+```
+
+
+```{r}
+teste <- df_principal_join %>% select(Nome, nota) %>% slice(1:19)
+teste <- add_row(teste, Nome = 'RAFAELA NASCIMENTO DOS SANTOS', nota = 1)
+teste2 <- df_principal_join %>% select(Nome, nota) %>% slice(20:34)
+teste <- rbind(teste, teste2)
+teste <- add_row(teste, Nome = 'ANA LETICIA SANTOS VALENTE', nota = 1)
+teste <- add_row(teste, Nome = 'JULIA MARIA FERREIRA LUCAS', nota = 1)
+```
+
+```{r}
+rm(teste2)
+```
+
+```{r}
+V(AP)$nota <- teste$nota
+```
+
+
+```{r, dev='png'}
+par(mfrow=c(1,2))
+plot(AP, 
+     vertex.color = c("gold", "skyblue")[1+(V(AP)$gender=="M")], 
+     vertex.label = V(AP)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     #vertex.size = sqrt(V(AP)$nota)*5,
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.color = E(AP)$weight,
+     edge.width = E(AP)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Amizade - Psicologia 1')
+plot(AP_p, 
+     vertex.color = c("gold", "skyblue")[1+(V(AP_p)$gender=="M")], 
+     vertex.label = V(AP_p)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     #vertex.size = sqrt(V(AP_p)$bw),
+     edge.arrow.size=.1,
+     edge.color = E(AP_p)$weight,
+     edge.curved=0.2,
+     edge.width = E(AP_p)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Profissão - Psicologia 1')
+```
+
+
+```{r}
+E(AP_d)$weight <- ars_ap_d_all$Peso
+V(AP_d)$gender <- c("M", "M", "M", "F", 
+                    "F", "F", "F", "F", 
+                    "M", "F", "M", "F", 
+                    "M", "F", "M", "F", 
+                    "F", "M", "F", "F", 
+                    "F", "M", "M", "F", 
+                    "F", "F", "M", "F",
+                    "M", "F", "F", "M", 
+                    "F", "M", "F", "F", 
+                    "F")
+
+V(AP_d)$suj <- paste("s", 1:39, sep = "")
+
+```
+
+```{r}
+plot(AP_d, 
+     vertex.color = c("gold", "skyblue")[1+(V(AP_d)$gender=="M")], 
+     vertex.label = V(AP)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.width = E(AP_d)$weight, 
+     layout = layout.fruchterman.reingold)
+
+```
+
+```{r}
+V(AP_p)$name
+E(AP_p)$weight <- ars_ap_p_all$Peso
+V(AP_p)$gender <- c("M", "M", "M", "F", 
+                    "F", "F", "F", "F", 
+                    "M", "F", "F", "M", 
+                    "F", "M", "F", "M", 
+                    "F", "F", "M", "F", 
+                    "F", "M", "M", "F", 
+                    "F", "F", "F", "M",
+                    "F", "F", "M", "F", 
+                    "M", "F", "M", "F", 
+                    "F")
+
+V(AP_p)$suj <- paste("s", 1:37, sep = "")
+```
+
+
+
+```{r}
+V(SER_)$name
+E(SER_)$weight <- df_ser_all$Peso
+V(SER_)$gender <- c("F", "F", "F", "M", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "M", "F", "F", 
+                    "M", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "F")
+
+# Atributo dos sujeitos sem nomes
+V(SER_)$suj <- paste("s", 1:47, sep = "")
+```
+
+```{r}
+V(SER_)$name
+V(SER_p)$name
+```
+
+```{r}
+V(SER_p)$suj <- paste("s", 1:48, sep = "")
+E(SER_p)$weight <- df_p_ser_all$Peso
+V(SER_p)$gender <- c("F", "F", "F", "M", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "M", "F", "F", 
+                    "M", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "F", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "M", "F", 
+                    "F", "F", "F", "M")
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(SER_, 
+     vertex.color = c("gold", "skyblue")[1+(V(SER_)$gender=="M")], 
+     vertex.label = V(SER_)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.7, 
+     #vertex.size = sqrt(V(SER_)$bw),
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.width = E(SER_)$weight, 
+     edge.color = E(SER_)$weight,
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Amizade',
+     sub = "Serviço Social 1")
+plot(SER_p, 
+     vertex.color = c("gold", "skyblue")[1+(V(SER_p)$gender=="M")], 
+     vertex.label = V(SER_p)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.7, 
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.width = E(SER_p)$weight,
+     edge.color = E(SER_p)$weight,
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Profissão',
+     sub = "Serviço Social 1")
+```
+
+```{r}
+## AP 2022 ####
+AP_2022
+E(AP_2022)$weight <- ars_ap_2022_all$Peso
+V(AP_2022)$suj <- paste("s", 1:38, sep = "")
+V(AP_2022)$name
+V(AP_2022)$gender <- c("F", "F", "M", "F", 
+                    "F", "M", "F", "M", 
+                    "M", "F", "F", "M", 
+                    "F", "F", "F", "M", 
+                    "F", "F", "F", "F", 
+                    "M", "F", "F", "M", 
+                    "F", "M", "M", "M", 
+                    "F", "M", "F", "F",
+                    "F", "F", "F", "F",
+                    "M", "F")
+```
+
+```{r}
+V(AP_2022_p)$suj <- paste("s", 1:36, sep = "")
+E(AP_2022_p)$weight <- ars_ap_2022_p_all$Peso
+V(AP_2022_p)$name
+V(AP_2022_p)$gender <- c("F", "F", "M", "F", 
+                    "F", "M", "F", "M", 
+                    "M", "F", "F", "M", 
+                    "F", "F", "F", "M", 
+                    "F", "F", "F", "F", 
+                    "M", "F", "F", "F", 
+                    "M", "M", "M", "F", 
+                    "M", "F", "F", "F",
+                    "F", "F", "F", "M")
+```
+
+
+```{r}
+plot(AP_2022, 
+     vertex.color = c("gold", "skyblue")[1+(V(AP_2022)$gender=="M")], 
+     vertex.label = V(AP_2022)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.7, 
+     #vertex.size = sqrt(V(AP_2022)$bw),
+     edge.arrow.size= .1,
+     edge.curved=0.2, 
+     edge.color = E(AP_2022)$weight,
+     edge.width = E(AP_2022)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Amizade',
+     sub = "Psicologia 2")
+plot(AP_2022_p, 
+     vertex.color = c("gold", "skyblue")[1+(V(AP_2022_p)$gender=="M")], 
+     vertex.label = V(AP_2022_p)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.7, 
+     #vertex.size = sqrt(V(AP_2022)$bw),
+     edge.arrow.size= 0.1,
+     edge.curved=0.2, 
+     edge.color = E(AP_2022_p)$weight,
+     edge.width = E(AP_2022_p)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Profissão',
+     sub = "Psicologia 2")
+```
+
+
+```{r}
+SER_2022
+E(SER_2022)$weight <- df_ser_2022_all$Peso
+V(SER_2022)$suj <- paste("s", 1:60, sep = "")
+V(SER_2022)$name
+```
+
+```{r}
+plot(SER_2022, 
+     vertex.color = "gold", 
+     vertex.label = V(SER_2022)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.7, 
+     #vertex.size = sqrt(V(AP_2022)$bw),
+     edge.arrow.size= 0.1,
+     edge.curved=0.2, 
+     edge.color = E(SER_2022)$weight,
+     edge.width = E(SER_2022)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Amizade',
+     sub = "Serviço Social 2")
+plot(SER_2022_p, 
+     vertex.color = "gold", 
+     vertex.label = V(SER_2022_p)$suj,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.7, 
+     #vertex.size = sqrt(V(AP_2022)$bw),
+     edge.arrow.size= 0.1,
+     edge.curved=0.2, 
+     edge.color = E(SER_2022_p)$weight,
+     edge.width = E(SER_2022_p)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Profissão',
+     sub = "Serviço Social 2")
+```
+
+
+```{r}
+SER_2022_p
+E(SER_2022_p)$weight <- df_p_ser_2022_all$Peso
+V(SER_2022_p)$suj <- paste("s", 1:58, sep = "")
+V(SER_2022_p)$name
+```
+
+```{r}
+V(AP_mau)$name
+E(AP_mau)$weight <- ars_ap_mau_all$Peso
+# Atributo dos sujeitos sem nomes
+V(AP_mau)$suj <- paste("s", 1:38, sep = "")
+```
+
+```{r}
+V(AP_mau_p)$name
+E(AP_mau_p)$weight <- ars_ap_mau_p_all$Peso
+# Atributo dos sujeitos sem nomes
+V(AP_mau_p)$suj <- paste("s", 1:36, sep = "")
+```
+
+
+```{r}
+par(mfrow = c(1,2))
+plot(AP_mau, 
+     vertex.color = "gold",
+     vertex.label = V(AP_mau)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.color = E(AP_mau)$weight,
+     edge.width = E(AP_mau)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = "Rede de Amizade", 
+     sub =  "Psicologia 3")
+plot(AP_mau_p, 
+     vertex.color = "gold",
+     vertex.label = V(AP_mau_p)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     edge.arrow.size=.1,
+     edge.color = E(AP_mau_p)$weight,
+     edge.curved=0.2,
+     edge.width = E(AP_mau_p)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Profissão',
+     sub =  "Psicologia 3")
+```
+
+
+---------------------------------
+
+```{r}
+V(ODO_)$name
+E(ODO_)$weight <- Dados_Odo_all$Peso
+# Atributo dos sujeitos sem nomes
+V(ODO_)$suj <- paste("s", 1:16, sep = "")
+```
+
+```{r}
+V(ODO_p)$name
+E(ODO_p)$weight <- Dados_Odo_p_all$Peso
+# Atributo dos sujeitos sem nomes
+V(ODO_p)$suj <- paste("s", 1:16, sep = "")
+```
+
+
+```{r}
+par(mfrow = c(1,2))
+plot(ODO_, 
+     vertex.color = "gold",
+     vertex.label = V(ODO_)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.color = E(ODO_)$weight,
+     edge.width = E(ODO_)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = "Rede de Amizade", 
+     sub =  "Odonto")
+plot(ODO_p, 
+     vertex.color = "gold",
+     vertex.label = V(ODO_p)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     edge.arrow.size=.1,
+     edge.color = E(ODO_p)$weight,
+     edge.curved=0.2,
+     edge.width = E(ODO_p)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Profissão',
+     sub =  "Odonto")
+```
+
+------------------------
+
+```{r}
+V(PET1)$name
+E(PET1)$weight <- ars_pet1_all$Peso
+# Atributo dos sujeitos sem nomes
+V(PET1)$suj <- paste("s", 1:23, sep = "")
+```
+
+```{r}
+V(PET1_p)$name
+E(PET1_p)$weight <- ars_pet1_p_all$Peso
+# Atributo dos sujeitos sem nomes
+V(PET1_p)$suj <- paste("s", 1:23, sep = "")
+```
+
+
+```{r}
+par(mfrow = c(1,2))
+plot(PET1, 
+     vertex.color = "gold",
+     vertex.label = V(PET1)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.color = E(PET1)$weight,
+     edge.width = E(PET1)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = "Rede de Amizade", 
+     sub =  "Psicologia Petrolina 1")
+plot(PET1_p, 
+     vertex.color = "gold",
+     vertex.label = V(PET1_p)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     edge.arrow.size=.1,
+     edge.color = E(PET1_p)$weight,
+     edge.curved=0.2,
+     edge.width = E(PET1_p)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Profissão',
+     sub =  "Psicologia Petrolina 1")
+```
+
+
+-------------------
+
+```{r}
+V(PET3)$name
+E(PET3)$weight <- ars_pet3_all$Peso
+# Atributo dos sujeitos sem nomes
+V(PET3)$suj <- paste("s", 1:37, sep = "")
+```
+
+```{r}
+V(PET3_p)$name
+E(PET3_p)$weight <- ars_pet3_p_all$Peso
+# Atributo dos sujeitos sem nomes
+V(PET3_p)$suj <- paste("s", 1:35, sep = "")
+```
+
+
+```{r}
+par(mfrow = c(1,2))
+plot(PET3, 
+     vertex.color = "gold",
+     vertex.label = V(PET3)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     edge.arrow.size=.1,
+     edge.curved=0.2, 
+     edge.color = E(PET3)$weight,
+     edge.width = E(PET3)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = "Rede de Amizade", 
+     sub =  "Psicologia Petrolina 2")
+plot(PET3_p, 
+     vertex.color = "gold",
+     vertex.label = V(PET3_p)$suj,
+     vertex.label.color = "black", 
+     vertex.label.cex = 1, 
+     edge.arrow.size=.1,
+     edge.color = E(PET3_p)$weight,
+     edge.curved=0.2,
+     edge.width = E(PET3_p)$weight, 
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Profissão',
+     sub =  "Psicologia Petrolina 2")
+```

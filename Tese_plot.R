@@ -15,21 +15,21 @@ V(AP)$gender <- c("M", "M", "M", "F",
 V(AP)$suj <- paste("s", 1:37, sep = "")
 
 # Colocando as métricas no grafo
-V(AP)$degree <- AP_deg
-V(AP)$eig <- AP_deg
-V(AP)$bw <- AP_bw
+V(AP)$aut <-  authority_score(AP)$vector
 
 
 plot(AP, 
      vertex.color = c("gold", "skyblue")[1+(V(AP)$gender=="M")], 
-     #vertex.label = V(AP)$suj,
+     vertex.label = V(AP)$suj,
      vertex.label.color = "black", 
      vertex.label.cex = 1, 
-     #vertex.size = sqrt(V(AP)$bw),
+     #vertex.size = sqrt(V(AP)$nota)*5,
      edge.arrow.size=.1,
      edge.curved=0.2, 
+     edge.color = E(AP)$weight,
      edge.width = E(AP)$weight, 
-     layout = layout.fruchterman.reingold)
+     layout = layout.fruchterman.reingold,
+     main = 'Rede de Amizade')
 
 
 
@@ -73,7 +73,7 @@ plot(AP_d,
      #vertex.label = V(AP)$suj,
      vertex.label.color = "black", 
      vertex.label.cex = 1, 
-     #vertex.size = sqrt(V(AP)$bw),
+     vertex.size = V(AP)$bw,
      edge.arrow.size=.1,
      edge.curved=0.2, 
      edge.width = E(AP_d)$weight, 

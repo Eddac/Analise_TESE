@@ -356,9 +356,6 @@ AP_centralidade$Proximidade <- evcent(AP)$vector
 AP_centralidade$Intermediação <- betweenness(AP, directed = TRUE) 
 # Nível de autoridade
 AP_centralidade$Autoridade <- authority_score(AP)$vector
-
-AP_centralidade <- AP_centralidade %>% arrange(Nome)
-
 ```
 
 ```{r}
@@ -397,8 +394,6 @@ AP_d_centralidade$Centralidade_distancia_D <- closeness(AP_d, mode = "all")
 AP_d_centralidade$Proximidade_D <- evcent(AP_d)$vector 
 AP_d_centralidade$Intermediação_D <- betweenness(AP_d, directed = TRUE) 
 AP_d_centralidade$Autoridade_D <- authority_score(AP_d)$vector
-
-AP_d_centralidade <- AP_d_centralidade %>% arrange(Nome)
 ```
 
 ```{r}
@@ -438,8 +433,6 @@ AP_p_centralidade$Intermediação_P <- betweenness(AP_p, directed = TRUE)
 
 # Nível de autoridade
 AP_p_centralidade$Autoridade_P <- authority_score(AP_p)$vector
-
-AP_p_centralidade <- AP_p_centralidade %>% arrange(Nome)
 ```
 
 ```{r}
@@ -491,8 +484,6 @@ AP_mau_centralidade$Intermediação <- betweenness(AP_mau, directed = TRUE)
 # Nível de autoridade
 AP_mau_centralidade$Autoridade <- authority_score(AP_mau)$vector
 
-AP_mau_centralidade <- AP_mau_centralidade %>% arrange(Nome)
-
 
 #### DISTANCIAMENTO PSICOLOGIA MAU
 ars_ap_mau_d_1 <- df_ap_mau %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
@@ -529,8 +520,6 @@ AP_mau_d_centralidade$Centralidade_distancia_D <- closeness(AP_mau_d, mode = "al
 AP_mau_d_centralidade$Proximidade_D <- evcent(AP_mau_d)$vector 
 AP_mau_d_centralidade$Intermediação_D <- betweenness(AP_mau_d, directed = TRUE) 
 AP_mau_d_centralidade$Autoridade_D <- authority_score(AP_mau_d)$vector
-
-AP_mau_d_centralidade <- AP_mau_d_centralidade %>% arrange(Nome)
 
 
 ###### PROFISSIONAL PSICOLOGIA
@@ -571,8 +560,6 @@ AP_mau_p_centralidade$Intermediação_P <- betweenness(AP_mau_p, directed = TRUE
 
 # Nível de autoridade
 AP_mau_p_centralidade$Autoridade_P <- authority_score(AP_mau_p)$vector
-
-AP_mau_p_centralidade <- AP_mau_p_centralidade %>% arrange(Nome)
 
 
 #### UNIR MÉTRICAS PSICOLOGIA
@@ -628,7 +615,6 @@ SER_centralidade$Intermediação <- betweenness(SER_, directed = TRUE)
 # Nível de autoridade
 SER_centralidade$Autoridade <- authority_score(SER_)$vector
 
-SER_centralidade <- SER_centralidade %>% arrange(Nome)
 
 ### Distância SERVIÇO SOCIAL
 df_d_ser_1 <- df_ser %>% select(1,7) %>% rename(Distância = "1º Distanciamento")
@@ -660,7 +646,6 @@ SER_d_centralidade$Intermediação_D <- betweenness(SER_d, directed = TRUE)
 # Nível de autoridade
 SER_d_centralidade$Autoridade_D <- authority_score(SER_d)$vector
 
-SER_d_centralidade <- SER_d_centralidade %>% arrange(Nome)
 
 ## Jean e Jessica Menezes
 
@@ -694,7 +679,7 @@ SER_p_centralidade$Intermediação_P <- betweenness(SER_p, directed = TRUE)
 
 # Nível de autoridade
 SER_p_centralidade$Autoridade_P <- authority_score(SER_p)$vector
-SER_p_centralidade <- SER_p_centralidade %>% arrange(Nome)
+
 ```
 
 ```{r}
@@ -831,7 +816,7 @@ SER_2022_p_centralidade$Intermediação_P <- betweenness(SER_2022_p, directed = 
 
 # Nível de autoridade
 SER_2022_p_centralidade$Autoridade_P <- authority_score(SER_2022_p)$vector
-# SER_2022_p_centralidade <- SER_p_centralidade %>% arrange(Nome)
+
 ```
 
 ```{r}
@@ -874,7 +859,7 @@ ODO_centralidade$Intermediação <- betweenness(ODO_, directed = TRUE)
 
 # Nível de autoridade
 ODO_centralidade$Autoridade <- authority_score(ODO_)$vector
-ODO_centralidade <- ODO_centralidade %>% arrange(Nome)
+
 
 ### Odonto - Distância ----
 
@@ -906,7 +891,7 @@ ODO_d_centralidade$Intermediação_D <- betweenness(ODO_d, directed = TRUE)
 
 # Nível de autoridade
 ODO_d_centralidade$Autoridade_D <- authority_score(ODO_d)$vector
-ODO_d_centralidade <- ODO_d_centralidade %>% arrange(Nome)
+
 
 ## Odonto - Profissional ----
 
@@ -938,7 +923,7 @@ ODO_p_centralidade$Intermediação_P<- betweenness(ODO_p, directed = TRUE)
 
 # Nível de autoridade
 ODO_p_centralidade$Autoridade_P <- authority_score(ODO_p)$vector
-ODO_p_centralidade <- ODO_p_centralidade %>% arrange(Nome)
+
 ```
 
 ```{r}
@@ -993,7 +978,6 @@ AP_2022_centralidade$Intermediação <- betweenness(AP_2022, directed = TRUE)
 # Nível de autoridade
 AP_2022_centralidade$Autoridade <- authority_score(AP_2022)$vector
 
-#AP_2022_centralidade <- AP_2022_centralidade %>% arrange(Nome)
 
 AP_2022_dis <- degree.distribution(AP_2022, cumulative = FALSE)
 
@@ -1035,7 +1019,6 @@ AP_2022_d_centralidade$Proximidade_D <- evcent(AP_2022_d)$vector
 AP_2022_d_centralidade$Intermediação_D <- betweenness(AP_2022_d, directed = TRUE) 
 AP_2022_d_centralidade$Autoridade_D <- authority_score(AP_2022_d)$vector
 
-AP_2022_d_centralidade <- AP_2022_d_centralidade %>% arrange(Nome)
 
 
 ###### PROFISSIONAL PSICOLOGIA
@@ -1075,7 +1058,7 @@ AP_2022_p_centralidade$Intermediação_P <- betweenness(AP_2022_p, directed = TR
 
 # Nível de autoridade
 AP_2022_p_centralidade$Autoridade_P <- authority_score(AP_2022_p)$vector
-AP_2022_p_centralidade <- AP_2022_p_centralidade %>% arrange(Nome)
+
 ```
 
 ```{r}
@@ -1130,7 +1113,6 @@ PET1_centralidade$Intermediação <- betweenness(PET1, directed = TRUE)
 # Nível de autoridade
 PET1_centralidade$Autoridade <- authority_score(PET1)$vector
 
-#AP_2022_centralidade <- AP_2022_centralidade %>% arrange(Nome)
 
 #PET1_dis <- degree.distribution(PET1, cumulative = FALSE)
 
@@ -1267,7 +1249,6 @@ PET3_centralidade$Intermediação <- betweenness(PET3, directed = TRUE)
 # Nível de autoridade
 PET3_centralidade$Autoridade <- authority_score(PET3)$vector
 
-#AP_2022_centralidade <- AP_2022_centralidade %>% arrange(Nome)
 
 #PET1_dis <- degree.distribution(PET1, cumulative = FALSE)
 
@@ -1310,7 +1291,6 @@ PET3_d_centralidade$Proximidade_D <- evcent(PET3_d)$vector
 PET3_d_centralidade$Intermediação_D <- betweenness(PET3_d, directed = TRUE) 
 PET3_d_centralidade$Autoridade_D <- authority_score(PET3_d)$vector
 
-# AP_2022_d_centralidade <- AP_2022_d_centralidade %>% arrange(Nome)
 
 
 ###### PROFISSIONAL PSICOLOGIA
@@ -1405,8 +1385,12 @@ df_principal_join$nota <- ifelse(df_principal_join$nota == "9.50 - 10",19,
                           ifelse(df_principal_join$nota == "3 - 3.49",6,
                           ifelse(df_principal_join$nota == "0 - 1",1, df_principal_join$nota)))))))))))
 df_principal_join$nota <- as.numeric(df_principal_join$nota)
-
 ```
+
+```{r}
+df_principal_join %>% select(Nome, nota) %>%
+```
+
 
 ```{r}
 names(df_geral)

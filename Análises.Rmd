@@ -8,6 +8,8 @@ output: html_document
 library(arsenal)
 library(olsrr)
 library(ggpubr)
+library(pander)
+
 ```
 
 
@@ -19,24 +21,6 @@ library(ggpubr)
 - Normalidade
 - Homocesdasticidade
 - Relação linear
-
-```{r}
-shapiro.test(df_principal_join$CF1)
-shapiro.test(df_principal_join$CF2)
-shapiro.test(df_principal_join$CF3)
-shapiro.test(df_principal_join$CF4)
-shapiro.test(df_principal_join$CF5)
-shapiro.test(df_principal_join$HF1)
-shapiro.test(df_principal_join$HF2)
-shapiro.test(df_principal_join$HF3)
-shapiro.test(df_principal_join$HF4)
-shapiro.test(df_principal_join$HF5)
-shapiro.test(df_principal_join$MF1)
-shapiro.test(df_principal_join$MF2)
-shapiro.test(df_principal_join$MF3)
-shapiro.test(df_principal_join$nota)
-```
-
 
 
 ```{r}
@@ -51,8 +35,13 @@ df_principal_join %>% select(6,11,16) %>% corr.test()
 
 ```{r}
 profm <- corr.test(df_principal_join[20:36], df_principal_join[3:6])
-profm$stars
+profm$stars 
 ```
+
+```{r}
+cor.test(df_principal_join[20:36], df_principal_join[3:6]) %>% pander()
+```
+
 
 ```{r}
 profm2 <- corr.test(df_principal_join[20:36], df_principal_join[7:11])
@@ -115,7 +104,7 @@ ols_coll_diag(mod1)
 
 ```{r}
 modP1 <- lm(Autoridade_P ~ CF3 + CF4 + HF2 + HF3 + HF5, df_principal_join)
-summary(modP1)
+ols_regress(modP1)
 ```
 
 ```{r}
