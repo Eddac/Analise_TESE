@@ -30,7 +30,8 @@ df_principal_join %>% select(12:16) %>% corr.test()
 ```
 
 ```{r}
-df_principal_join %>% select(6,11,16) %>% corr.test()
+profm6 <- df_principal_join %>% select(6,11,16) %>% corr.test()
+profm6$stars 
 ```
 
 ```{r}
@@ -56,6 +57,16 @@ profm3$stars
 ```{r}
 profm3 <- corr.test(df_principal_join[20:36], df_principal_join[12:16])
 profm3$stars
+```
+
+```{r}
+profm4 <- corr.test(df_principal_join[20:36], df_principal_join[20:36])
+profm4$stars
+```
+
+```{r}
+profm5 <- corr.test(df_principal_join[20:36], df_principal_join[18])
+profm5$stars
 ```
 
 ```{r}
@@ -108,9 +119,121 @@ ols_regress(modP1)
 ```
 
 ```{r}
-par(mfrow=c(1,2))
-plot(mod2, which = c(1,3))
+modD <- lm(Grau_Entrada_D ~ HF2 + HF3 + HF4 + MF2 + MF3 + MF_GERAL, df_principal_join)
+ols_regress(modD)
 ```
+
+```{r}
+modD2 <- lm(Grau_Entrada_D ~ MF2 + MF3 + MF_GERAL, df_principal_join)
+ols_regress(modD2)
+```
+
+```{r}
+modD3 <- lm(Grau_Entrada_D ~ HF2 + HF3 + HF4, df_principal_join)
+ols_regress(modD3)
+```
+
+```{r}
+mod_nota <- lm(nota ~ Autoridade_P + Autoridade + Autoridade_D + rvtotal, df_principal_join)
+ols_regress(mod_nota)
+```
+
+```{r}
+mod_nota2 <- lm(nota ~ Grau_Entrada_P + rvtotal, df_principal_join)
+ols_regress(mod_nota2)
+```
+
+```{r}
+Psi_mau_corte <- df_principal_join %>% slice(142:174)
+```
+
+```{r}
+Psi_mau_corte[1][Psi_mau_corte[1] == 'MARIA EDUARDA DE ALMEIDA COSTA'] <- 'S1'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'MARIA LUISA GERONCIO DO NASCIME'] <- 'S2'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'DANIELE CARDOSO REIS'] <- 'S3'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'GABRIELA VITORIA FARIAS WANDERLEY'] <- 'S4'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'LUCILAYNE ALBUQUERQUE DA COSTA'] <- 'S5'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'LARISSA DE CASTRO NERIS'] <- 'S6'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'ALEXANDRA VITORIA CARNEIRO CUNHA'] <- 'S7'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'JESSICA MAYRA UELLENDAHL RAMOS'] <- 'S8'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'VICTORIA HELLEN TELES PEREIRA LOPES'] <- 'S9'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'ANA BEATRIZ VENTURA ALVES DE LIMA'] <- 'S10'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'ALYSON LUIZ DA SILVA SANTOS'] <- 'S11'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'MARIANA NOBREGA QUEIROZ DE PAIVA'] <- 'S12'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'LAURA FRANCA FERREIRA BISPO'] <- 'S13'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'LETICIA MARQUES PEREIRA MIRANDA D'] <- 'S14'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'MARIA CAROLINA ALVES CALLOU'] <- 'S15'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'ADRIELLY PERRINI TEIXEIRA'] <- 'S16'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'JULIO HENRIQUE MAGALHAES LUCKWU'] <- 'S17'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'THAMIRES DAYANE DE SA PEREIRA'] <- 'S18'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'JULIA ROBERTA FERRAZ FURLANI'] <- 'S19'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'MARIA FERNANDA LEAL VALENCA'] <- 'S20'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'LIVIA MONTEIRO RODRIGUES LIRA'] <- 'S21'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'ANA CLAUDIA MARTINS DE ALMEIDA'] <- 'S22'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'LUDMILLA DE SA FALCAO LIRA'] <- 'S23'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'MARCOS GABRIEL ARAUJO E SILVA'] <- 'S24'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'CAIO FARAH DE LIMA'] <- 'S25'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'MARCOS VINICIUS SANTOS DE ALMEIDA'] <- 'S26'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'CARLOS ANDRE LEAL DE MORAES'] <- 'S27'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'LILIAN RAFAELI DUTRA SILVEIRA'] <- 'S28'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'ICARO ALBUQUERQUE DE SOUZA'] <- 'S29'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'ISAAC GENUARIO DA SILVA FILHO'] <- 'S30'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'BRUNO ANTONIO DA SILVA'] <- 'S31'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'JHENNYPHE SEABRA DE LYRA BARBOZA'] <- 'S32'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'MIRELA LIZANDRA GONCALVES FEITOZA'] <- 'S33'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'GABRIEL FILIPE ALVES DE SOUZA'] <- 'S34'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'PEROLA VITORIA SILVA DE SOUZA'] <- 'S35'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'BRUNO SOARES SIMOES FERREIRA'] <- 'S36'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'TAYANE MONIQUE DO NASCIMENTO'] <- 'S37'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'MIRIAM AMANDA PEREIRA DO NASCIMENTO'] <- 'S38'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'LUCAS GARCIA DOS SANTOS'] <- 'S39'
+Psi_mau_corte[1][Psi_mau_corte[1] == 'ITALO SOARES DA SILVA'] <- 'S40'
+```
+
+```{r}
+Psi_mau_corte$Grupo <- c(2,1,2,1,1,2,2,2,2,2,2,1,2,1,1,2,1,1,2,2,2,2,2,2,1,2,1,2,1,1,1,1,1)
+```
+
+```{r}
+t.test(HF1 ~ Grupo, data = Psi_mau_corte)
+t.test(HF2 ~ Grupo, data = Psi_mau_corte)
+t.test(HF3 ~ Grupo, data = Psi_mau_corte)
+t.test(HF4 ~ Grupo, data = Psi_mau_corte)
+t.test(HF5 ~ Grupo, data = Psi_mau_corte)
+t.test(CF1 ~ Grupo, data = Psi_mau_corte)
+t.test(CF2 ~ Grupo, data = Psi_mau_corte)
+t.test(CF3 ~ Grupo, data = Psi_mau_corte)
+t.test(CF4 ~ Grupo, data = Psi_mau_corte)
+t.test(CF5 ~ Grupo, data = Psi_mau_corte)
+t.test(MF1 ~ Grupo, data = Psi_mau_corte)
+t.test(MF2 ~ Grupo, data = Psi_mau_corte)
+t.test(MF3 ~ Grupo, data = Psi_mau_corte)
+t.test(C_GERAL ~ Grupo, data = Psi_mau_corte)
+t.test(MF_GERAL ~ Grupo, data = Psi_mau_corte)
+t.test(nota ~ Grupo, data = Psi_mau_corte)
+t.test(rvtotal ~ Grupo, data = Psi_mau_corte)
+```
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------
+
+# Magias do Professor
+
+```{r}
+write_csv(df_principal_join, "df_tese.csv")
+```
+
+
+
 
 
 

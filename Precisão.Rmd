@@ -23,6 +23,7 @@ library(ggplot2)
 df_geral %>% select(58:61, 64) %>% psych::omega(digits=3,poly=TRUE) #0.93
 df_geral %>% select(62,63,65:70) %>% omega(digits=3,poly=TRUE) #0.86
 df_geral %>% select(71:74) %>% omega(digits=3,poly=TRUE) #0.83
+df_geral %>% select(58:74) %>% omega(digits=3,poly=TRUE) #0.83
 ```
 
 - HSE
