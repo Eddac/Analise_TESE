@@ -76,6 +76,7 @@ names(df_principal_join)
 - Regressões
 
 ```{r}
+## Modelo de regressão 1 (TESE)
 mod1 <- lm(Autoridade ~ CF3 + HF3 + HF4 + HF5, df_principal_join)
 ols_regress(mod1)
 ```
@@ -114,11 +115,13 @@ ols_coll_diag(mod1)
 
 
 ```{r}
+## Modelo de regressão 2 (TESE)
 modP1 <- lm(Autoridade_P ~ CF3 + CF4 + HF2 + HF3 + HF5, df_principal_join)
 ols_regress(modP1)
 ```
 
 ```{r}
+## Modelo de regressão 3 (TESE)
 modD <- lm(Grau_Entrada_D ~ HF2 + HF3 + HF4 + MF2 + MF3 + MF_GERAL, df_principal_join)
 ols_regress(modD)
 ```
@@ -142,6 +145,13 @@ ols_regress(mod_nota)
 mod_nota2 <- lm(nota ~ Grau_Entrada_P + rvtotal, df_principal_join)
 ols_regress(mod_nota2)
 ```
+
+```{r} 
+## Modelo de regressão 4 (TESE)
+mod_nota3 <- lm(nota ~ Autoridade_P + rvtotal, df_principal_join)
+ols_regress(mod_nota3)
+```
+
 
 ```{r}
 Psi_mau_corte <- df_principal_join %>% slice(142:174)
