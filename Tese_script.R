@@ -1362,4 +1362,7 @@ range(SER_centralidade_geral$Proximidade)
 mod4 <- lmer(Autoridade ~ HF3 + (1|Curso), data = df_principal_join)
 mod5 <- lm(Autoridade ~ HF3, data = df_principal_join)
   
+table(df_geral$`Qual período está cursando?`)
+
+table(df_geral$`Desempenho no último semestre`)
 

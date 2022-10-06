@@ -9,7 +9,6 @@ library(arsenal)
 library(olsrr)
 library(ggpubr)
 library(pander)
-
 ```
 
 
@@ -94,9 +93,13 @@ ggplot(df_principal_join, aes(x = HF3, y = Autoridade)) +
                    label.x = 1, label.y = 0.9)
 ```
 
+- Teste de normalidade
 ```{r}
 ols_plot_resid_qq(mod1)
-ols_plot_resid_qq(mod2)
+```
+
+```{r}
+ols_plot_resid_qq(modP1)
 ```
 
 ```{r}
@@ -104,15 +107,80 @@ ols_test_normality(mod1)
 ```
 
 ```{r}
+ols_test_normality(modP1)
+```
+
+```{r}
+ols_plot_resid_qq(modD)
+```
+
+```{r}
+ols_test_normality(modD)
+```
+
+```{r}
+ols_plot_resid_qq(mod_nota3)
+```
+
+```{r}
+ols_test_normality(mod_nota3)
+```
+
+
+- Teste de homocesta
+```{r}
 ols_plot_resid_fit(mod1)
 ols_test_breusch_pagan(mod1)
 ```
 
 ```{r}
+ols_plot_resid_fit(modP1)
+ols_test_breusch_pagan(modP1)
+```
+
+```{r}
+ols_plot_resid_fit(modD)
+ols_test_breusch_pagan(modD)
+```
+
+```{r}
+ols_plot_resid_fit(mod_nota3)
+ols_test_breusch_pagan(mod_nota3)
+```
+
+- Ind resi
+```{r}
+car::durbinWatsonTest(mod1)
+```
+
+```{r}
+car::durbinWatsonTest(modP1)
+```
+
+```{r}
+car::durbinWatsonTest(modD)
+```
+
+```{r}
+car::durbinWatsonTest(mod_nota3)
+```
+
+- Multicolinearidade 
+```{r}
 ols_coll_diag(mod1)
 ```
 
+```{r}
+ols_coll_diag(modP1)
+```
 
+```{r}
+ols_coll_diag(modD)
+```
+
+```{r}
+ols_coll_diag(mod_nota3)
+```
 
 ```{r}
 ## Modelo de regressão 2 (TESE)
@@ -224,16 +292,6 @@ t.test(nota ~ Grupo, data = Psi_mau_corte)
 t.test(rvtotal ~ Grupo, data = Psi_mau_corte)
 ```
 
-
-
-
-
-
-
-
-
-
-
 ------------------------------------------------
 
 # Magias do Professor
@@ -242,10 +300,15 @@ t.test(rvtotal ~ Grupo, data = Psi_mau_corte)
 write_csv(df_principal_join, "df_tese.csv")
 ```
 
+```{r}
+write_csv(df_universidade, "df_universidade.csv")
+```
 
 
+## Análise dos pressupostos
+```{r}
 
-
+```
 
 
 
