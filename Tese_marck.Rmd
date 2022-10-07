@@ -10,6 +10,12 @@ output:
       smooth_control: yes
   
 ---
+# DADOS TESE  
+  
+- Esse é o arquivo principal para carregamento e manipulação dos dados da tese. Porém, como forma de organização, outros arquivos foram construídos com finalidades distintas.  
+O arquivo Graficos.Rmd se encontra com os scripts relacionados aos plots apresentados na tese. Mais especificamente, os plots das redes de cada turma (amizade, profissional e distância).  
+Os plots das análises de redes psicométricas foram construídos no Jasp.  
+O arquivo Precisão.Rmd contém as análises de confiabilidade dos instrumentos.
 
 # Carregamento de pacotes
 ```{r, warning=FALSE, message=FALSE}
@@ -39,9 +45,9 @@ Dados_Petrolina_1 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_1.xlsx") #7
 Dados_Petrolina_3 <- readxl::read_xlsx("HSE_DOC_DEB_UNIVASF_3.xlsx") #8
 ```
   
-A participante Natalia respondeu o questionário 2 vezes e solicitou a retirada do primeiro momento de resposta.
+A participante A33 respondeu o questionário 2 vezes e solicitou a retirada do primeiro momento de resposta.
 ```{r}
-# retirada da linha 33 por ser repetida com a linha 35 (Natalia)
+# retirada da linha 33 por ser repetida com a linha 35 (A33)
 Dados_AP_ <- Dados_AP_ %>% slice(-33)
 ```
   
@@ -79,7 +85,7 @@ df_geral <- rbind(Dados_AP_, Dados_AP_2022, Dados_mau_,
                   Dados_Petrolina_3, Dados_Odo)
 ```
   
-Um banco de dados de Psicologia estava com a opção de respostas repetidas, por isso foi dito no momento da aplicação as opções corretas e sua ordem de marcação. Em seguida, foi feita a transformação no banco de dados.
+Um banco de dados de Psicologia estava com a opção de respostas repetidas, por isso, no momento da aplicação, as informações corretas foram passadas com o respectivo posicionamento das respostas, assim os estudantes escolhiam a opção de acordo com essas informações.Em seguida, foi feita a transformação no banco de dados.
 ```{r}
 # Correção de respostas dos sujeitos de psicologia RV_03, pois houve uma duplicação.
 recode(df_geral[, 48]) <- c("Primavera"~"Médico", "Férias"~"Hospital", "Sol"~"Doença", "Verão"~"Dor", "Ventilador"~"Coração")
@@ -246,58 +252,6 @@ df_geral$MF3 <- df_geral %>% select(71:74) %>% rowMeans() # Meta evitação
 df_geral$MF_GERAL <- df_geral %>% select(158:160) %>% rowMeans()
 ```
 
-
-
-# Análise de confiabilidade
-
-```{r}
-# names(df_geral) # Itens do 58:74
-```
-
-```{r}
-df_geral %>% select(58:74) %>% KMO()
-df_geral %>% select(58:74) %>% bartlett.test()
-```
-
-```{r}
-poly_meta <- df_geral %>% select(58:74) %>% polychoric(.)   # matriz de correlações policóricas para análise paralela.
-rho_meta <- poly_meta$rho # guardando apenas o Rho de Spearman da matriz de correlações policóricas
-scree_meta <-scree(rho_meta)
-
-pa_meta <- fa.parallel(rho_meta, n.obs=209, fa="fa") # análise paralela sobre a matriz de correlações policóricas
-pa_meta$fa.values #mostra os eigenvalues com os dados experimentais
-pa_meta$fa.sim #mostra os eigenvalues com os dados simulados
-```
-
-```{r}
-# Fatores
-
-meta_efa <- df_geral %>% select(58:74) %>% fa(nfactors = '3', cor='poly', 
-            fm='wls', rotate = 'geominQ')
-
-meta_efa$e.values
-meta_efa$loadings %>% view()
-meta_efa$Structure
-```
-
-
-
-```{r}
-# Fatores
-
-meta_efa2 <- df_geral %>% select(58:74) %>% fa(nfactors = '4', cor='poly', 
-            fm='wls', rotate = 'geominQ')
-
-meta_efa2$e.values
-meta_efa2$loadings %>% view()
-```
-
-```{r}
-df_geral %>% select(58:61, 64) %>% psych::omega(digits=3,poly=TRUE) #0.93
-df_geral %>% select(62,63,65:70) %>% omega(digits=3,poly=TRUE) #0.86
-df_geral %>% select(71:74) %>% omega(digits=3,poly=TRUE) #0.83
-```
-
 No processo das análises, pode ser necessário observar se a turma que o sujeito se encontra exerce efeito sobre seu resultado. Por isso, as turmas foram enumeradas. 
 ```{r}
 # Numerando o banco de dados
@@ -341,45 +295,6 @@ rm(ars_ap_1, ars_ap_2, ars_ap_3, ars_ap_4, ars_ap_5)
 # retirada das linhas com Na's
 ars_ap_all <- na.omit(ars_ap_all)
 
-ars_ap_all[1:2][ars_ap_all[1:2] == 'ORIONN FERREIRA ALBUQUERQUE'] <- 'S1'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'ARTHUR DA SILVA RODRIGUES DE FREITAS'] <- 'S2'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'PEDRO JORGE FREIRE BEZERRA'] <- 'S3'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'LARA DE MENEZES ALBERT'] <- 'S4'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'JULIA MARIA LEANDRO TELES'] <- 'S5'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'LAILA BEATRIZ FERREIRA CASADO'] <- 'S6'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'MARIA CLARA MACHADO ALONSO DE ARAUJO'] <- 'S7'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'SAMARA ANDREA MACIEL DA SILVA'] <- 'S8'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'SAULO GONCALO BRASILEIRO'] <- 'S9'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'VANESSA NEVES DA SILVA'] <- 'S10'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'THIAGO ATAIDE SIQUEIRA'] <- 'S11'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'BRUNA NUNES E SILVA'] <- 'S12'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'OSCAR RODRIGUES BARBOSA BISNETO'] <- 'S13'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'SAMILLY VITORIA FERREIRA DA SILVA'] <- 'S14'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'LINDOLFO JOSE COSTA DE HOLANDA CAVALCANTI'] <- 'S15'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'VITORIA ISABEL SANTOS DO NASCIMENTO'] <- 'S16'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'GIOVANNA MARIA SANTOS DE ARAUJO'] <- 'S17'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'CARLOS HENRIQUE BEZERRA MOURA'] <- 'S18'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'TAINA NASCIMENTO DE PAIVA'] <- 'S19'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'RAFAELA NASCIMENTO DOS SANTOS'] <- 'S20'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'ANA BEATRIZ DA SILVA SOUZA'] <- 'S21'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'ANDREY LUCAS RODRIGUES DA SILVA'] <- 'S22'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'ALAN MARQUES FEITOSA'] <- 'S23'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'LETICIA VICTORIA GUEDES HOLANDA'] <- 'S24'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'MILENA GODOY MARGOLIS'] <- 'S25'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'JULIA CRISTINA FERRAZ NOVAES DE SA'] <- 'S26'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'GERALDO JOSE DE ALMEIDA NETO'] <- 'S27'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'ANA CLARA ROMANO DE ARRUDA'] <- 'S28'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'MATHEUS HENRIQUE SILVA'] <- 'S29'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'RAFAELA MARIA DE MELO ARAUJO'] <- 'S30'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'LARISSA BEATRIZ DOS SANTOS DA SILVA'] <- 'S31'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'MATHEUS ALEXSANDRO MONTEIRO ARCANJO'] <- 'S32'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'NATALIA FREITAS DE LIMA'] <- 'S33'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'JOSE FRANCISCO TEIXEIRA ARAUJO NETO'] <- 'S34'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'MIRELLA VITORIA VILA NOVA DE OLIVEIRA'] <- 'S35'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'ANA LETICIA SANTOS VALENTE'] <- 'S36'
-ars_ap_all[1:2][ars_ap_all[1:2] == 'JULIA MARIA FERREIRA LUCAS'] <- 'S37'
-
-
 
 # Elaboração do grafo da turma de avaliação psicológica
 AP <- graph_from_data_frame(ars_ap_all, directed = TRUE, vertices = NULL)
@@ -421,46 +336,6 @@ rm(ars_ap_d_1,
   
 ars_ap_d_all <- na.omit(ars_ap_d_all)
 
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'ORIONN FERREIRA ALBUQUERQUE'] <- 'S1'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'ARTHUR DA SILVA RODRIGUES DE FREITAS'] <- 'S2'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'PEDRO JORGE FREIRE BEZERRA'] <- 'S3'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'LARA DE MENEZES ALBERT'] <- 'S4'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'JULIA MARIA LEANDRO TELES'] <- 'S5'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'LAILA BEATRIZ FERREIRA CASADO'] <- 'S6'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'MARIA CLARA MACHADO ALONSO DE ARAUJO'] <- 'S7'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'SAMARA ANDREA MACIEL DA SILVA'] <- 'S8'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'SAULO GONCALO BRASILEIRO'] <- 'S9'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'VANESSA NEVES DA SILVA'] <- 'S10'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'THIAGO ATAIDE SIQUEIRA'] <- 'S11'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'BRUNA NUNES E SILVA'] <- 'S12'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'OSCAR RODRIGUES BARBOSA BISNETO'] <- 'S13'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'SAMILLY VITORIA FERREIRA DA SILVA'] <- 'S14'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'LINDOLFO JOSE COSTA DE HOLANDA CAVALCANTI'] <- 'S15'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'VITORIA ISABEL SANTOS DO NASCIMENTO'] <- 'S16'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'GIOVANNA MARIA SANTOS DE ARAUJO'] <- 'S17'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'CARLOS HENRIQUE BEZERRA MOURA'] <- 'S18'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'TAINA NASCIMENTO DE PAIVA'] <- 'S19'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'RAFAELA NASCIMENTO DOS SANTOS'] <- 'S20'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'ANA BEATRIZ DA SILVA SOUZA'] <- 'S21'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'ANDREY LUCAS RODRIGUES DA SILVA'] <- 'S22'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'ALAN MARQUES FEITOSA'] <- 'S23'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'LETICIA VICTORIA GUEDES HOLANDA'] <- 'S24'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'MILENA GODOY MARGOLIS'] <- 'S25'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'JULIA CRISTINA FERRAZ NOVAES DE SA'] <- 'S26'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'GERALDO JOSE DE ALMEIDA NETO'] <- 'S27'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'ANA CLARA ROMANO DE ARRUDA'] <- 'S28'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'MATHEUS HENRIQUE SILVA'] <- 'S29'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'RAFAELA MARIA DE MELO ARAUJO'] <- 'S30'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'LARISSA BEATRIZ DOS SANTOS DA SILVA'] <- 'S31'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'MATHEUS ALEXSANDRO MONTEIRO ARCANJO'] <- 'S32'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'NATALIA FREITAS DE LIMA'] <- 'S33'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'JOSE FRANCISCO TEIXEIRA ARAUJO NETO'] <- 'S34'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'MIRELLA VITORIA VILA NOVA DE OLIVEIRA'] <- 'S35'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'ANA LETICIA SANTOS VALENTE'] <- 'S36'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'JULIA MARIA FERREIRA LUCAS'] <- 'S37'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'WESLEY EDUARDO SOBRAL DA SILVA'] <- 'S38'
-ars_ap_d_all[1:2][ars_ap_d_all[1:2] == 'MARCELLA MATOS SOUZA DE JESUS'] <- 'S39'
-
 AP_d <- graph_from_data_frame(ars_ap_d_all, directed = TRUE, vertices = NULL)
 
 
@@ -499,45 +374,6 @@ rm(ars_ap_p_1,
 
 ars_ap_p_all <- na.omit(ars_ap_p_all)
 
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'ORIONN FERREIRA ALBUQUERQUE'] <- 'S1'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'ARTHUR DA SILVA RODRIGUES DE FREITAS'] <- 'S2'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'PEDRO JORGE FREIRE BEZERRA'] <- 'S3'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'LARA DE MENEZES ALBERT'] <- 'S4'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'JULIA MARIA LEANDRO TELES'] <- 'S5'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'LAILA BEATRIZ FERREIRA CASADO'] <- 'S6'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'MARIA CLARA MACHADO ALONSO DE ARAUJO'] <- 'S7'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'SAMARA ANDREA MACIEL DA SILVA'] <- 'S8'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'SAULO GONCALO BRASILEIRO'] <- 'S9'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'VANESSA NEVES DA SILVA'] <- 'S10'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'THIAGO ATAIDE SIQUEIRA'] <- 'S11'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'BRUNA NUNES E SILVA'] <- 'S12'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'OSCAR RODRIGUES BARBOSA BISNETO'] <- 'S13'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'SAMILLY VITORIA FERREIRA DA SILVA'] <- 'S14'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'LINDOLFO JOSE COSTA DE HOLANDA CAVALCANTI'] <- 'S15'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'VITORIA ISABEL SANTOS DO NASCIMENTO'] <- 'S16'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'GIOVANNA MARIA SANTOS DE ARAUJO'] <- 'S17'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'CARLOS HENRIQUE BEZERRA MOURA'] <- 'S18'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'TAINA NASCIMENTO DE PAIVA'] <- 'S19'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'RAFAELA NASCIMENTO DOS SANTOS'] <- 'S20'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'ANA BEATRIZ DA SILVA SOUZA'] <- 'S21'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'ANDREY LUCAS RODRIGUES DA SILVA'] <- 'S22'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'ALAN MARQUES FEITOSA'] <- 'S23'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'LETICIA VICTORIA GUEDES HOLANDA'] <- 'S24'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'MILENA GODOY MARGOLIS'] <- 'S25'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'JULIA CRISTINA FERRAZ NOVAES DE SA'] <- 'S26'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'GERALDO JOSE DE ALMEIDA NETO'] <- 'S27'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'ANA CLARA ROMANO DE ARRUDA'] <- 'S28'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'MATHEUS HENRIQUE SILVA'] <- 'S29'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'RAFAELA MARIA DE MELO ARAUJO'] <- 'S30'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'LARISSA BEATRIZ DOS SANTOS DA SILVA'] <- 'S31'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'MATHEUS ALEXSANDRO MONTEIRO ARCANJO'] <- 'S32'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'NATALIA FREITAS DE LIMA'] <- 'S33'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'JOSE FRANCISCO TEIXEIRA ARAUJO NETO'] <- 'S34'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'MIRELLA VITORIA VILA NOVA DE OLIVEIRA'] <- 'S35'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'ANA LETICIA SANTOS VALENTE'] <- 'S36'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'JULIA MARIA FERREIRA LUCAS'] <- 'S37'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'WESLEY EDUARDO SOBRAL DA SILVA'] <- 'S38'
-ars_ap_p_all[1:2][ars_ap_p_all[1:2] == 'MARCELLA MATOS SOUZA DE JESUS'] <- 'S39'
 
 AP_p <- graph_from_data_frame(ars_ap_p_all, directed = TRUE, vertices = NULL)
 
@@ -587,47 +423,6 @@ rm(ars_ap_mau_1, ars_ap_mau_2, ars_ap_mau_3, ars_ap_mau_4, ars_ap_mau_5)
 # retirada das linhas com Na's
 ars_ap_mau_all <- na.omit(ars_ap_mau_all)
 
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'MARIA EDUARDA DE ALMEIDA COSTA'] <- 'S1'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'MARIA LUISA GERONCIO DO NASCIME'] <- 'S2'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'DANIELE CARDOSO REIS'] <- 'S3'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'GABRIELA VITORIA FARIAS WANDERLEY'] <- 'S4'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'LUCILAYNE ALBUQUERQUE DA COSTA'] <- 'S5'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'LARISSA DE CASTRO NERIS'] <- 'S6'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'ALEXANDRA VITORIA CARNEIRO CUNHA'] <- 'S7'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'JESSICA MAYRA UELLENDAHL RAMOS'] <- 'S8'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'VICTORIA HELLEN TELES PEREIRA LOPES'] <- 'S9'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'ANA BEATRIZ VENTURA ALVES DE LIMA'] <- 'S10'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'ALYSON LUIZ DA SILVA SANTOS'] <- 'S11'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'MARIANA NOBREGA QUEIROZ DE PAIVA'] <- 'S12'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'LAURA FRANCA FERREIRA BISPO'] <- 'S13'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'LETICIA MARQUES PEREIRA MIRANDA D'] <- 'S14'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'MARIA CAROLINA ALVES CALLOU'] <- 'S15'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'ADRIELLY PERRINI TEIXEIRA'] <- 'S16'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'JULIO HENRIQUE MAGALHAES LUCKWU'] <- 'S17'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'THAMIRES DAYANE DE SA PEREIRA'] <- 'S18'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'JULIA ROBERTA FERRAZ FURLANI'] <- 'S19'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'MARIA FERNANDA LEAL VALENCA'] <- 'S20'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'LIVIA MONTEIRO RODRIGUES LIRA'] <- 'S21'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'ANA CLAUDIA MARTINS DE ALMEIDA'] <- 'S22'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'LUDMILLA DE SA FALCAO LIRA'] <- 'S23'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'MARCOS GABRIEL ARAUJO E SILVA'] <- 'S24'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'CAIO FARAH DE LIMA'] <- 'S25'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'MARCOS VINICIUS SANTOS DE ALMEIDA'] <- 'S26'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'CARLOS ANDRE LEAL DE MORAES'] <- 'S27'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'LILIAN RAFAELI DUTRA SILVEIRA'] <- 'S28'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'ICARO ALBUQUERQUE DE SOUZA'] <- 'S29'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'ISAAC GENUARIO DA SILVA FILHO'] <- 'S30'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'BRUNO ANTONIO DA SILVA'] <- 'S31'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'JHENNYPHE SEABRA DE LYRA BARBOZA'] <- 'S32'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'MIRELA LIZANDRA GONCALVES FEITOZA'] <- 'S33'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'GABRIEL FILIPE ALVES DE SOUZA'] <- 'S34'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'PEROLA VITORIA SILVA DE SOUZA'] <- 'S35'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'BRUNO SOARES SIMOES FERREIRA'] <- 'S36'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'TAYANE MONIQUE DO NASCIMENTO'] <- 'S37'
-ars_ap_mau_all[1:2][ars_ap_mau_all[1:2] == 'MIRIAM AMANDA PEREIRA DO NASCIMENTO'] <- 'S38'
-
-
-
 
 # Elaboração do grafo da turma de avaliação psicológica
 AP_mau <- graph_from_data_frame(ars_ap_mau_all, directed = TRUE, vertices = NULL)
@@ -672,47 +467,6 @@ rm(ars_ap_mau_d_1,
 
 ars_ap_mau_d_all <- na.omit(ars_ap_mau_d_all)
 
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'MARIA EDUARDA DE ALMEIDA COSTA'] <- 'S1'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'MARIA LUISA GERONCIO DO NASCIME'] <- 'S2'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'DANIELE CARDOSO REIS'] <- 'S3'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'GABRIELA VITORIA FARIAS WANDERLEY'] <- 'S4'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'LUCILAYNE ALBUQUERQUE DA COSTA'] <- 'S5'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'LARISSA DE CASTRO NERIS'] <- 'S6'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'ALEXANDRA VITORIA CARNEIRO CUNHA'] <- 'S7'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'JESSICA MAYRA UELLENDAHL RAMOS'] <- 'S8'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'VICTORIA HELLEN TELES PEREIRA LOPES'] <- 'S9'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'ANA BEATRIZ VENTURA ALVES DE LIMA'] <- 'S10'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'ALYSON LUIZ DA SILVA SANTOS'] <- 'S11'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'MARIANA NOBREGA QUEIROZ DE PAIVA'] <- 'S12'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'LAURA FRANCA FERREIRA BISPO'] <- 'S13'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'LETICIA MARQUES PEREIRA MIRANDA D'] <- 'S14'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'MARIA CAROLINA ALVES CALLOU'] <- 'S15'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'ADRIELLY PERRINI TEIXEIRA'] <- 'S16'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'JULIO HENRIQUE MAGALHAES LUCKWU'] <- 'S17'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'THAMIRES DAYANE DE SA PEREIRA'] <- 'S18'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'JULIA ROBERTA FERRAZ FURLANI'] <- 'S19'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'MARIA FERNANDA LEAL VALENCA'] <- 'S20'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'LIVIA MONTEIRO RODRIGUES LIRA'] <- 'S21'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'ANA CLAUDIA MARTINS DE ALMEIDA'] <- 'S22'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'LUDMILLA DE SA FALCAO LIRA'] <- 'S23'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'MARCOS GABRIEL ARAUJO E SILVA'] <- 'S24'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'CAIO FARAH DE LIMA'] <- 'S25'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'MARCOS VINICIUS SANTOS DE ALMEIDA'] <- 'S26'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'CARLOS ANDRE LEAL DE MORAES'] <- 'S27'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'LILIAN RAFAELI DUTRA SILVEIRA'] <- 'S28'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'ICARO ALBUQUERQUE DE SOUZA'] <- 'S29'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'ISAAC GENUARIO DA SILVA FILHO'] <- 'S30'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'BRUNO ANTONIO DA SILVA'] <- 'S31'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'JHENNYPHE SEABRA DE LYRA BARBOZA'] <- 'S32'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'MIRELA LIZANDRA GONCALVES FEITOZA'] <- 'S33'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'GABRIEL FILIPE ALVES DE SOUZA'] <- 'S34'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'PEROLA VITORIA SILVA DE SOUZA'] <- 'S35'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'BRUNO SOARES SIMOES FERREIRA'] <- 'S36'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'TAYANE MONIQUE DO NASCIMENTO'] <- 'S37'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'MIRIAM AMANDA PEREIRA DO NASCIMENTO'] <- 'S38'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'LUCAS GARCIA DOS SANTOS'] <- 'S39'
-ars_ap_mau_d_all[1:2][ars_ap_mau_d_all[1:2] == 'ITALO SOARES DA SILVA'] <- 'S40'
-
 
 AP_mau_d <- graph_from_data_frame(ars_ap_mau_d_all, directed = TRUE, vertices = NULL)
 
@@ -752,47 +506,6 @@ rm(ars_ap_mau_p_1,
    ars_ap_mau_p_5)
 
 ars_ap_mau_p_all <- na.omit(ars_ap_mau_p_all)
-
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'MARIA EDUARDA DE ALMEIDA COSTA'] <- 'S1'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'MARIA LUISA GERONCIO DO NASCIME'] <- 'S2'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'DANIELE CARDOSO REIS'] <- 'S3'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'GABRIELA VITORIA FARIAS WANDERLEY'] <- 'S4'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'LUCILAYNE ALBUQUERQUE DA COSTA'] <- 'S5'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'LARISSA DE CASTRO NERIS'] <- 'S6'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'ALEXANDRA VITORIA CARNEIRO CUNHA'] <- 'S7'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'JESSICA MAYRA UELLENDAHL RAMOS'] <- 'S8'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'VICTORIA HELLEN TELES PEREIRA LOPES'] <- 'S9'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'ANA BEATRIZ VENTURA ALVES DE LIMA'] <- 'S10'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'ALYSON LUIZ DA SILVA SANTOS'] <- 'S11'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'MARIANA NOBREGA QUEIROZ DE PAIVA'] <- 'S12'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'LAURA FRANCA FERREIRA BISPO'] <- 'S13'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'LETICIA MARQUES PEREIRA MIRANDA D'] <- 'S14'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'MARIA CAROLINA ALVES CALLOU'] <- 'S15'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'ADRIELLY PERRINI TEIXEIRA'] <- 'S16'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'JULIO HENRIQUE MAGALHAES LUCKWU'] <- 'S17'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'THAMIRES DAYANE DE SA PEREIRA'] <- 'S18'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'JULIA ROBERTA FERRAZ FURLANI'] <- 'S19'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'MARIA FERNANDA LEAL VALENCA'] <- 'S20'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'LIVIA MONTEIRO RODRIGUES LIRA'] <- 'S21'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'ANA CLAUDIA MARTINS DE ALMEIDA'] <- 'S22'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'LUDMILLA DE SA FALCAO LIRA'] <- 'S23'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'MARCOS GABRIEL ARAUJO E SILVA'] <- 'S24'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'CAIO FARAH DE LIMA'] <- 'S25'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'MARCOS VINICIUS SANTOS DE ALMEIDA'] <- 'S26'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'CARLOS ANDRE LEAL DE MORAES'] <- 'S27'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'LILIAN RAFAELI DUTRA SILVEIRA'] <- 'S28'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'ICARO ALBUQUERQUE DE SOUZA'] <- 'S29'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'ISAAC GENUARIO DA SILVA FILHO'] <- 'S30'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'BRUNO ANTONIO DA SILVA'] <- 'S31'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'JHENNYPHE SEABRA DE LYRA BARBOZA'] <- 'S32'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'MIRELA LIZANDRA GONCALVES FEITOZA'] <- 'S33'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'GABRIEL FILIPE ALVES DE SOUZA'] <- 'S34'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'PEROLA VITORIA SILVA DE SOUZA'] <- 'S35'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'BRUNO SOARES SIMOES FERREIRA'] <- 'S36'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'TAYANE MONIQUE DO NASCIMENTO'] <- 'S37'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'MIRIAM AMANDA PEREIRA DO NASCIMENTO'] <- 'S38'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'LUCAS GARCIA DOS SANTOS'] <- 'S39'
-ars_ap_mau_p_all[1:2][ars_ap_mau_p_all[1:2] == 'ITALO SOARES DA SILVA'] <- 'S40'
 
 AP_mau_p <- graph_from_data_frame(ars_ap_mau_p_all, directed = TRUE, vertices = NULL)
 ```
@@ -848,54 +561,6 @@ df_ser_all <- rbind(df_ser_1, df_ser_2, df_ser_3, df_ser_4, df_ser_5)
 
 df_ser_all <- na.omit(df_ser_all)
 
-df_ser_all[1:2][df_ser_all[1:2] == 'ELISA CAROLINA GALINDO DE ALMEIDA PANTA'] <- 'S1'
-df_ser_all[1:2][df_ser_all[1:2] == 'SAFFIRA CANDICE DO NASCIMENTO LOU'] <- 'S2'
-df_ser_all[1:2][df_ser_all[1:2] == 'LUIZA FERREIRA DUARTE'] <- 'S3'
-df_ser_all[1:2][df_ser_all[1:2] == 'LUCAS FELIPE FERREIRA DA SILVA'] <- 'S4'
-df_ser_all[1:2][df_ser_all[1:2] == 'JESSICA CRISTINA DE OLIVEIRA BARBOSA'] <- 'S5'
-df_ser_all[1:2][df_ser_all[1:2] == 'MARIANA BRENDA DOS SANTOS SOARES'] <- 'S6'
-df_ser_all[1:2][df_ser_all[1:2] == 'LAURA MIRANDA DA SILVA CABRAL'] <- 'S7'
-df_ser_all[1:2][df_ser_all[1:2] == 'YASMIN LORENA GOMES DA SILVA'] <- 'S8'
-df_ser_all[1:2][df_ser_all[1:2] == 'ALINE MARIA VICENTE DA SILVA'] <- 'S9'
-df_ser_all[1:2][df_ser_all[1:2] == 'ADRIA NAYANNE DOS SANTOS RODRIGUES'] <- 'S10'
-df_ser_all[1:2][df_ser_all[1:2] == 'ANTONIO VINICIO CANDIDO FELIPE DO VALE'] <- 'S11'
-df_ser_all[1:2][df_ser_all[1:2] == 'NATASHA MIRLLES OLIVEIRA NASCIMENTO SOUZA'] <- 'S12'
-df_ser_all[1:2][df_ser_all[1:2] == 'GILVIA VITORIA LIMA SILVA'] <- 'S13'
-df_ser_all[1:2][df_ser_all[1:2] == 'MARIA EDUARDA SOUZA ALVES DE MOURA'] <- 'S14'
-df_ser_all[1:2][df_ser_all[1:2] == 'RAYANNE MONNESKA ARAUJO CALDEIRA FREIRE'] <- 'S15'
-df_ser_all[1:2][df_ser_all[1:2] == 'ALICE HELENA VICTOR AVELINO DA SILVA'] <- 'S16'
-df_ser_all[1:2][df_ser_all[1:2] == 'QUEZIA CASSIANO DE SOUZA SILVA'] <- 'S17'
-df_ser_all[1:2][df_ser_all[1:2] == 'JANDSON ROBERTO DE SOUZA FILHO'] <- 'S18'
-df_ser_all[1:2][df_ser_all[1:2] == 'FRANCYNI MARILIVIA DA SILVA XAVIER'] <- 'S19'
-df_ser_all[1:2][df_ser_all[1:2] == 'KAROLAYNE KEDMA TORRES DOS SANTOS'] <- 'S20'
-df_ser_all[1:2][df_ser_all[1:2] == 'MATHEUS AURELIO SOUZA DE SANTANA'] <- 'S21'
-df_ser_all[1:2][df_ser_all[1:2] == 'VICTORIA MARIA DOS SANTOS PESSOA'] <- 'S22'
-df_ser_all[1:2][df_ser_all[1:2] == 'FLAVIA LARYSSA DE SOUZA SILVA'] <- 'S23'
-df_ser_all[1:2][df_ser_all[1:2] == 'VITORIA VIRGINIA BATISTA DA SILVA'] <- 'S24'
-df_ser_all[1:2][df_ser_all[1:2] == 'LARISSA SOUZA DA HORA'] <- 'S25'
-df_ser_all[1:2][df_ser_all[1:2] == 'CLEYCIANE DA SILVA'] <- 'S26'
-df_ser_all[1:2][df_ser_all[1:2] == 'MARCELA MARIA DE ALBUQUERQUE CASTRO'] <- 'S27'
-df_ser_all[1:2][df_ser_all[1:2] == 'SUELAYNE SILVA DO NASCIMENTO'] <- 'S28'
-df_ser_all[1:2][df_ser_all[1:2] == 'LETICIA BATISTA MARINHO'] <- 'S29'
-df_ser_all[1:2][df_ser_all[1:2] == 'IRANEIDE ABREU DA SILVA MOTA'] <- 'S30'
-df_ser_all[1:2][df_ser_all[1:2] == 'WELLUSKA DE SOUZA ABREU'] <- 'S31'
-df_ser_all[1:2][df_ser_all[1:2] == 'JULIANNE PAULA DA SILVA NASCIMENTO'] <- 'S32'
-df_ser_all[1:2][df_ser_all[1:2] == 'ANA KALLYNNE LINS DE MELO BEZERRA'] <- 'S33'
-df_ser_all[1:2][df_ser_all[1:2] == 'ANA KARLA DE FREITAS PEDROSA'] <- 'S34'
-df_ser_all[1:2][df_ser_all[1:2] == 'GRAZIELLY HELLEN NASCIMENTO DA SILVA'] <- 'S35'
-df_ser_all[1:2][df_ser_all[1:2] == 'JULIANA RODRIGUES CARDOSO'] <- 'S36'
-df_ser_all[1:2][df_ser_all[1:2] == 'MARIA EDUARDA GALVAO DE OLIVEIRA'] <- 'S37'
-df_ser_all[1:2][df_ser_all[1:2] == 'LEILA DAYANE GOMES DA SILVA'] <- 'S38'
-df_ser_all[1:2][df_ser_all[1:2] == 'DANILO ESTEVAO BARROS BATISTA'] <- 'S39'
-df_ser_all[1:2][df_ser_all[1:2] == 'BRUNA KEVYLLY PEREIRA DA SILVA'] <- 'S40'
-df_ser_all[1:2][df_ser_all[1:2] == 'RAFAELA MARIA DA SILVA'] <- 'S41'
-df_ser_all[1:2][df_ser_all[1:2] == 'BEATRIZ KEROLLY MARTINS ARAUJO'] <- 'S42'
-df_ser_all[1:2][df_ser_all[1:2] == 'VICTOR COUTINHO LEITAO'] <- 'S43'
-df_ser_all[1:2][df_ser_all[1:2] == 'SULAMITA GLEICE DE SOUZA'] <- 'S44'
-df_ser_all[1:2][df_ser_all[1:2] == 'ISABELA LAUREANO DE SOUZA SOARES'] <- 'S45'
-df_ser_all[1:2][df_ser_all[1:2] == 'EMANUELLE VIRGINIA DOS SANTOS COSTA'] <- 'S46'
-df_ser_all[1:2][df_ser_all[1:2] == 'JEANNE OLIVEIRA TEOFILO DO REGO SANTOS'] <- 'S47'
-
 
 rm(df_ser_1, df_ser_2, df_ser_3, df_ser_4, df_ser_5)
 
@@ -928,56 +593,6 @@ df_d_ser_all <- rbind(df_d_ser_1, df_d_ser_2, df_d_ser_3, df_d_ser_4, df_d_ser_5
 rm(df_d_ser_1, df_d_ser_2, df_d_ser_3, df_d_ser_4, df_d_ser_5)
 
 df_d_ser_all <- na.omit(df_d_ser_all)
-
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'ELISA CAROLINA GALINDO DE ALMEIDA PANTA'] <- 'S1'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'SAFFIRA CANDICE DO NASCIMENTO LOU'] <- 'S2'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'LUIZA FERREIRA DUARTE'] <- 'S3'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'LUCAS FELIPE FERREIRA DA SILVA'] <- 'S4'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'JESSICA CRISTINA DE OLIVEIRA BARBOSA'] <- 'S5'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'MARIANA BRENDA DOS SANTOS SOARES'] <- 'S6'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'LAURA MIRANDA DA SILVA CABRAL'] <- 'S7'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'YASMIN LORENA GOMES DA SILVA'] <- 'S8'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'ALINE MARIA VICENTE DA SILVA'] <- 'S9'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'ADRIA NAYANNE DOS SANTOS RODRIGUES'] <- 'S10'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'ANTONIO VINICIO CANDIDO FELIPE DO VALE'] <- 'S11'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'NATASHA MIRLLES OLIVEIRA NASCIMENTO SOUZA'] <- 'S12'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'GILVIA VITORIA LIMA SILVA'] <- 'S13'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'MARIA EDUARDA SOUZA ALVES DE MOURA'] <- 'S14'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'RAYANNE MONNESKA ARAUJO CALDEIRA FREIRE'] <- 'S15'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'ALICE HELENA VICTOR AVELINO DA SILVA'] <- 'S16'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'QUEZIA CASSIANO DE SOUZA SILVA'] <- 'S17'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'JANDSON ROBERTO DE SOUZA FILHO'] <- 'S18'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'FRANCYNI MARILIVIA DA SILVA XAVIER'] <- 'S19'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'KAROLAYNE KEDMA TORRES DOS SANTOS'] <- 'S20'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'MATHEUS AURELIO SOUZA DE SANTANA'] <- 'S21'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'VICTORIA MARIA DOS SANTOS PESSOA'] <- 'S22'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'FLAVIA LARYSSA DE SOUZA SILVA'] <- 'S23'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'VITORIA VIRGINIA BATISTA DA SILVA'] <- 'S24'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'LARISSA SOUZA DA HORA'] <- 'S25'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'CLEYCIANE DA SILVA'] <- 'S26'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'MARCELA MARIA DE ALBUQUERQUE CASTRO'] <- 'S27'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'SUELAYNE SILVA DO NASCIMENTO'] <- 'S28'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'LETICIA BATISTA MARINHO'] <- 'S29'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'IRANEIDE ABREU DA SILVA MOTA'] <- 'S30'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'WELLUSKA DE SOUZA ABREU'] <- 'S31'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'JULIANNE PAULA DA SILVA NASCIMENTO'] <- 'S32'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'ANA KALLYNNE LINS DE MELO BEZERRA'] <- 'S33'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'ANA KARLA DE FREITAS PEDROSA'] <- 'S34'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'GRAZIELLY HELLEN NASCIMENTO DA SILVA'] <- 'S35'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'JULIANA RODRIGUES CARDOSO'] <- 'S36'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'MARIA EDUARDA GALVAO DE OLIVEIRA'] <- 'S37'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'LEILA DAYANE GOMES DA SILVA'] <- 'S38'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'DANILO ESTEVAO BARROS BATISTA'] <- 'S39'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'BRUNA KEVYLLY PEREIRA DA SILVA'] <- 'S40'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'RAFAELA MARIA DA SILVA'] <- 'S41'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'BEATRIZ KEROLLY MARTINS ARAUJO'] <- 'S42'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'VICTOR COUTINHO LEITAO'] <- 'S43'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'SULAMITA GLEICE DE SOUZA'] <- 'S44'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'ISABELA LAUREANO DE SOUZA SOARES'] <- 'S45'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'EMANUELLE VIRGINIA DOS SANTOS COSTA'] <- 'S46'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'JEANNE OLIVEIRA TEOFILO DO REGO SANTOS'] <- 'S47'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'JEAN DOS SANTOS BRASIL'] <- 'S48'
-df_d_ser_all[1:2][df_d_ser_all[1:2] == 'JESSICA CRISTINE MENEZES SILVA ALVES'] <- 'S49'
 
 SER_d <- graph_from_data_frame(df_d_ser_all, directed = TRUE, vertices = NULL)
 
@@ -1012,56 +627,6 @@ df_p_ser_all <- rbind(df_p_ser_1,df_p_ser_2,df_p_ser_3,df_p_ser_4,df_p_ser_5)
 rm(df_p_ser_1,df_p_ser_2,df_p_ser_3,df_p_ser_4,df_p_ser_5)
 
 df_p_ser_all <- na.omit(df_p_ser_all)
-
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'ELISA CAROLINA GALINDO DE ALMEIDA PANTA'] <- 'S1'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'SAFFIRA CANDICE DO NASCIMENTO LOU'] <- 'S2'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'LUIZA FERREIRA DUARTE'] <- 'S3'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'LUCAS FELIPE FERREIRA DA SILVA'] <- 'S4'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'JESSICA CRISTINA DE OLIVEIRA BARBOSA'] <- 'S5'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'MARIANA BRENDA DOS SANTOS SOARES'] <- 'S6'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'LAURA MIRANDA DA SILVA CABRAL'] <- 'S7'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'YASMIN LORENA GOMES DA SILVA'] <- 'S8'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'ALINE MARIA VICENTE DA SILVA'] <- 'S9'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'ADRIA NAYANNE DOS SANTOS RODRIGUES'] <- 'S10'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'ANTONIO VINICIO CANDIDO FELIPE DO VALE'] <- 'S11'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'NATASHA MIRLLES OLIVEIRA NASCIMENTO SOUZA'] <- 'S12'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'GILVIA VITORIA LIMA SILVA'] <- 'S13'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'MARIA EDUARDA SOUZA ALVES DE MOURA'] <- 'S14'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'RAYANNE MONNESKA ARAUJO CALDEIRA FREIRE'] <- 'S15'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'ALICE HELENA VICTOR AVELINO DA SILVA'] <- 'S16'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'QUEZIA CASSIANO DE SOUZA SILVA'] <- 'S17'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'JANDSON ROBERTO DE SOUZA FILHO'] <- 'S18'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'FRANCYNI MARILIVIA DA SILVA XAVIER'] <- 'S19'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'KAROLAYNE KEDMA TORRES DOS SANTOS'] <- 'S20'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'MATHEUS AURELIO SOUZA DE SANTANA'] <- 'S21'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'VICTORIA MARIA DOS SANTOS PESSOA'] <- 'S22'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'FLAVIA LARYSSA DE SOUZA SILVA'] <- 'S23'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'VITORIA VIRGINIA BATISTA DA SILVA'] <- 'S24'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'LARISSA SOUZA DA HORA'] <- 'S25'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'CLEYCIANE DA SILVA'] <- 'S26'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'MARCELA MARIA DE ALBUQUERQUE CASTRO'] <- 'S27'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'SUELAYNE SILVA DO NASCIMENTO'] <- 'S28'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'LETICIA BATISTA MARINHO'] <- 'S29'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'IRANEIDE ABREU DA SILVA MOTA'] <- 'S30'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'WELLUSKA DE SOUZA ABREU'] <- 'S31'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'JULIANNE PAULA DA SILVA NASCIMENTO'] <- 'S32'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'ANA KALLYNNE LINS DE MELO BEZERRA'] <- 'S33'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'ANA KARLA DE FREITAS PEDROSA'] <- 'S34'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'GRAZIELLY HELLEN NASCIMENTO DA SILVA'] <- 'S35'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'JULIANA RODRIGUES CARDOSO'] <- 'S36'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'MARIA EDUARDA GALVAO DE OLIVEIRA'] <- 'S37'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'LEILA DAYANE GOMES DA SILVA'] <- 'S38'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'DANILO ESTEVAO BARROS BATISTA'] <- 'S39'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'BRUNA KEVYLLY PEREIRA DA SILVA'] <- 'S40'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'RAFAELA MARIA DA SILVA'] <- 'S41'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'BEATRIZ KEROLLY MARTINS ARAUJO'] <- 'S42'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'VICTOR COUTINHO LEITAO'] <- 'S43'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'SULAMITA GLEICE DE SOUZA'] <- 'S44'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'ISABELA LAUREANO DE SOUZA SOARES'] <- 'S45'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'EMANUELLE VIRGINIA DOS SANTOS COSTA'] <- 'S46'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'JEANNE OLIVEIRA TEOFILO DO REGO SANTOS'] <- 'S47'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'JEAN DOS SANTOS BRASIL'] <- 'S48'
-df_p_ser_all[1:2][df_p_ser_all[1:2] == 'JESSICA CRISTINE MENEZES SILVA ALVES'] <- 'S49'
 
 SER_p <- graph_from_data_frame(df_p_ser_all, directed = TRUE, vertices = NULL)
 
@@ -1127,67 +692,6 @@ df_ser_2022_all <- rbind(df_ser_2022_1, df_ser_2022_2, df_ser_2022_3, df_ser_202
 
 df_ser_2022_all <- na.omit(df_ser_2022_all)
 
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'THAMIRES LARISSA SILVA DE MELO'] <- 'S1'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'KLEITON VIRGINIO ALVARO'] <- 'S2'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ANA LUIZA DE LIMA FRAGOSO'] <- 'S3'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'LUCAS ANTONIO DA SILVA'] <- 'S4'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA EDUARDA SOBRAL DE SANTANA'] <- 'S5'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA BRUNA MALTA DA SILVA'] <- 'S6'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA CECILIA SOARES DA SILVA'] <- 'S7'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA CLARA ANDRADE DE MELO'] <- 'S8'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ALICE SOARES DE AMORIM'] <- 'S9'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ELLEN MANUELLE DA SILVA'] <- 'S10'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ALINE MARQUES DA SILVA'] <- 'S11'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'VITORIA CAROLYNE PEREIRA DA SILVA'] <- 'S12'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'STEPHANIE DA SILVA SANTOS'] <- 'S13'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'YSILYS RUANA SANTOS JOSE'] <- 'S14'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA LUIZA SANTOS RODRIGUES DE LIMA'] <- 'S15'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA EDUARDA GUSMAO LAPENDA DE AMORIM'] <- 'S16'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'BRENDA CAILANE DE MOURA PASCHOAL'] <- 'S17'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA EDUARDA MENDES COSTA'] <- 'S18'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'STHEFANY EMILLE BARROS LIMA'] <- 'S19'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA MÔNICA EVANGELISTA'] <- 'S20'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ALEXIA DARLLA OLIVEIRA DINIZ'] <- 'S21'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ALICE VICTORIA SILVA DOS SANTOS'] <- 'S22'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'JACQUELINE DA SILVA VIRGINIO'] <- 'S23'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'GRACYELLE DE OLIVEIRA ANDRADE'] <- 'S24'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ILUARA MONTEIRO GONÇALVES'] <- 'S25'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'LUIZA COSTA VITORIA'] <- 'S26'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ALEXANDRO FIDELIS RIBEIRO DA SILVA'] <- 'S27'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'CAIO BRUMEL SOARES DE SANTANA'] <- 'S28'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA FERNANDA DOS SANTOS CRUZ'] <- 'S29'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA LUIZA SANTOS OLIVEIRA'] <- 'S30'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'LUCAS JOAQUIM DE MOURA'] <- 'S31'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'FRANCIELY TEIXEIRA LIMA'] <- 'S32'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'GIOVANNA NASCIMENTO SILVA'] <- 'S33'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ESTER LYDIA HELEN AZEVEDO'] <- 'S34'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'LARISSA PRISCILLA ALVES DA CUNHA'] <- 'S35'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'SARA DAYANE SANTOS DE SOUZA'] <- 'S36'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ANNA CLARA DE OLIVEIRA SILVA'] <- 'S37'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'NATHALIA VITORIA FREIRE DOS SANTOS'] <- 'S38'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ALICE CAROLINA RAMOS ANTAS'] <- 'S39'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ALICE VIEIRA DE ARAUJO'] <- 'S40'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'THAMIRES SALES RESENDE'] <- 'S41'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MAIARA KELLE DE LIMA'] <- 'S42'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ANNA BEATRIZ DE JESUS DUTRA'] <- 'S43'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'THERLA KIRIA CARNEIRO OLIVEIRA DE MEDEIROS'] <- 'S44'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'SUZANA LUIZA DO NASCIMENTO BARROS'] <- 'S45'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MIRTES SEVERINA DO MONTE'] <- 'S46'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'PAULA REGINA PEREIRA DE MELO'] <- 'S47'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'BRUNNA KAROLINE CAMPOS DA SILVA'] <- 'S48'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARCIO EMANOEL SILVA DE ABREU'] <- 'S49'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA GIOVANNA BOTELHO CARVALHO LIRA'] <- 'S50'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'CRISTEFANY AYNOAN DOS SANTOS SILVA'] <- 'S51'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'PAULYANE SILVA DE OLIVEIRA'] <- 'S52'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'RHAMONICK VICTORIA FERREIRA DA SILVA'] <- 'S53'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA ISABEL VELOSO DE ALMEIDA'] <- 'S54'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ALICE CAETANO DA SILVA'] <- 'S55'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'STEPHANIE VICTORIA BARBOSA COELHO'] <- 'S56'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MARIA EDUARDA BARBOSA FERREIRA'] <- 'S57'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'ALICIA SANTOS DANTAS'] <- 'S58'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'MATHEUS CAVALCANTI DOS SANTOS'] <- 'S59'
-df_ser_2022_all[1:2][df_ser_2022_all[1:2] == 'GENESELI DIAS DE OLIVEIRA ALBUQUERQUE'] <- 'S60'
-
 
 rm(df_ser_2022_1, df_ser_2022_2, df_ser_2022_3, df_ser_2022_4, 
    df_ser_2022_5)
@@ -1228,69 +732,6 @@ rm(df_d_ser_2022_1, df_d_ser_2022_2, df_d_ser_2022_3, df_d_ser_2022_4,
 
 df_d_ser_2022_all <- na.omit(df_d_ser_2022_all)
 
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'THAMIRES LARISSA SILVA DE MELO'] <- 'S1'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'KLEITON VIRGINIO ALVARO'] <- 'S2'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ANA LUIZA DE LIMA FRAGOSO'] <- 'S3'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'LUCAS ANTONIO DA SILVA'] <- 'S4'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA EDUARDA SOBRAL DE SANTANA'] <- 'S5'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA BRUNA MALTA DA SILVA'] <- 'S6'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA CECILIA SOARES DA SILVA'] <- 'S7'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA CLARA ANDRADE DE MELO'] <- 'S8'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ALICE SOARES DE AMORIM'] <- 'S9'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ELLEN MANUELLE DA SILVA'] <- 'S10'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ALINE MARQUES DA SILVA'] <- 'S11'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'VITORIA CAROLYNE PEREIRA DA SILVA'] <- 'S12'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'STEPHANIE DA SILVA SANTOS'] <- 'S13'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'YSILYS RUANA SANTOS JOSE'] <- 'S14'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA LUIZA SANTOS RODRIGUES DE LIMA'] <- 'S15'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA EDUARDA GUSMAO LAPENDA DE AMORIM'] <- 'S16'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'BRENDA CAILANE DE MOURA PASCHOAL'] <- 'S17'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA EDUARDA MENDES COSTA'] <- 'S18'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'STHEFANY EMILLE BARROS LIMA'] <- 'S19'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA MÔNICA EVANGELISTA'] <- 'S20'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ALEXIA DARLLA OLIVEIRA DINIZ'] <- 'S21'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ALICE VICTORIA SILVA DOS SANTOS'] <- 'S22'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'JACQUELINE DA SILVA VIRGINIO'] <- 'S23'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'GRACYELLE DE OLIVEIRA ANDRADE'] <- 'S24'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ILUARA MONTEIRO GONÇALVES'] <- 'S25'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'LUIZA COSTA VITORIA'] <- 'S26'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ALEXANDRO FIDELIS RIBEIRO DA SILVA'] <- 'S27'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'CAIO BRUMEL SOARES DE SANTANA'] <- 'S28'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA FERNANDA DOS SANTOS CRUZ'] <- 'S29'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA LUIZA SANTOS OLIVEIRA'] <- 'S30'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'LUCAS JOAQUIM DE MOURA'] <- 'S31'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'FRANCIELY TEIXEIRA LIMA'] <- 'S32'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'GIOVANNA NASCIMENTO SILVA'] <- 'S33'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ESTER LYDIA HELEN AZEVEDO'] <- 'S34'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'LARISSA PRISCILLA ALVES DA CUNHA'] <- 'S35'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'SARA DAYANE SANTOS DE SOUZA'] <- 'S36'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ANNA CLARA DE OLIVEIRA SILVA'] <- 'S37'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'NATHALIA VITORIA FREIRE DOS SANTOS'] <- 'S38'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ALICE CAROLINA RAMOS ANTAS'] <- 'S39'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ALICE VIEIRA DE ARAUJO'] <- 'S40'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'THAMIRES SALES RESENDE'] <- 'S41'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MAIARA KELLE DE LIMA'] <- 'S42'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ANNA BEATRIZ DE JESUS DUTRA'] <- 'S43'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'THERLA KIRIA CARNEIRO OLIVEIRA DE MEDEIROS'] <- 'S44'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'SUZANA LUIZA DO NASCIMENTO BARROS'] <- 'S45'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MIRTES SEVERINA DO MONTE'] <- 'S46'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'PAULA REGINA PEREIRA DE MELO'] <- 'S47'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'BRUNNA KAROLINE CAMPOS DA SILVA'] <- 'S48'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARCIO EMANOEL SILVA DE ABREU'] <- 'S49'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA GIOVANNA BOTELHO CARVALHO LIRA'] <- 'S50'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'CRISTEFANY AYNOAN DOS SANTOS SILVA'] <- 'S51'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'PAULYANE SILVA DE OLIVEIRA'] <- 'S52'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'RHAMONICK VICTORIA FERREIRA DA SILVA'] <- 'S53'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA ISABEL VELOSO DE ALMEIDA'] <- 'S54'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ALICE CAETANO DA SILVA'] <- 'S55'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'STEPHANIE VICTORIA BARBOSA COELHO'] <- 'S56'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MARIA EDUARDA BARBOSA FERREIRA'] <- 'S57'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'ALICIA SANTOS DANTAS'] <- 'S58'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'MATHEUS CAVALCANTI DOS SANTOS'] <- 'S59'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'GENESELI DIAS DE OLIVEIRA ALBUQUERQUE'] <- 'S60'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'LEILIANE SANTOS SILVA'] <- 'S61'
-df_d_ser_2022_all[1:2][df_d_ser_2022_all[1:2] == 'CAMILA KELLY DOS SANTOS SILVA'] <- 'S62'
-
 SER_2022_d <- graph_from_data_frame(df_d_ser_2022_all, directed = TRUE, vertices = NULL)
 
 
@@ -1324,69 +765,6 @@ rm(df_p_ser_2022_1,df_p_ser_2022_2,df_p_ser_2022_3,df_p_ser_2022_4,
    df_p_ser_2022_5)
 
 df_p_ser_2022_all <- na.omit(df_p_ser_2022_all)
-
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'THAMIRES LARISSA SILVA DE MELO'] <- 'S1'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'KLEITON VIRGINIO ALVARO'] <- 'S2'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ANA LUIZA DE LIMA FRAGOSO'] <- 'S3'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'LUCAS ANTONIO DA SILVA'] <- 'S4'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA EDUARDA SOBRAL DE SANTANA'] <- 'S5'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA BRUNA MALTA DA SILVA'] <- 'S6'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA CECILIA SOARES DA SILVA'] <- 'S7'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA CLARA ANDRADE DE MELO'] <- 'S8'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ALICE SOARES DE AMORIM'] <- 'S9'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ELLEN MANUELLE DA SILVA'] <- 'S10'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ALINE MARQUES DA SILVA'] <- 'S11'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'VITORIA CAROLYNE PEREIRA DA SILVA'] <- 'S12'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'STEPHANIE DA SILVA SANTOS'] <- 'S13'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'YSILYS RUANA SANTOS JOSE'] <- 'S14'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA LUIZA SANTOS RODRIGUES DE LIMA'] <- 'S15'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA EDUARDA GUSMAO LAPENDA DE AMORIM'] <- 'S16'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'BRENDA CAILANE DE MOURA PASCHOAL'] <- 'S17'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA EDUARDA MENDES COSTA'] <- 'S18'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'STHEFANY EMILLE BARROS LIMA'] <- 'S19'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA MÔNICA EVANGELISTA'] <- 'S20'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ALEXIA DARLLA OLIVEIRA DINIZ'] <- 'S21'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ALICE VICTORIA SILVA DOS SANTOS'] <- 'S22'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'JACQUELINE DA SILVA VIRGINIO'] <- 'S23'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'GRACYELLE DE OLIVEIRA ANDRADE'] <- 'S24'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ILUARA MONTEIRO GONÇALVES'] <- 'S25'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'LUIZA COSTA VITORIA'] <- 'S26'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ALEXANDRO FIDELIS RIBEIRO DA SILVA'] <- 'S27'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'CAIO BRUMEL SOARES DE SANTANA'] <- 'S28'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA FERNANDA DOS SANTOS CRUZ'] <- 'S29'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA LUIZA SANTOS OLIVEIRA'] <- 'S30'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'LUCAS JOAQUIM DE MOURA'] <- 'S31'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'FRANCIELY TEIXEIRA LIMA'] <- 'S32'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'GIOVANNA NASCIMENTO SILVA'] <- 'S33'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ESTER LYDIA HELEN AZEVEDO'] <- 'S34'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'LARISSA PRISCILLA ALVES DA CUNHA'] <- 'S35'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'SARA DAYANE SANTOS DE SOUZA'] <- 'S36'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ANNA CLARA DE OLIVEIRA SILVA'] <- 'S37'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'NATHALIA VITORIA FREIRE DOS SANTOS'] <- 'S38'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ALICE CAROLINA RAMOS ANTAS'] <- 'S39'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ALICE VIEIRA DE ARAUJO'] <- 'S40'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'THAMIRES SALES RESENDE'] <- 'S41'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MAIARA KELLE DE LIMA'] <- 'S42'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ANNA BEATRIZ DE JESUS DUTRA'] <- 'S43'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'THERLA KIRIA CARNEIRO OLIVEIRA DE MEDEIROS'] <- 'S44'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'SUZANA LUIZA DO NASCIMENTO BARROS'] <- 'S45'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MIRTES SEVERINA DO MONTE'] <- 'S46'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'PAULA REGINA PEREIRA DE MELO'] <- 'S47'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'BRUNNA KAROLINE CAMPOS DA SILVA'] <- 'S48'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARCIO EMANOEL SILVA DE ABREU'] <- 'S49'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA GIOVANNA BOTELHO CARVALHO LIRA'] <- 'S50'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'CRISTEFANY AYNOAN DOS SANTOS SILVA'] <- 'S51'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'PAULYANE SILVA DE OLIVEIRA'] <- 'S52'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'RHAMONICK VICTORIA FERREIRA DA SILVA'] <- 'S53'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA ISABEL VELOSO DE ALMEIDA'] <- 'S54'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ALICE CAETANO DA SILVA'] <- 'S55'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'STEPHANIE VICTORIA BARBOSA COELHO'] <- 'S56'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MARIA EDUARDA BARBOSA FERREIRA'] <- 'S57'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'ALICIA SANTOS DANTAS'] <- 'S58'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'MATHEUS CAVALCANTI DOS SANTOS'] <- 'S59'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'GENESELI DIAS DE OLIVEIRA ALBUQUERQUE'] <- 'S60'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'LEILIANE SANTOS SILVA'] <- 'S61'
-df_p_ser_2022_all[1:2][df_p_ser_2022_all[1:2] == 'CAMILA KELLY DOS SANTOS SILVA'] <- 'S62'
 
 SER_2022_p <- graph_from_data_frame(df_p_ser_2022_all, directed = TRUE, vertices = NULL)
 
@@ -1431,25 +809,6 @@ rm(Dados_Odo_1, Dados_Odo_2, Dados_Odo_3, Dados_Odo_4, Dados_Odo_5)
 
 Dados_Odo_all <- na.omit(Dados_Odo_all)
 
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'LAVINYA MARIA SILVA DE ARAUJO'] <- 'S1'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'ISABELLE LIMA VASCONCELOS DE ALMEIDA'] <- 'S2'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'MARIA TEREZA LOPES DE MOURA BORBA'] <- 'S3'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'DANIELEN CAMILLY DE OLIVEIRA'] <- 'S4'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'JEFFERSON HENRIQUE DOS SANTOS SILVA'] <- 'S5'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'MARIA EDUARDA DARIGO VASCONCELOS'] <- 'S6'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'MARIA GABRIELA FRANCISCA DA SILVA'] <- 'S7'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'ANNA KAROLLINE LIRA BEZERRA'] <- 'S8'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'RENATA GALDINO DA SILVA'] <- 'S9'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'CAIO LEMOS GUEDES'] <- 'S10'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'ADRIELLY OLIVEIRA SOARES DE ARAUJO'] <- 'S11'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'PAMELA DA SILVA MEDEIROS'] <- 'S12'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'AMANDA JULIA CUNHA SEGUNDO DA SILVA'] <- 'S13'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'GLEIDSON VICTOR RAMOS DA SILVA'] <- 'S14'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'RAFAELLA ANDRADE SOUZA'] <- 'S15'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'PDRO MEDEIROS DE LIMA'] <- 'S16'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'CARLA ADRIANA VIANA BARBOSA'] <- 'S17'
-Dados_Odo_all[1:2][Dados_Odo_all[1:2] == 'EDUARDA KEYLA DIAS DE SOUZA'] <- 'S18'
-
 ODO_ <- graph_from_data_frame(Dados_Odo_all, directed = TRUE, vertices = NULL)
 
 
@@ -1482,23 +841,6 @@ rm(Dados_Odo_1, Dados_Odo_2, Dados_Odo_3, Dados_Odo_4, Dados_Odo_5)
 
 Dados_Odo_d_all <- na.omit(Dados_Odo_d_all)
 
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'LAVINYA MARIA SILVA DE ARAUJO'] <- 'S1'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'ISABELLE LIMA VASCONCELOS DE ALMEIDA'] <- 'S2'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'MARIA TEREZA LOPES DE MOURA BORBA'] <- 'S3'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'DANIELEN CAMILLY DE OLIVEIRA'] <- 'S4'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'JEFFERSON HENRIQUE DOS SANTOS SILVA'] <- 'S5'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'MARIA EDUARDA DARIGO VASCONCELOS'] <- 'S6'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'MARIA GABRIELA FRANCISCA DA SILVA'] <- 'S7'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'ANNA KAROLLINE LIRA BEZERRA'] <- 'S8'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'RENATA GALDINO DA SILVA'] <- 'S9'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'CAIO LEMOS GUEDES'] <- 'S10'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'ADRIELLY OLIVEIRA SOARES DE ARAUJO'] <- 'S11'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'PAMELA DA SILVA MEDEIROS'] <- 'S12'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'AMANDA JULIA CUNHA SEGUNDO DA SILVA'] <- 'S13'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'GLEIDSON VICTOR RAMOS DA SILVA'] <- 'S14'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'RAFAELLA ANDRADE SOUZA'] <- 'S15'
-Dados_Odo_d_all[1:2][Dados_Odo_d_all[1:2] == 'PDRO MEDEIROS DE LIMA'] <- 'S16'
-
 ODO_d <- graph_from_data_frame(Dados_Odo_d_all, directed = TRUE, vertices = NULL)
 
 
@@ -1530,25 +872,6 @@ Dados_Odo_p_all <- rbind(Dados_Odo_1, Dados_Odo_2, Dados_Odo_3, Dados_Odo_4, Dad
 rm(Dados_Odo_1, Dados_Odo_2, Dados_Odo_3, Dados_Odo_4, Dados_Odo_5)
 
 Dados_Odo_p_all <- na.omit(Dados_Odo_p_all)
-
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'LAVINYA MARIA SILVA DE ARAUJO'] <- 'S1'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'ISABELLE LIMA VASCONCELOS DE ALMEIDA'] <- 'S2'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'MARIA TEREZA LOPES DE MOURA BORBA'] <- 'S3'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'DANIELEN CAMILLY DE OLIVEIRA'] <- 'S4'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'JEFFERSON HENRIQUE DOS SANTOS SILVA'] <- 'S5'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'MARIA EDUARDA DARIGO VASCONCELOS'] <- 'S6'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'MARIA GABRIELA FRANCISCA DA SILVA'] <- 'S7'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'ANNA KAROLLINE LIRA BEZERRA'] <- 'S8'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'RENATA GALDINO DA SILVA'] <- 'S9'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'CAIO LEMOS GUEDES'] <- 'S10'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'ADRIELLY OLIVEIRA SOARES DE ARAUJO'] <- 'S11'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'PAMELA DA SILVA MEDEIROS'] <- 'S12'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'AMANDA JULIA CUNHA SEGUNDO DA SILVA'] <- 'S13'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'GLEIDSON VICTOR RAMOS DA SILVA'] <- 'S14'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'RAFAELLA ANDRADE SOUZA'] <- 'S15'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'PDRO MEDEIROS DE LIMA'] <- 'S16'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'CARLA ADRIANA VIANA BARBOSA'] <- 'S17'
-Dados_Odo_p_all[1:2][Dados_Odo_p_all[1:2] == 'EDUARDA KEYLA DIAS DE SOUZA'] <- 'S18'
 
 ODO_p <- graph_from_data_frame(Dados_Odo_p_all, directed = TRUE, vertices = NULL)
 
@@ -1602,51 +925,10 @@ rm(ars_ap_2022_1,
 # retirada das linhas com Na's
 ars_ap_2022_all <- na.omit(ars_ap_2022_all)
 
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'MARIA DE FATIMA BARBOSA DE LIMA'] <- 'S1'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'JESSICA DO AMARAL SOUSA'] <- 'S2'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'ALDO DE ALBUQUERQUE SOUZA FILHO'] <- 'S3'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'ESTER PRAZERES DE SOUZA'] <- 'S4'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'ANA CRISTINA FERREIRA DA SILVA'] <- 'S5'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'RAFAEL DANZI FRIEDHEIM TENORIO'] <- 'S6'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'ANA CLARA AIRES RIBEIRO BRINGEL'] <- 'S7'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'JOAO PEDRO SOUZA DIAS'] <- 'S8'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'SAVIO SISNANDO DE OLIVEIRA'] <- 'S9'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'ANA SOFIA LIMA FELIX DA COSTA'] <- 'S10'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'ANA CLARA GOMES GALDINO'] <- 'S11'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'VICTOR TELLES SALES'] <- 'S12'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'LARISSA VITORIA SILVA SOARES'] <- 'S13'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'BRENDA DE FARIAS LIMA'] <- 'S14'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'DEBORA EVELYN MONTEIRO DA PAZ'] <- 'S15'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'HELIO SOARES DE FRANCA'] <- 'S16'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'ACAIAH NALANDA BATISTA ESTACIO GUSMAO'] <- 'S17'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'MARIA MONIELY MARTINS FERREIRA'] <- 'S18'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'JULIA DE SA PESSOA DE MELO'] <- 'S19'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'MARCELA DA CRUZ ANTUNES'] <- 'S20'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'VINICIUS DA SILVA SANTANA'] <- 'S21'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'SOFIA INOJOSA DE ANDRADE LIRA'] <- 'S22'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'LARA MENDONCA DE LUCENA'] <- 'S23'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'ANDREZA FERNANDA DE MEDEIROS'] <- 'S24'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'GUSTAVO HUGO CARDOSO DE OLIVEIRA'] <- 'S25'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'VI PORTO'] <- 'S26'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'GUIDIO GOMES DA SILVA'] <- 'S27'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'MARIA GABRIELA MONTEIRO MORAIS'] <- 'S28'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'TIAGO BATISTA DA SILVA'] <- 'S29'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'ALINE MOREIRA DE LIMA'] <- 'S30'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'MARIA VICTORIA GOMES DE SOUSA SILVA'] <- 'S31'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'RAYSSA KAROLLYNE DA SILVA'] <- 'S32'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'GIULIA COSTA PRALON'] <- 'S33'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'THAMIRIS EDUARDA DE SOUZA ANDRADE'] <- 'S34'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'HELOISA HELENA OLIVEIRA DE LIMA'] <- 'S35'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'PEDRO HENRIQUE DA SILVA ZEFERINO'] <- 'S36'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'DANIEL NUNES DA SILVA'] <- 'S37'
-ars_ap_2022_all[1:2][ars_ap_2022_all[1:2] == 'ANA CAROLYNE FERREIRA DA SILVA'] <- 'S38'
-
 
 
 # Elaboração do grafo da turma de avaliação psicológica
 AP_2022 <- graph_from_data_frame(ars_ap_2022_all, directed = TRUE, vertices = NULL)
-
-
 
 
 # Nível de centralidade
@@ -1688,46 +970,6 @@ rm(ars_ap_2022_d_1,
 
 ars_ap_2022_d_all <- na.omit(ars_ap_2022_d_all)
 
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'MARIA DE FATIMA BARBOSA DE LIMA'] <- 'S1'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'JESSICA DO AMARAL SOUSA'] <- 'S2'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'ALDO DE ALBUQUERQUE SOUZA FILHO'] <- 'S3'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'ESTER PRAZERES DE SOUZA'] <- 'S4'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'ANA CRISTINA FERREIRA DA SILVA'] <- 'S5'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'RAFAEL DANZI FRIEDHEIM TENORIO'] <- 'S6'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'ANA CLARA AIRES RIBEIRO BRINGEL'] <- 'S7'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'JOAO PEDRO SOUZA DIAS'] <- 'S8'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'SAVIO SISNANDO DE OLIVEIRA'] <- 'S9'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'ANA SOFIA LIMA FELIX DA COSTA'] <- 'S10'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'ANA CLARA GOMES GALDINO'] <- 'S11'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'VICTOR TELLES SALES'] <- 'S12'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'LARISSA VITORIA SILVA SOARES'] <- 'S13'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'BRENDA DE FARIAS LIMA'] <- 'S14'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'DEBORA EVELYN MONTEIRO DA PAZ'] <- 'S15'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'HELIO SOARES DE FRANCA'] <- 'S16'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'ACAIAH NALANDA BATISTA ESTACIO GUSMAO'] <- 'S17'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'MARIA MONIELY MARTINS FERREIRA'] <- 'S18'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'JULIA DE SA PESSOA DE MELO'] <- 'S19'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'MARCELA DA CRUZ ANTUNES'] <- 'S20'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'VINICIUS DA SILVA SANTANA'] <- 'S21'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'SOFIA INOJOSA DE ANDRADE LIRA'] <- 'S22'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'LARA MENDONCA DE LUCENA'] <- 'S23'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'ANDREZA FERNANDA DE MEDEIROS'] <- 'S24'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'GUSTAVO HUGO CARDOSO DE OLIVEIRA'] <- 'S25'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'VI PORTO'] <- 'S26'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'GUIDIO GOMES DA SILVA'] <- 'S27'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'MARIA GABRIELA MONTEIRO MORAIS'] <- 'S28'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'TIAGO BATISTA DA SILVA'] <- 'S29'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'ALINE MOREIRA DE LIMA'] <- 'S30'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'MARIA VICTORIA GOMES DE SOUSA SILVA'] <- 'S31'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'RAYSSA KAROLLYNE DA SILVA'] <- 'S32'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'GIULIA COSTA PRALON'] <- 'S33'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'THAMIRIS EDUARDA DE SOUZA ANDRADE'] <- 'S34'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'HELOISA HELENA OLIVEIRA DE LIMA'] <- 'S35'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'PEDRO HENRIQUE DA SILVA ZEFERINO'] <- 'S36'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'DANIEL NUNES DA SILVA'] <- 'S37'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'ANA CAROLYNE FERREIRA DA SILVA'] <- 'S38'
-ars_ap_2022_d_all[1:2][ars_ap_2022_d_all[1:2] == 'WIDSON LUCAS DE SOUZA BEZERRA'] <- 'S39'
-
 AP_2022_d <- graph_from_data_frame(ars_ap_2022_d_all, directed = TRUE, vertices = NULL)
 
 
@@ -1765,46 +1007,6 @@ rm(ars_ap_2022_p_1,
    ars_ap_2022_p_5)
 
 ars_ap_2022_p_all <- na.omit(ars_ap_2022_p_all)
-
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'MARIA DE FATIMA BARBOSA DE LIMA'] <- 'S1'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'JESSICA DO AMARAL SOUSA'] <- 'S2'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'ALDO DE ALBUQUERQUE SOUZA FILHO'] <- 'S3'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'ESTER PRAZERES DE SOUZA'] <- 'S4'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'ANA CRISTINA FERREIRA DA SILVA'] <- 'S5'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'RAFAEL DANZI FRIEDHEIM TENORIO'] <- 'S6'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'ANA CLARA AIRES RIBEIRO BRINGEL'] <- 'S7'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'JOAO PEDRO SOUZA DIAS'] <- 'S8'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'SAVIO SISNANDO DE OLIVEIRA'] <- 'S9'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'ANA SOFIA LIMA FELIX DA COSTA'] <- 'S10'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'ANA CLARA GOMES GALDINO'] <- 'S11'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'VICTOR TELLES SALES'] <- 'S12'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'LARISSA VITORIA SILVA SOARES'] <- 'S13'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'BRENDA DE FARIAS LIMA'] <- 'S14'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'DEBORA EVELYN MONTEIRO DA PAZ'] <- 'S15'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'HELIO SOARES DE FRANCA'] <- 'S16'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'ACAIAH NALANDA BATISTA ESTACIO GUSMAO'] <- 'S17'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'MARIA MONIELY MARTINS FERREIRA'] <- 'S18'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'JULIA DE SA PESSOA DE MELO'] <- 'S19'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'MARCELA DA CRUZ ANTUNES'] <- 'S20'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'VINICIUS DA SILVA SANTANA'] <- 'S21'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'SOFIA INOJOSA DE ANDRADE LIRA'] <- 'S22'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'LARA MENDONCA DE LUCENA'] <- 'S23'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'ANDREZA FERNANDA DE MEDEIROS'] <- 'S24'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'GUSTAVO HUGO CARDOSO DE OLIVEIRA'] <- 'S25'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'VI PORTO'] <- 'S26'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'GUIDIO GOMES DA SILVA'] <- 'S27'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'MARIA GABRIELA MONTEIRO MORAIS'] <- 'S28'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'TIAGO BATISTA DA SILVA'] <- 'S29'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'ALINE MOREIRA DE LIMA'] <- 'S30'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'MARIA VICTORIA GOMES DE SOUSA SILVA'] <- 'S31'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'RAYSSA KAROLLYNE DA SILVA'] <- 'S32'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'GIULIA COSTA PRALON'] <- 'S33'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'THAMIRIS EDUARDA DE SOUZA ANDRADE'] <- 'S34'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'HELOISA HELENA OLIVEIRA DE LIMA'] <- 'S35'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'PEDRO HENRIQUE DA SILVA ZEFERINO'] <- 'S36'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'DANIEL NUNES DA SILVA'] <- 'S37'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'ANA CAROLYNE FERREIRA DA SILVA'] <- 'S38'
-ars_ap_2022_p_all[1:2][ars_ap_2022_p_all[1:2] == 'WIDSON LUCAS DE SOUZA BEZERRA'] <- 'S39'
 
 AP_2022_p <- graph_from_data_frame(ars_ap_2022_p_all, directed = TRUE, vertices = NULL)
 
@@ -1858,30 +1060,6 @@ rm(ars_pet1_1,
 # retirada das linhas com Na's
 ars_pet1_all <- na.omit(ars_pet1_all)
 
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'BRENDA JAMILLY MARTINS COELHO'] <- 'S1'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'MARIA LUIZA DE SOUSA SANTANA'] <- 'S2'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'LUIS EDUARDO DA SILVA BARBOZA'] <- 'S3'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'MARILIA GABRIELA DOS SANTOS LIMOEIRO'] <- 'S4'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'LUCAS EMMANUEL DE CARVALHO LIMA'] <- 'S5'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'GESSYCA CYNARA LIMA CLEMENTINO'] <- 'S6'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'MARIA LUIZA MAGALHAES SANTOS'] <- 'S7'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'VITORIA DE ALMEIDA GONDIM'] <- 'S8'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'GIOVANNA COELHO E SILVA'] <- 'S9'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'LARA RAVENNA LEITE ALVES'] <- 'S10'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'LUCAS ADRIANO FAGUNDES COSTA'] <- 'S11'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'GEYDSON IGOR DOS SANTOS OLIVEIRA'] <- 'S12'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'ERICA EVELLYN CARDOSO DA SILVA'] <- 'S13'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'IONARA VITORIA CARVALHO DO NASCIMENTO'] <- 'S14'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'PAULO HENRIQUE MAGALHAES DA SILVA'] <- 'S15'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'LUANA MICHELLY RIBEIRO DE MORAIS'] <- 'S16'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'ANA VITORIA GONCALVES DE SOUSA'] <- 'S17'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'MANOEL DE SA ARAUJO JUNIOR'] <- 'S18'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'MAIRA TIAGO NOGUEIRA LEMOS'] <- 'S19'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'SAMUEL SOUZA RIOS LIMA ARAUJO'] <- 'S20'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'LUCIVANDO COSTA BARROS'] <- 'S21'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'ANANDA VASCONCELOS VALOIS'] <- 'S22'
-ars_pet1_all[1:2][ars_pet1_all[1:2] == 'ERICK SANTANA DE OLIVEIRA'] <- 'S23'
-
 
 # Elaboração do grafo da turma de avaliação psicológica
 PET1 <- graph_from_data_frame(ars_pet1_all, directed = TRUE, vertices = NULL)
@@ -1926,33 +1104,6 @@ rm(ars_pet1_d_1,
 
 ars_pet1_d_all <- na.omit(ars_pet1_d_all)
 
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'BRENDA JAMILLY MARTINS COELHO'] <- 'S1'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'MARIA LUIZA DE SOUSA SANTANA'] <- 'S2'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'LUIS EDUARDO DA SILVA BARBOZA'] <- 'S3'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'MARILIA GABRIELA DOS SANTOS LIMOEIRO'] <- 'S4'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'LUCAS EMMANUEL DE CARVALHO LIMA'] <- 'S5'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'GESSYCA CYNARA LIMA CLEMENTINO'] <- 'S6'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'MARIA LUIZA MAGALHAES SANTOS'] <- 'S7'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'VITORIA DE ALMEIDA GONDIM'] <- 'S8'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'GIOVANNA COELHO E SILVA'] <- 'S9'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'LARA RAVENNA LEITE ALVES'] <- 'S10'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'LUCAS ADRIANO FAGUNDES COSTA'] <- 'S11'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'GEYDSON IGOR DOS SANTOS OLIVEIRA'] <- 'S12'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'ERICA EVELLYN CARDOSO DA SILVA'] <- 'S13'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'IONARA VITORIA CARVALHO DO NASCIMENTO'] <- 'S14'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'PAULO HENRIQUE MAGALHAES DA SILVA'] <- 'S15'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'LUANA MICHELLY RIBEIRO DE MORAIS'] <- 'S16'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'ANA VITORIA GONCALVES DE SOUSA'] <- 'S17'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'MANOEL DE SA ARAUJO JUNIOR'] <- 'S18'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'MAIRA TIAGO NOGUEIRA LEMOS'] <- 'S19'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'SAMUEL SOUZA RIOS LIMA ARAUJO'] <- 'S20'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'LUCIVANDO COSTA BARROS'] <- 'S21'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'ANANDA VASCONCELOS VALOIS'] <- 'S22'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'ERICK SANTANA DE OLIVEIRA'] <- 'S23'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'MERCIA GILMARIA ALEIXO DA COSTA LIMA'] <- 'S24'
-ars_pet1_d_all[1:2][ars_pet1_d_all[1:2] == 'MARCOS ANDRÉ MOURA DIAS'] <- 'S25'
-
-
 PET1_d <- graph_from_data_frame(ars_pet1_d_all, directed = TRUE, vertices = NULL)
 
 
@@ -1991,32 +1142,6 @@ rm(ars_pet1_p_1,
    ars_pet1_p_5)
 
 ars_pet1_p_all <- na.omit(ars_pet1_p_all)
-
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'BRENDA JAMILLY MARTINS COELHO'] <- 'S1'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'MARIA LUIZA DE SOUSA SANTANA'] <- 'S2'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'LUIS EDUARDO DA SILVA BARBOZA'] <- 'S3'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'MARILIA GABRIELA DOS SANTOS LIMOEIRO'] <- 'S4'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'LUCAS EMMANUEL DE CARVALHO LIMA'] <- 'S5'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'GESSYCA CYNARA LIMA CLEMENTINO'] <- 'S6'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'MARIA LUIZA MAGALHAES SANTOS'] <- 'S7'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'VITORIA DE ALMEIDA GONDIM'] <- 'S8'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'GIOVANNA COELHO E SILVA'] <- 'S9'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'LARA RAVENNA LEITE ALVES'] <- 'S10'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'LUCAS ADRIANO FAGUNDES COSTA'] <- 'S11'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'GEYDSON IGOR DOS SANTOS OLIVEIRA'] <- 'S12'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'ERICA EVELLYN CARDOSO DA SILVA'] <- 'S13'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'IONARA VITORIA CARVALHO DO NASCIMENTO'] <- 'S14'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'PAULO HENRIQUE MAGALHAES DA SILVA'] <- 'S15'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'LUANA MICHELLY RIBEIRO DE MORAIS'] <- 'S16'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'ANA VITORIA GONCALVES DE SOUSA'] <- 'S17'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'MANOEL DE SA ARAUJO JUNIOR'] <- 'S18'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'MAIRA TIAGO NOGUEIRA LEMOS'] <- 'S19'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'SAMUEL SOUZA RIOS LIMA ARAUJO'] <- 'S20'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'LUCIVANDO COSTA BARROS'] <- 'S21'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'ANANDA VASCONCELOS VALOIS'] <- 'S22'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'ERICK SANTANA DE OLIVEIRA'] <- 'S23'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'MERCIA GILMARIA ALEIXO DA COSTA LIMA'] <- 'S24'
-ars_pet1_p_all[1:2][ars_pet1_p_all[1:2] == 'MARCOS ANDRÉ MOURA DIAS'] <- 'S25'
 
 PET1_p <- graph_from_data_frame(ars_pet1_p_all, directed = TRUE, vertices = NULL)
 
@@ -2070,45 +1195,6 @@ rm(ars_pet3_1,
 # retirada das linhas com Na's
 ars_pet3_all <- na.omit(ars_pet3_all)
 
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'ANA LUIZA PINHO RODRIGUES'] <- 'S1'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'MARIA EMILIA LIMA PASSOS DA SILVA'] <- 'S2'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'ADRIANE DE SOUZA RIBEIRO'] <- 'S3'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'LUDMIRIS DA SILVA ROCHA'] <- 'S4'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'JOSIANE MARIA RODRIGUES COELHO'] <- 'S5'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'SARAH SILVA BARBOSA'] <- 'S6'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'MILLENE GABRIELA ALENCAR DIAS'] <- 'S7'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'AMANDA LAIS DO NASCIMENTO CARVALHO'] <- 'S8'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'FERNANDA SOUZA NONATO'] <- 'S9'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'KALINE SANTOS BRITO'] <- 'S10'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'MARIANE SANTANA DA COSTA'] <- 'S11'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'CAIO QUEIROZ DE SOUZA'] <- 'S12'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'DEBORA BEATRIZ PACHECO DOS SANTOS'] <- 'S13'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'GESSICA LAVINNIA DE OLIVEIRA ESTEVES SANTOS'] <- 'S14'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'VITORIA DE PAULO MARQUES SANTANA'] <- 'S15'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'ADNA PAIVA RODRIGUES DE SOUZA'] <- 'S16'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'MIKAELLY SAMARA DA SILVA NASCIMENTO'] <- 'S17'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'LUCAS SANTOS DE LACERDA'] <- 'S18'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'ANGELA LARYSSA LISBOA FERREIRA'] <- 'S19'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'HANNAH GABRIELLE GOMES DE LIMA'] <- 'S20'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'SHAKIA THAMARA GUEDES DA ROCHA SANTOS'] <- 'S21'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'ADDA KAYANE DE LIMA MAIA'] <- 'S22'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'ANGELA LOPES MIRANDA'] <- 'S23'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'JOAO VICTOR DE SOUZA FERREIRA'] <- 'S24'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'LAURA ISIS DE OLIVEIRA BEZERRA'] <- 'S25'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'MATHEUS HORACIO SILVA TELES'] <- 'S26'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'EUNICE MARIANA SILVA'] <- 'S27'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'ANA LETICIA SIEBRA MAROPO DE ARAUJO'] <- 'S28'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'MARIA VITORIA BARBOSA LEAL'] <- 'S29'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'MARYLYANY XAVIER LIMA SILVA'] <- 'S30'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'LUMA SOUZA RAMOS'] <- 'S31'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'ARIELY DE SOUZA PEREIRA'] <- 'S32'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'JESSICA MOREIRA FONSECA'] <- 'S33'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'ANNA CLARA DE AMORIM GALDINO'] <- 'S34'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'CALINE BATISTA PEREIRA'] <- 'S35'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'JULIA MOREIRA SAMPAIO AMARAL'] <- 'S36'
-ars_pet3_all[1:2][ars_pet3_all[1:2] == 'ANNE CAROLINE ANTUNES BRANDAO MENEZES'] <- 'S37'
-
-
 
 # Elaboração do grafo da turma de avaliação psicológica
 PET3 <- graph_from_data_frame(ars_pet3_all, directed = TRUE, vertices = NULL)
@@ -2158,45 +1244,6 @@ rm(ars_pet3_d_1,
 
 ars_pet3_d_all <- na.omit(ars_pet3_d_all)
 
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'ANA LUIZA PINHO RODRIGUES'] <- 'S1'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'MARIA EMILIA LIMA PASSOS DA SILVA'] <- 'S2'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'ADRIANE DE SOUZA RIBEIRO'] <- 'S3'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'LUDMIRIS DA SILVA ROCHA'] <- 'S4'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'JOSIANE MARIA RODRIGUES COELHO'] <- 'S5'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'SARAH SILVA BARBOSA'] <- 'S6'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'MILLENE GABRIELA ALENCAR DIAS'] <- 'S7'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'AMANDA LAIS DO NASCIMENTO CARVALHO'] <- 'S8'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'FERNANDA SOUZA NONATO'] <- 'S9'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'KALINE SANTOS BRITO'] <- 'S10'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'MARIANE SANTANA DA COSTA'] <- 'S11'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'CAIO QUEIROZ DE SOUZA'] <- 'S12'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'DEBORA BEATRIZ PACHECO DOS SANTOS'] <- 'S13'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'GESSICA LAVINNIA DE OLIVEIRA ESTEVES SANTOS'] <- 'S14'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'VITORIA DE PAULO MARQUES SANTANA'] <- 'S15'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'ADNA PAIVA RODRIGUES DE SOUZA'] <- 'S16'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'MIKAELLY SAMARA DA SILVA NASCIMENTO'] <- 'S17'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'LUCAS SANTOS DE LACERDA'] <- 'S18'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'ANGELA LARYSSA LISBOA FERREIRA'] <- 'S19'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'HANNAH GABRIELLE GOMES DE LIMA'] <- 'S20'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'SHAKIA THAMARA GUEDES DA ROCHA SANTOS'] <- 'S21'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'ADDA KAYANE DE LIMA MAIA'] <- 'S22'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'ANGELA LOPES MIRANDA'] <- 'S23'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'JOAO VICTOR DE SOUZA FERREIRA'] <- 'S24'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'LAURA ISIS DE OLIVEIRA BEZERRA'] <- 'S25'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'MATHEUS HORACIO SILVA TELES'] <- 'S26'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'EUNICE MARIANA SILVA'] <- 'S27'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'ANA LETICIA SIEBRA MAROPO DE ARAUJO'] <- 'S28'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'MARIA VITORIA BARBOSA LEAL'] <- 'S29'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'MARYLYANY XAVIER LIMA SILVA'] <- 'S30'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'LUMA SOUZA RAMOS'] <- 'S31'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'ARIELY DE SOUZA PEREIRA'] <- 'S32'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'JESSICA MOREIRA FONSECA'] <- 'S33'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'ANNA CLARA DE AMORIM GALDINO'] <- 'S34'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'CALINE BATISTA PEREIRA'] <- 'S35'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'JULIA MOREIRA SAMPAIO AMARAL'] <- 'S36'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'ANNE CAROLINE ANTUNES BRANDAO MENEZES'] <- 'S37'
-ars_pet3_d_all[1:2][ars_pet3_d_all[1:2] == 'CARLOS REINALDO OLIVEIRA MENDES'] <- 'S38'
-
 PET3_d <- graph_from_data_frame(ars_pet3_d_all, directed = TRUE, vertices = NULL)
 
 
@@ -2234,45 +1281,6 @@ rm(ars_pet3_p_1,
    ars_pet3_p_5)
 
 ars_pet3_p_all <- na.omit(ars_pet3_p_all)
-
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'ANA LUIZA PINHO RODRIGUES'] <- 'S1'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'MARIA EMILIA LIMA PASSOS DA SILVA'] <- 'S2'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'ADRIANE DE SOUZA RIBEIRO'] <- 'S3'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'LUDMIRIS DA SILVA ROCHA'] <- 'S4'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'JOSIANE MARIA RODRIGUES COELHO'] <- 'S5'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'SARAH SILVA BARBOSA'] <- 'S6'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'MILLENE GABRIELA ALENCAR DIAS'] <- 'S7'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'AMANDA LAIS DO NASCIMENTO CARVALHO'] <- 'S8'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'FERNANDA SOUZA NONATO'] <- 'S9'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'KALINE SANTOS BRITO'] <- 'S10'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'MARIANE SANTANA DA COSTA'] <- 'S11'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'CAIO QUEIROZ DE SOUZA'] <- 'S12'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'DEBORA BEATRIZ PACHECO DOS SANTOS'] <- 'S13'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'GESSICA LAVINNIA DE OLIVEIRA ESTEVES SANTOS'] <- 'S14'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'VITORIA DE PAULO MARQUES SANTANA'] <- 'S15'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'ADNA PAIVA RODRIGUES DE SOUZA'] <- 'S16'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'MIKAELLY SAMARA DA SILVA NASCIMENTO'] <- 'S17'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'LUCAS SANTOS DE LACERDA'] <- 'S18'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'ANGELA LARYSSA LISBOA FERREIRA'] <- 'S19'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'HANNAH GABRIELLE GOMES DE LIMA'] <- 'S20'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'SHAKIA THAMARA GUEDES DA ROCHA SANTOS'] <- 'S21'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'ADDA KAYANE DE LIMA MAIA'] <- 'S22'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'ANGELA LOPES MIRANDA'] <- 'S23'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'JOAO VICTOR DE SOUZA FERREIRA'] <- 'S24'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'LAURA ISIS DE OLIVEIRA BEZERRA'] <- 'S25'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'MATHEUS HORACIO SILVA TELES'] <- 'S26'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'EUNICE MARIANA SILVA'] <- 'S27'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'ANA LETICIA SIEBRA MAROPO DE ARAUJO'] <- 'S28'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'MARIA VITORIA BARBOSA LEAL'] <- 'S29'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'MARYLYANY XAVIER LIMA SILVA'] <- 'S30'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'LUMA SOUZA RAMOS'] <- 'S31'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'ARIELY DE SOUZA PEREIRA'] <- 'S32'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'JESSICA MOREIRA FONSECA'] <- 'S33'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'ANNA CLARA DE AMORIM GALDINO'] <- 'S34'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'CALINE BATISTA PEREIRA'] <- 'S35'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'JULIA MOREIRA SAMPAIO AMARAL'] <- 'S36'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'ANNE CAROLINE ANTUNES BRANDAO MENEZES'] <- 'S37'
-ars_pet3_p_all[1:2][ars_pet3_p_all[1:2] == 'CARLOS REINALDO OLIVEIRA MENDES'] <- 'S38'
 
 PET3_p <- graph_from_data_frame(ars_pet3_p_all, directed = TRUE, vertices = NULL)
 
