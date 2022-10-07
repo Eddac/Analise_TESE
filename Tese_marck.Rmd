@@ -1350,17 +1350,6 @@ df_principal_join$nota <- ifelse(df_principal_join$nota == "9.50 - 10",19,
 df_principal_join$nota <- as.numeric(df_principal_join$nota)
 ```
 
-```{r}
-df_principal_join %>% select(Nome, nota) %>%
-```
-
-
-```{r}
-names(df_geral)
-```
-
-
-
 **RESUMO**  
   
 Até o presente momento, as análises indicam que extroversão exerce efeito sobre a centralidade do sujeito na rede.  
@@ -1372,11 +1361,15 @@ Que nota acadêmica é predita por CF5 quando observado no modelo simples, poré
   
 ```{r}
 df_universidade <- df_principal_join
+df_universidade$Capital <- 0
 
 df_universidade$Capital[c(1:34, 35:74, 75:127, 142:174, 128:141, 175:210)] <- 1
 df_universidade$Capital[c(211:255)] <- 0
 df_universidade$Capital <- as.factor(df_universidade$Capital)
 ```
+
+
+## Análises de regressão por Região  
 
 ```{r}
 ## Regressão logística por área

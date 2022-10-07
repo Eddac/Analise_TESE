@@ -4,6 +4,8 @@ author: "Emanuel Cordeiro"
 date: "7/1/2022"
 output: html_document
 ---
+
+# Carregamento de pacotes
 ```{r}
 library(arsenal)
 library(olsrr)
@@ -13,13 +15,7 @@ library(pander)
 
 
 
-## Teste com prof
-
-- Testar pressupostos
-
-- Normalidade
-- Homocesdasticidade
-- Relação linear
+# Análises de correlação
 
 
 ```{r}
@@ -72,27 +68,9 @@ profm5$stars
 names(df_principal_join)
 ```
 
-- Regressões
+# Análises de regressão  
 
-```{r}
-## Modelo de regressão 1 (TESE)
-mod1 <- lm(Autoridade ~ CF3 + HF3 + HF4 + HF5, df_principal_join)
-ols_regress(mod1)
-```
-
-```{r}
-mod2 <- lm(Autoridade ~  HF3, df_principal_join)
-ols_regress(mod2)
-```
-
-```{r}
-ggplot(df_principal_join, aes(x = HF3, y = Autoridade)) +
-  geom_jitter() + geom_smooth(method = 'lm') +
-  ggpubr::stat_regline_equation(label.x = 5.1, label.y = 1.1) +
-  ggpubr::stat_cor(aes(label = ..rr.label..), method = 'pearson',
-                   label.x = 1, label.y = 0.9)
-```
-
+## Análises dos pressupostos
 - Teste de normalidade
 ```{r}
 ols_plot_resid_qq(mod1)
@@ -182,6 +160,21 @@ ols_coll_diag(modD)
 ols_coll_diag(mod_nota3)
 ```
 
+## Modelos de regressão para a tese  
+
+```{r}
+## Modelo de regressão 1 (TESE)
+mod1 <- lm(Autoridade ~ CF3 + HF3 + HF4 + HF5, df_principal_join)
+ols_regress(mod1)
+```
+
+```{r}
+ggplot(df_principal_join, aes(x = HF3, y = Autoridade)) +
+  geom_jitter() + geom_smooth(method = 'lm') +
+  ggpubr::stat_regline_equation(label.x = 5.1, label.y = 1.1) +
+  ggpubr::stat_cor(aes(label = ..rr.label..), method = 'pearson',
+                   label.x = 1, label.y = 0.9)
+```
 ```{r}
 ## Modelo de regressão 2 (TESE)
 modP1 <- lm(Autoridade_P ~ CF3 + CF4 + HF2 + HF3 + HF5, df_principal_join)
@@ -194,78 +187,18 @@ modD <- lm(Grau_Entrada_D ~ HF2 + HF3 + HF4 + MF2 + MF3 + MF_GERAL, df_principal
 ols_regress(modD)
 ```
 
-```{r}
-modD2 <- lm(Grau_Entrada_D ~ MF2 + MF3 + MF_GERAL, df_principal_join)
-ols_regress(modD2)
-```
-
-```{r}
-modD3 <- lm(Grau_Entrada_D ~ HF2 + HF3 + HF4, df_principal_join)
-ols_regress(modD3)
-```
-
-```{r}
-mod_nota <- lm(nota ~ Autoridade_P + Autoridade + Autoridade_D + rvtotal, df_principal_join)
-ols_regress(mod_nota)
-```
-
-```{r}
-mod_nota2 <- lm(nota ~ Grau_Entrada_P + rvtotal, df_principal_join)
-ols_regress(mod_nota2)
-```
-
 ```{r} 
 ## Modelo de regressão 4 (TESE)
 mod_nota3 <- lm(nota ~ Autoridade_P + rvtotal, df_principal_join)
 ols_regress(mod_nota3)
 ```
 
+# Análises de test t para a turma Psicologia 3
+  
+- A turma de Psicologia 3 apresentou dois grupos bem delineados visualmente, esses grupos receberam rótulos para comparar entre as variáveis do estudo.
 
 ```{r}
 Psi_mau_corte <- df_principal_join %>% slice(142:174)
-```
-
-```{r}
-Psi_mau_corte[1][Psi_mau_corte[1] == 'MARIA EDUARDA DE ALMEIDA COSTA'] <- 'S1'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'MARIA LUISA GERONCIO DO NASCIME'] <- 'S2'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'DANIELE CARDOSO REIS'] <- 'S3'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'GABRIELA VITORIA FARIAS WANDERLEY'] <- 'S4'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'LUCILAYNE ALBUQUERQUE DA COSTA'] <- 'S5'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'LARISSA DE CASTRO NERIS'] <- 'S6'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'ALEXANDRA VITORIA CARNEIRO CUNHA'] <- 'S7'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'JESSICA MAYRA UELLENDAHL RAMOS'] <- 'S8'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'VICTORIA HELLEN TELES PEREIRA LOPES'] <- 'S9'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'ANA BEATRIZ VENTURA ALVES DE LIMA'] <- 'S10'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'ALYSON LUIZ DA SILVA SANTOS'] <- 'S11'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'MARIANA NOBREGA QUEIROZ DE PAIVA'] <- 'S12'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'LAURA FRANCA FERREIRA BISPO'] <- 'S13'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'LETICIA MARQUES PEREIRA MIRANDA D'] <- 'S14'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'MARIA CAROLINA ALVES CALLOU'] <- 'S15'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'ADRIELLY PERRINI TEIXEIRA'] <- 'S16'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'JULIO HENRIQUE MAGALHAES LUCKWU'] <- 'S17'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'THAMIRES DAYANE DE SA PEREIRA'] <- 'S18'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'JULIA ROBERTA FERRAZ FURLANI'] <- 'S19'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'MARIA FERNANDA LEAL VALENCA'] <- 'S20'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'LIVIA MONTEIRO RODRIGUES LIRA'] <- 'S21'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'ANA CLAUDIA MARTINS DE ALMEIDA'] <- 'S22'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'LUDMILLA DE SA FALCAO LIRA'] <- 'S23'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'MARCOS GABRIEL ARAUJO E SILVA'] <- 'S24'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'CAIO FARAH DE LIMA'] <- 'S25'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'MARCOS VINICIUS SANTOS DE ALMEIDA'] <- 'S26'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'CARLOS ANDRE LEAL DE MORAES'] <- 'S27'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'LILIAN RAFAELI DUTRA SILVEIRA'] <- 'S28'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'ICARO ALBUQUERQUE DE SOUZA'] <- 'S29'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'ISAAC GENUARIO DA SILVA FILHO'] <- 'S30'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'BRUNO ANTONIO DA SILVA'] <- 'S31'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'JHENNYPHE SEABRA DE LYRA BARBOZA'] <- 'S32'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'MIRELA LIZANDRA GONCALVES FEITOZA'] <- 'S33'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'GABRIEL FILIPE ALVES DE SOUZA'] <- 'S34'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'PEROLA VITORIA SILVA DE SOUZA'] <- 'S35'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'BRUNO SOARES SIMOES FERREIRA'] <- 'S36'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'TAYANE MONIQUE DO NASCIMENTO'] <- 'S37'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'MIRIAM AMANDA PEREIRA DO NASCIMENTO'] <- 'S38'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'LUCAS GARCIA DOS SANTOS'] <- 'S39'
-Psi_mau_corte[1][Psi_mau_corte[1] == 'ITALO SOARES DA SILVA'] <- 'S40'
 ```
 
 ```{r}
@@ -294,7 +227,7 @@ t.test(rvtotal ~ Grupo, data = Psi_mau_corte)
 
 ------------------------------------------------
 
-# Magias do Professor
+# Salvar o banco de dados em CSV
 
 ```{r}
 write_csv(df_principal_join, "df_tese.csv")
@@ -305,10 +238,6 @@ write_csv(df_universidade, "df_universidade.csv")
 ```
 
 
-## Análise dos pressupostos
-```{r}
-
-```
 
 
 

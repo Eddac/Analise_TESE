@@ -17,6 +17,56 @@ library(qgraph)
 library(ggplot2)
 ```
 
+# Análise Fatorial Metas de realização
+
+```{r}
+# names(df_geral) # Itens do 58:74
+```
+
+```{r}
+df_geral %>% select(58:74) %>% KMO()
+df_geral %>% select(58:74) %>% bartlett.test()
+```
+
+```{r}
+poly_meta <- df_geral %>% select(58:74) %>% polychoric(.)   # matriz de correlações policóricas para análise paralela.
+rho_meta <- poly_meta$rho # guardando apenas o Rho de Spearman da matriz de correlações policóricas
+scree_meta <-scree(rho_meta)
+
+pa_meta <- fa.parallel(rho_meta, n.obs=209, fa="fa") # análise paralela sobre a matriz de correlações policóricas
+pa_meta$fa.values #mostra os eigenvalues com os dados experimentais
+pa_meta$fa.sim #mostra os eigenvalues com os dados simulados
+```
+
+```{r}
+# Fatores
+
+meta_efa <- df_geral %>% select(58:74) %>% fa(nfactors = '3', cor='poly', 
+            fm='wls', rotate = 'geominQ')
+
+meta_efa$e.values
+meta_efa$loadings %>% view()
+meta_efa$Structure
+```
+
+
+
+```{r}
+# Fatores
+
+meta_efa2 <- df_geral %>% select(58:74) %>% fa(nfactors = '4', cor='poly', 
+            fm='wls', rotate = 'geominQ')
+
+meta_efa2$e.values
+meta_efa2$loadings %>% view()
+```
+
+```{r}
+df_geral %>% select(58:61, 64) %>% psych::omega(digits=3,poly=TRUE) #0.93
+df_geral %>% select(62,63,65:70) %>% omega(digits=3,poly=TRUE) #0.86
+df_geral %>% select(71:74) %>% omega(digits=3,poly=TRUE) #0.83
+```
+
 # Análise de precisão
 - Metas
 ```{r}

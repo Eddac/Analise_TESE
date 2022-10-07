@@ -1,0 +1,215 @@
+---
+title: "Testes"
+author: "Emanuel Cordeiro"
+date: "9/26/2022"
+output: html_document
+---
+# Regressões Teste  
+  
+- Esse arquivo contém vários modelos de regressão que foram testados de modo independente, mas não foram inseridos na tese.  
+
+## Regressões Distância
+
+```{r}
+modD <- lm(Centralidade_distancia_D ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modD2 <- lm(Intermediação_D ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modD3 <- lm(Autoridade_D ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modD4 <- lm(Proximidade_D ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+            HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+modD5 <- lm(Proximidade_D ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+            HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+modD8 <- lm(Centralidade_distancia_D ~ MF1 + MF2, df_principal_join)
+modD9 <- lm(Autoridade_D ~ MF1 + MF2, df_principal_join)
+modD10 <- lm(Centralidade_distancia_D ~ CF1 + CF2 + CF3 + CF4 + CF5, df_principal_join)
+modD11 <- lm(Autoridade_D ~ CF2 + CF3 + CF4 + CF5, df_principal_join)
+```
+
+```{r}
+modD6 <- lmerTest::lmer(Autoridade_D ~ CF2 + CF3 + CF4 + CF5 + (1|Sala), df_principal_join)
+```
+
+```{r}
+summary(modD)
+summary(modD2)
+summary(modD3)
+summary(modD4)
+summary(modD5)
+summary(modD8)
+summary(modD9)
+summary(modD10)
+summary(modD11)
+```
+
+```{r}
+summary(modD6)
+```
+
+### Regressão ARS e nota
+
+
+```{r}
+mod_nota <- lm(nota ~ Autoridade_P + Autoridade, Autoridade_D, df_principal_join)
+mod_nota2 <- lm(nota ~ Autoridade_P + Intermediação_P + Centralidade_distancia_P, df_principal_join)
+mod_nota3 <- lm(nota ~ Autoridade_P, df_principal_join)
+```
+
+```{r}
+mod_nota4 <- lmerTest::lmer(nota ~ Autoridade_P + (1|Sala), df_principal_join)
+```
+
+
+```{r}
+summary(mod_nota)
+summary(mod_nota2)
+summary(mod_nota3)
+```
+
+```{r}
+summary(mod_nota4)
+```
+
+## Plot
+
+```{r}
+centralityPlot(PET3, include = "all")
+
+```
+
+```{r}
+par(mfrow=c(1,2))
+plot(PET3, vertex.size = V(PET3)$autoridade*30)
+```
+
+```{r}
+ggplot(PET3_centralidade_geral, aes(Autoridade, reorder(Nome, Nome)))+
+  geom_point()
+```
+
+```{r}
+df_principal_join %>% group_by(Sala=) %>% ggplot(aes(x = Autoridade, y = Nome))+
+  geom_point()
+```
+
+## Regressões Amizade
+```{r}
+mod <- lm(Centralidade_distancia ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+mod2 <- lm(Intermediação ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+mod3 <- lm(Autoridade ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+mod4 <- lm(Proximidade ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+mod5 <- lm(Proximidade ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+mod6 <- lm(nota ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+mod7 <- lm(nota ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+mod8 <- lm(Centralidade_distancia ~ MF1 + MF2, df_principal_join)
+mod9 <- lm(Autoridade ~ MF1 + MF2, df_principal_join)
+mod10 <- lm(Centralidade_distancia ~ CF1 + CF2 + CF3 + CF4 + CF5, df_principal_join)
+mod11 <- lm(Autoridade ~ CF2 + CF3 + CF4 + CF5, df_principal_join)
+mod12 <- lm(nota ~ MF1 + MF2, df_principal_join)
+```
+
+```{r}
+mod16 <- lm(nota ~ CF1 + CF2 + CF3 + CF4 + CF5, df_principal_join)
+```
+
+```{r}
+mod20 <- lm(nota ~ rvtotal, df_principal_join)
+```
+
+```{r}
+mod21 <- lmerTest::lmer(Autoridade ~ rvtotal + (1|Sala), df_principal_join)
+mod22 <- lmerTest::lmer(Autoridade ~ rvtotal + (rvtotal|Sala), df_principal_join) #overfit
+```
+
+
+Alguns efeitos são encontrados quando analisados a partir da regressão linear simples. Ao utilizar o **modelo misto**, em que assume a sala de aula como **intercepto aleatório**, observa-se que a sala explicar uma porcentagem acima de 20% sobre o efeito das variáveis, e retira o efeito preditor na VD.
+```{r}
+mod13 <- lmerTest::lmer(nota ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2 + (1|Sala), df_principal_join)
+mod14 <- lmerTest::lmer(nota ~ HF1 + HF2 + HF3 + HF4 +HF5 + (1|Sala), df_principal_join)
+mod17 <- lmerTest::lmer(nota ~ CF1 + CF2 + CF3 + CF4 + CF5 + (1|Sala), df_principal_join)
+mod18 <- lmerTest::lmer(Autoridade ~ HF1 + HF2 + HF3 + HF4 +HF5 + (1|Sala), df_principal_join)
+mod19 <- lmerTest::lmer(Autoridade ~ CF1 + CF2 + CF3 + CF4 + CF5 + (1|Sala), df_principal_join)
+```
+
+```{r}
+mod15 <- lmerTest::lmer(nota ~ HF1 + HF2 + HF3 + HF4 +HF5 + (1 + HF1 + HF2 + HF3 + HF4 + HF5|Sala), df_principal_join)
+```
+
+  
+Extroversão (HF3) exerce efeito no comportamento das redes. Amabilidade exerce efeito nas notas acadêmicas. 
+```{r}
+summary(mod) # Hse é significativo
+summary(mod2)
+summary(mod3)
+summary(mod4) # Hse é significativo
+summary(mod5) # Hse é significativo
+summary(mod6) # Hse é significativo
+summary(mod7)
+summary(mod8)
+summary(mod9)
+summary(mod10)
+summary(mod11)
+summary(mod12)
+```
+
+```{r}
+summary(mod13)
+summary(mod14)
+summary(mod16)
+summary(mod17)
+```
+
+```{r}
+ranova(mod15)
+```
+
+```{r}
+summary(mod18)
+summary(mod19)
+```
+
+```{r}
+summary(mod20)
+summary(mod21)
+```
+
+## Regressões Profissional
+
+```{r}
+modP <- lm(Centralidade_distancia_P ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modP2 <- lm(Intermediação_P ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modP3 <- lm(Autoridade_P ~ HF1 + HF2 + HF3 + HF4 +HF5, df_principal_join)
+modP4 <- lm(Proximidade_P ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+modP5 <- lm(Proximidade_P ~ CF1 + CF2 + CF3 + CF4 + CF5 +
+             HF1 + HF2 + HF3 + HF4 +HF5 + MF1 + MF2, df_principal_join)
+modP8 <- lm(Centralidade_distancia_P ~ MF1 + MF2, df_principal_join)
+modP9 <- lm(Autoridade_P ~ MF1 + MF2, df_principal_join)
+modP10 <- lm(Centralidade_distancia_P ~ CF1 + CF2 + CF3 + CF4 + CF5, df_principal_join)
+modP11 <- lm(Autoridade_P ~ CF2 + CF3 + CF4 + CF5, df_principal_join)
+```
+
+Modelo com todas os fatores de H ocasionou um overfit, por isso foi retirado **H1, H4, H5**.
+```{r}
+modP6 <- lmerTest::lmer(Autoridade_P ~ HF2 + HF3 + (1|Sala), df_principal_join)
+modP7 <- lmerTest::lmer(Autoridade_P ~ MF1 + MF2 + (1|Sala), df_principal_join)
+```
+
+```{r}
+summary(modP)
+summary(modP2)
+summary(modP3)
+summary(modP4)
+summary(modP5)
+summary(modP8)
+summary(modP9)
+summary(modP10)
+summary(modP11)
+```
+
+```{r}
+summary(modP6)
+summary(modP7)
+```
