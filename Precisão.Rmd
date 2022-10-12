@@ -50,7 +50,6 @@ meta_efa$Structure
 ```
 
 
-
 ```{r}
 # Fatores
 
@@ -107,9 +106,21 @@ df_geral %>% select(17,19,138,43) %>% omega(digits=3,poly=TRUE)
 df_geral %>% select(13,18,21,23,30,33,44) %>% omega(digits=3,poly=TRUE)
 # 0.65 / 0.73
 df_geral %>% select(136,20,24,28,31,36,45) %>% omega(digits=3,poly=TRUE)
+
+df_geral %>% select(12,16,19,26,34,37,40,42, 
+                    15,22,25,137,32,35,38, 
+                    17,19,138,43, 
+                    13,18,21,23,30,33,44,
+                    136,20,24,28,31,36,45) %>% omega(digits=3,poly=TRUE)
+```
+
+- Raciocínio verbal
+```{r}
+df_geral %>% select(123:134) %>% omega(digits=3,poly=TRUE)
 ```
 
 
+# Análises descritivas  
 
 ```{r}
 df_geral$Idade <- substr(df_geral$Idade,1,2)
@@ -127,12 +138,58 @@ df_geral %>% select(Gênero, Sala) %>% filter(Sala <= 6) %>% group_by(Gênero) %
 ```
 
 ```{r}
-df_geral %>% select(Idade, Sala) %>% filter(Sala == 7 | Sala == 8) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+df_geral(Idade, Sala) %>% filter(Sala == 7 | Sala == 8) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
 
 df_geral %>% select(Gênero, Sala) %>% filter(Sala == 7 | Sala == 8) %>% group_by(Gênero) %>% count() %>% mutate(porc = n/(35+9+1)*100)
+```
+
+```{r}
+df_geral %>% slice(1:35) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+df_geral %>% slice(36:71) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+df_geral %>% slice(72:108) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+df_geral %>% slice(109:150) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+df_geral %>% slice(151:204) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+df_geral %>% slice(205:223) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+df_geral %>% slice(224:249) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
+df_geral %>% slice(250:263) %>% summarise(mean(Idade), sd(Idade), min(Idade), max(Idade))
 ```
 
 
 ```{r}
 summary(df_geral$Idade)
 ```
+
+names(df_geral)
+
+```{r}
+df_geral %>% summarise(mean(rvtotal), sd(rvtotal), min(rvtotal), max(rvtotal))
+df_geral %>% summarise(mean(HF1), sd(HF1), min(HF1), max(HF1))
+df_geral %>% summarise(mean(HF2), sd(HF2), min(HF2), max(HF2))
+df_geral %>% summarise(mean(HF3), sd(HF3), min(HF3), max(HF3))
+df_geral %>% summarise(mean(HF4), sd(HF4), min(HF4), max(HF4))
+df_geral %>% summarise(mean(HF5), sd(HF5), min(HF5), max(HF5))
+```
+
+```{r}
+df_geral %>% summarise(mean(CF1), sd(CF1), min(CF1), max(CF1))
+df_geral %>% summarise(mean(CF2), sd(CF2), min(CF2), max(CF2))
+df_geral %>% summarise(mean(CF3), sd(CF3), min(CF3), max(CF3))
+df_geral %>% summarise(mean(CF4), sd(CF4), min(CF4), max(CF4))
+df_geral %>% summarise(mean(CF5), sd(CF5), min(CF5), max(CF5))
+df_geral %>% summarise(mean(C_GERAL), sd(C_GERAL), min(C_GERAL), max(C_GERAL))
+```
+
+```{r}
+df_geral %>% summarise(mean(MF1), sd(MF1), min(MF1), max(MF1))
+df_geral %>% summarise(mean(MF2), sd(MF2), min(MF2), max(MF2))
+df_geral %>% summarise(mean(MF3), sd(MF3), min(MF3), max(MF3))
+df_geral %>% summarise(mean(MF_GERAL), sd(MF_GERAL), min(MF_GERAL), max(MF_GERAL))
+```
+
+```{r}
+df_geral %>% summarise(mean(rvtotal), sd(rvtotal), min(rvtotal), max(rvtotal))
+```
+
+
+
+

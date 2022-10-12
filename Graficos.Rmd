@@ -69,6 +69,10 @@ rm(teste2)
 V(AP)$nota <- teste$nota
 ```
 
+```{r}
+E(AP)$weight <- ars_ap_all$Peso
+```
+
 
 ```{r, dev='png'}
 par(mfrow=c(1,2))
@@ -79,8 +83,8 @@ plot(AP,
      #vertex.size = sqrt(V(AP)$nota)*5,
      edge.arrow.size=.1,
      edge.curved=0.2, 
-     edge.color = E(AP)$weight,
-     edge.width = E(AP)$weight, 
+     edge.color = E(AP)$Peso,
+     edge.width = E(AP)$Peso, 
      layout = layout.fruchterman.reingold,
      main = 'Rede de Amizade - Psicologia 1')
 plot(AP_p, 
@@ -182,8 +186,8 @@ plot(SER_,
      #vertex.size = sqrt(V(SER_)$bw),
      edge.arrow.size=.1,
      edge.curved=0.2, 
-     edge.width = E(SER_)$weight, 
-     edge.color = E(SER_)$weight,
+     edge.width = E(SER_)$Peso, 
+     edge.color = E(SER_)$Peso,
      layout = layout.fruchterman.reingold,
      main = 'Rede de Amizade',
      sub = "Serviço Social 1")
@@ -193,8 +197,8 @@ plot(SER_p,
      vertex.label.cex = 0.7, 
      edge.arrow.size=.1,
      edge.curved=0.2, 
-     edge.width = E(SER_p)$weight,
-     edge.color = E(SER_p)$weight,
+     edge.width = E(SER_p)$Peso,
+     edge.color = E(SER_p)$Peso,
      layout = layout.fruchterman.reingold,
      main = 'Rede de Profissão',
      sub = "Serviço Social 1")
@@ -441,8 +445,8 @@ plot(PET1,
      vertex.label.cex = 1, 
      edge.arrow.size=.1,
      edge.curved=0.2, 
-     edge.color = E(PET1)$weight,
-     edge.width = E(PET1)$weight, 
+     edge.color = E(PET1)$Peso,
+     edge.width = E(PET1)$Peso, 
      layout = layout.fruchterman.reingold,
      main = "Rede de Amizade", 
      sub =  "Psicologia Petrolina 1")
@@ -451,9 +455,9 @@ plot(PET1_p,
      vertex.label.color = "black", 
      vertex.label.cex = 1, 
      edge.arrow.size=.1,
-     edge.color = E(PET1_p)$weight,
+     edge.color = E(PET1_p)$Peso,
      edge.curved=0.2,
-     edge.width = E(PET1_p)$weight, 
+     edge.width = E(PET1_p)$Peso, 
      layout = layout.fruchterman.reingold,
      main = 'Rede de Profissão',
      sub =  "Psicologia Petrolina 1")
@@ -485,8 +489,8 @@ plot(PET3,
      vertex.label.cex = 1, 
      edge.arrow.size=.1,
      edge.curved=0.2, 
-     edge.color = E(PET3)$weight,
-     edge.width = E(PET3)$weight, 
+     edge.color = E(PET3)$Peso,
+     edge.width = E(PET3)$Peso, 
      layout = layout.fruchterman.reingold,
      main = "Rede de Amizade", 
      sub =  "Psicologia Petrolina 2")
@@ -495,9 +499,9 @@ plot(PET3_p,
      vertex.label.color = "black", 
      vertex.label.cex = 1, 
      edge.arrow.size=.1,
-     edge.color = E(PET3_p)$weight,
+     edge.color = E(PET3_p)$Peso,
      edge.curved=0.2,
-     edge.width = E(PET3_p)$weight, 
+     edge.width = E(PET3_p)$Peso, 
      layout = layout.fruchterman.reingold,
      main = 'Rede de Profissão',
      sub =  "Psicologia Petrolina 2")
